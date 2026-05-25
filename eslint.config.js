@@ -15,7 +15,7 @@ const baseConfig = tseslint.config({
   extends: [eslint.configs.recommended, tseslint.configs.strictTypeChecked, tseslint.configs.stylisticTypeChecked],
   languageOptions: {
     parserOptions: {
-      projectService: true,
+      project: true,
       tsconfigRootDir: import.meta.dirname,
     },
   },
@@ -68,6 +68,19 @@ const astroConfig = tseslint.config({
   },
 });
 
+const scriptsConfig = tseslint.config({
+  files: ["scripts/**/*.{js,mjs,cjs}"],
+  languageOptions: {
+    globals: {
+      process: "readonly",
+      console: "readonly",
+    },
+  },
+  rules: {
+    "no-console": "off",
+  },
+});
+
 export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
@@ -75,5 +88,6 @@ export default tseslint.config(
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
+  scriptsConfig,
   eslintPluginPrettier,
 );
