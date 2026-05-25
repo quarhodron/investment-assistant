@@ -1,1 +1,6 @@
 npx lint-staged
+node scripts/check-wrangler-secrets.mjs
+if grep -RIn "wrangler pages" package.json .github/workflows/ 2>/dev/null; then
+  echo "[pre-commit] ERROR: 'wrangler pages' command detected — this project deploys to Workers." >&2
+  exit 1
+fi
