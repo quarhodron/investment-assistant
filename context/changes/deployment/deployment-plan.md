@@ -24,8 +24,8 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
 - `wrangler.jsonc` — `name` field rename (`10x-astro-starter` → `investment-assistant`)
 - `package.json` — `name` field rename + add `deploy` script
 - `.husky/pre-commit` — extend with secrets-leak guard and stale-Pages-command grep
-- `scripts/check-wrangler-secrets.mjs` *(new)* — pre-commit guard implementation
-- `context/deployment/runbook.md` *(new)* — operational runbook
+- `scripts/check-wrangler-secrets.mjs` _(new)_ — pre-commit guard implementation
+- `context/deployment/runbook.md` _(new)_ — operational runbook
 
 **Verify, do not modify:**
 
@@ -100,6 +100,7 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
   ```
 
   Using `printf '%s'` avoids appending a newline that would corrupt the secret. Do NOT use `echo` without `-n`.
+
 - [ ] Set production `SUPABASE_KEY` (anon key — the same one already in `.dev.vars`):
 
   ```sh
@@ -113,6 +114,7 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
   ```
 
   Expect a JSON array containing `SUPABASE_URL` and `SUPABASE_KEY` with `type: "secret_text"`.
+
 - [ ] Run a clean build: `rm -rf dist .astro && npx astro sync && npm run build`.
 - [ ] Deploy: `npx wrangler deploy`. (Add `--yes` only if a confirmation prompt appears.)
 - [ ] **Capture the bundle size** from the deploy output line `Total Upload: X.XX KiB / gzip: Y.YY KiB`. Note the gzipped size — the Workers bundle ceiling is 3 MB gzipped; flag if `Y.YY > 2 MB` (early-warning headroom). Record the number in the runbook.
@@ -128,6 +130,7 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
   ```
 
   Run `npm run deploy` once locally to confirm the script path works end-to-end. (Subsequent deploys are `npm run deploy` — that is the canonical production push for this project.)
+
 - [ ] Commit: `wrangler.jsonc`, `package.json`, `context/foundation/tech-stack.md`. Do NOT commit anything secret-shaped.
 
 **Verification:**
@@ -205,6 +208,7 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
 # investment-assistant — Cloudflare Workers Operational Runbook
 
 ## Quick reference
+
 - Worker name: `investment-assistant`
 - URL: `https://investment-assistant.<subdomain>.workers.dev`
 - Deploy: **manual, local only** — `npm run deploy` from the dev's machine
@@ -213,12 +217,14 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
 - Account ID: `<fill in from wrangler whoami>`
 
 ## Routine deploy
+
 - `npm run deploy` (= `astro build && wrangler deploy`).
 - After deploy, run the four smoke tests from the deploy plan (curl `/`, browser `/auth/signin`,
   protected route, `wrangler tail`).
 - If `wrangler whoami` reports an expired OAuth session, run `npx wrangler login` and retry.
 
 ## Rollback
+
 - **Most recent N deploys (best effort)**: `npx wrangler rollback` (interactive picker) or
   `npx wrangler rollback --version-id <uuid>`.
 - Cloudflare retains a best-effort window of recent versions. The count is **not contractually
@@ -226,27 +232,32 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
 - **Older revert**: `git checkout <good-sha> && npm run deploy`.
 
 ## Secret rotation
+
 - `printf '%s' '<new-value>' | npx wrangler secret put SUPABASE_KEY`
 - New value applies on the next request — no redeploy required.
 - Local dev: also update `.dev.vars` (gitignored) so `npm run dev` matches production.
 
 ## Logs
+
 - Live tail: `npx wrangler tail` (filter: `--status error`, `--method POST`, etc.)
 - Dashboard: Workers & Pages → `investment-assistant` → Logs (observability is enabled in
   `wrangler.jsonc`).
 
 ## Free tier 429 cliff
+
 - Free plan: 100,000 requests/day, hard cutoff. **Past the limit, requests return user-visible
   HTTP 429** — there is no overage billing.
 - Recommendation: upgrade to the $5/month paid plan **before public dogfooding** to avoid
   surprise outages.
 
 ## Bundle size ceiling
+
 - Workers bundle limit: **3 MB gzipped**. First-deploy gzipped size: **<fill in after Phase 3>**.
 - Re-check after adding heavy deps (chart libraries, markdown processors, AI client SDKs).
   `npm run build && npx wrangler deploy --dry-run` prints the projected size without uploading.
 
 ## prerenderEnvironment caveat
+
 - Astro 6 supports `export const prerenderEnvironment = 'node'` per page for static pages that
   import Node-only libraries at build time.
 - **Failure mode**: build succeeds but the page errors at first runtime request on workerd. There
@@ -255,22 +266,26 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
   `prerenderEnvironment: 'node'` explicitly.
 
 ## nodejs_compat scope
+
 - Currently enabled globally via `compatibility_flags: ["nodejs_compat"]` in `wrangler.jsonc`.
 - Required for `@supabase/ssr` (uses `node:crypto`, `node:buffer`).
 - If a future dep needs a wider polyfill, prefer adding to `compatibility_flags` over editing the
   adapter.
 
 ## Stale Pages-shaped commands
+
 - Pre-commit hook (`.husky/pre-commit`) greps for `wrangler pages` in `package.json` and
   `.github/workflows/`. If it fires, replace with the Workers equivalent: `wrangler deploy`
   (not `wrangler pages deploy`), `wrangler tail` (not `wrangler pages deployment tail`).
 
 ## Contract-drift check
+
 - `context/foundation/tech-stack.md` frontmatter `deployment_target` must say
   `cloudflare-workers`. If it ever drifts back to `cloudflare-pages`, an agent will scaffold the
   wrong CI/adapter on the next refactor.
 
 ## Future-revisit: auth posture
+
 - Currently using `wrangler login` (OAuth). This ties production deploy to one human's
   Cloudflare account login and grants broad privileges. Acceptable for solo MVP local deploys.
 - **Revisit when**: a second person needs to deploy, CI deploy is added, or this leaves the
@@ -279,6 +294,7 @@ This plan does **not** modify application code. The Supabase SSR client (`src/li
   manager / CI secret store.
 
 ## Future-revisit: CI deploy
+
 - Currently no GitHub Actions deploy job — production pushes are manual local `npm run deploy`.
 - **Revisit when**: deploy cadence picks up, you forget to deploy after a merge, or a second
   contributor joins. The infrastructure-research file's "Getting Started" section sketches the

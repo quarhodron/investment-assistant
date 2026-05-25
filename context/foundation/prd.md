@@ -30,7 +30,7 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 - Has a day job; researches investments after hours.
 - No formal financial-analyst training; cannot do fundamental analysis unaided.
 - Goal: place money in long-term investments and build a personal research practice over time.
-- Reaches for the product when looking for sectors or companies worth investing in *now* and when revisiting earlier research to extend it.
+- Reaches for the product when looking for sectors or companies worth investing in _now_ and when revisiting earlier research to extend it.
 - Multi-tenant from v1: every user has isolated prompts, analyses, watchlists, API keys, and model preferences.
 
 (No secondary persona for v1.)
@@ -154,7 +154,7 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 - FR-028: User can configure API keys per supported AI provider in Settings. Each user has their own keys. Priority: must-have
   > Socrates: Counter-argument considered: "the app could ship with a built-in shared key and meter usage." Resolution: kept per-user keys. Bring-your-own-key is the multi-tenant baseline that makes the product viable without the builder taking on per-user cost or rate-limit risk.
 - FR-029: User can choose a default AI model used to pre-fill the model selection when starting a new analysis. Priority: must-have
-  > Socrates: Default is a *suggestion* — overridable per run via FR-012. No counter-argument. Stands as written.
+  > Socrates: Default is a _suggestion_ — overridable per run via FR-012. No counter-argument. Stands as written.
 - FR-030: User can see the list of available model variants offered by the application, grouped by provider. Priority: must-have
   > Socrates: Counter-argument considered: "hardcode the variant list in code." Resolution: kept as application configuration. Provider model rosters change frequently (new GPT, new Claude); requiring a redeploy each time the user wants a newly-released model would freeze them out of the latest capabilities.
 

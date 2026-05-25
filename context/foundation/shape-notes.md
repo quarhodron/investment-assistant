@@ -77,7 +77,7 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 - Has a day job; researches investments after hours.
 - No formal financial-analyst training; cannot do fundamental analysis unaided.
 - Goal: place money in long-term investments and build a personal research practice over time.
-- Reaches for the product when looking for sectors or companies worth investing in *now* and when revisiting earlier research to extend it.
+- Reaches for the product when looking for sectors or companies worth investing in _now_ and when revisiting earlier research to extend it.
 - Multi-tenant from v1: every user has isolated prompts, analyses, watchlists, API keys, and model preferences.
 
 (No secondary persona for v1.)
@@ -201,7 +201,7 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 - FR-028: User can configure API keys per AI provider (Anthropic and OpenAI) in Settings. Each user has their own keys. Priority: must-have
   > Socrates: Counter-argument considered: "the app could ship with a built-in shared key and meter usage." Resolution: kept per-user keys. Bring-your-own-key is the multi-tenant baseline that makes the product viable without the builder taking on per-user cost or rate-limit risk.
 - FR-029: User can choose a default AI model used to pre-fill the model dropdown when starting a new analysis. Priority: must-have
-  > Socrates: Default is a *suggestion* — overridable per run via FR-012. No counter-argument. Stands as written.
+  > Socrates: Default is a _suggestion_ — overridable per run via FR-012. No counter-argument. Stands as written.
 - FR-030: User can see the list of available model variants offered by the app, grouped by provider (Anthropic Claude family, OpenAI GPT family). Priority: must-have
   > Socrates: Counter-argument considered: "hardcode the variant list in code." Resolution: kept as app config. Provider model rosters change frequently (new GPT, new Claude); requiring a redeploy each time the user wants a newly-released model would freeze them out of the latest capabilities.
 
@@ -295,16 +295,12 @@ The rest of the analytical reasoning is in the user's prompts. The application d
 
 All five greenfield soft-gate elements present. No gaps. `quality_check_status: accepted`.
 
-| Element | Status | Source |
-| --- | --- | --- |
-| Access Control | present | `## Access Control` |
-| Business Logic (one-sentence rule) | present | `## Business Logic` opening sentence |
-| Project artifacts | present | this file with valid checkpoint frontmatter |
-| Timeline-cost ack | present | `mvp_weeks: 3` within comfort threshold |
-| Non-Goals | present | `## Non-Goals` (7 entries: 4 functional + 3 quality) |
+| Element                            | Status  | Source                                               |
+| ---------------------------------- | ------- | ---------------------------------------------------- |
+| Access Control                     | present | `## Access Control`                                  |
+| Business Logic (one-sentence rule) | present | `## Business Logic` opening sentence                 |
+| Project artifacts                  | present | this file with valid checkpoint frontmatter          |
+| Timeline-cost ack                  | present | `mvp_weeks: 3` within comfort threshold              |
+| Non-Goals                          | present | `## Non-Goals` (7 entries: 4 functional + 3 quality) |
 
 No `## Open Questions` for `/10x-prd` to mirror — every gray area surfaced during shaping was resolved with a user decision (see `gray_areas_resolved` in frontmatter).
-
-
-
-
