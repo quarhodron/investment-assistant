@@ -2,9 +2,10 @@
 change_id: data-schema-and-rls
 roadmap_id: F-01
 title: Multi-tenant data schema with per-user isolation (RLS)
-status: implementing
+status: implemented
 created: 2026-05-29
 updated: 2026-05-29
+
 ---
 
 # Change: data-schema-and-rls

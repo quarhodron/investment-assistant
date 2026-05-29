@@ -310,11 +310,11 @@ Greenfield slice. Empty `supabase/migrations/` on disk. No data migration. No ba
 
 #### Automated
 
-- [x] 3.1 Script is valid SQL: `psql --set ON_ERROR_STOP=on "$SUPABASE_DB_URL" -f supabase/tests/rls_smoke.sql` exits 0
-- [x] 3.2 Migration still applies from empty after the script runs and tears down: `npx supabase db reset` exits 0
-- [x] 3.3 Lint passes: `npm run lint`
+- [x] 3.1 Script is valid SQL: `psql --set ON_ERROR_STOP=on "$SUPABASE_DB_URL" -f supabase/tests/rls_smoke.sql` exits 0 — 7a9bcb8
+- [x] 3.2 Migration still applies from empty after the script runs and tears down: `npx supabase db reset` exits 0 — 7a9bcb8
+- [x] 3.3 Lint passes: `npm run lint` — 7a9bcb8
 
 #### Manual
 
-- [x] 3.4 Running the script against a freshly reset local stack produces silent success
-- [x] 3.5 Commenting out one RLS policy and re-running causes the script to raise a `FAIL:` exception
+- [x] 3.4 Running the script against a freshly reset local stack produces silent success — 7a9bcb8
+- [x] 3.5 Commenting out one RLS policy and re-running causes the script to raise a `FAIL:` exception — 7a9bcb8
