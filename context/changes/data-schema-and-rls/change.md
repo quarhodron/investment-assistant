@@ -24,3 +24,4 @@ Every downstream slice (S-01 through S-08) depends on this foundation. RLS is th
 - PRD: `context/foundation/prd.md` (Access Control §Isolation, NFRs §isolation, FR-020, FR-006…FR-031)
 - Plan: `context/changes/data-schema-and-rls/plan.md`
 - Plan brief: `context/changes/data-schema-and-rls/plan-brief.md`
+- Reviews: `context/changes/data-schema-and-rls/reviews/`

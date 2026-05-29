@@ -2,7 +2,7 @@
 
 ## Overview
 
-Stand up the multi-tenant Postgres schema for Investment Assistant: four tables (`prompts`, `analyses`, `watched_companies`, `user_settings`), per-operation per-role RLS on every table, structural enforcement of FR-020 analysis immutability, and the indexes downstream slices need. Generate TypeScript types and wire them through `src/lib/supabase.ts` and `src/types.ts` so every later slice gets compiler-level isolation guarantees for free.
+Stand up the multi-tenant Postgres schema for Investment Assistant: four tables (`prompts`, `analyses`, `watched_companies`, `user_settings`), per-operation per-role RLS on every table, structural enforcement of FR-020 analysis immutability, and the indexes downstream slices need. Generate TypeScript types and wire them through `src/lib/supabase.ts` and `src/types.ts` so every later slice gets compiler-level row typing matching the schema. Note: types match the schema, they do not enforce isolation — RLS and the immutability trigger are the runtime gates.
 
 ## Current State Analysis
 
@@ -54,12 +54,13 @@ After this plan ships:
 - **No password-reset auth changes.** That is S-09's job and is independent.
 - **No data-seed for development.** Empty database after `db reset` is the desired state.
 - **No application-layer business logic, no API routes, no UI changes.** Foundation only.
+- **No CI gate for the RLS smoke script.** CI doesn't run a Postgres in the loop yet, so `rls_smoke.sql` ships as a runbook artifact. Promotion to a CI gate is deferred until Supabase-in-CI exists. Until then: every migration PR must run `psql --set ON_ERROR_STOP=on "$SUPABASE_DB_URL" -f supabase/tests/rls_smoke.sql` against a freshly-reset local stack before merge — a future migration that silently drops a single RLS policy passes lint and build but breaks isolation, and the smoke run is the only checkpoint that catches it.
 
 ## Implementation Approach
 
 One forward-only migration creates the schema, constraints, indexes, RLS policies, and immutability trigger together. Order inside the migration matters: extensions → tables (in FK order: `prompts`, `watched_companies`, `user_settings`, `analyses`) → triggers → policies → indexes. Then a separate code change generates and wires the TypeScript types. Then a separate verification artifact lives outside `migrations/` (so it isn't replayed on `db reset`).
 
-Greenfield + RLS-first means we never have to write per-route auth filters in any downstream slice. Every `select * from prompts` from a Supabase SSR client is automatically scoped to the signed-in user.
+Greenfield + RLS-first means we never have to write per-route auth filters in any downstream slice. Every `select * from prompts` from a Supabase SSR client is automatically scoped to the signed-in user by RLS at the database layer (the TypeScript generic only matches row shapes — it does not enforce the isolation predicate).
 
 ## Critical Implementation Details
 
@@ -90,7 +91,7 @@ Single forward-only migration creating extensions, the four tables with all cons
 - **`prompts`**: `id uuid PK default gen_random_uuid()`, `user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE`, `name text NOT NULL CHECK (length(name) BETWEEN 1 AND 200)`, `description text`, `body text NOT NULL CHECK (length(body) BETWEEN 1 AND 50000)`, `created_at timestamptz NOT NULL DEFAULT now()`, `updated_at timestamptz NOT NULL DEFAULT now()`. Trigger to bump `updated_at` on UPDATE.
 - **`watched_companies`**: `id uuid PK default gen_random_uuid()`, `user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE`, `name text NOT NULL CHECK (length(name) BETWEEN 1 AND 200)`, `ticker text`, `exchange text`, `industry text`, `note text`, `created_at`, `updated_at`. `CHECK ((ticker IS NULL) = (exchange IS NULL))` so ticker and exchange travel together. Partial unique index `(user_id, exchange, ticker) WHERE ticker IS NOT NULL`. Trigger to bump `updated_at`.
 - **`user_settings`**: `user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE`, `api_keys jsonb NOT NULL DEFAULT '{}'::jsonb`, `default_model text`, `created_at`, `updated_at`. F-02 will define the `api_keys` ciphertext shape; F-01 commits only that the column exists, is JSONB, defaults to empty object, and is RLS-isolated.
-- **`analyses`**: `id uuid PK default gen_random_uuid()`, `user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE`, `parent_analysis_id uuid REFERENCES analyses(id) ON DELETE SET NULL`, `company_id uuid REFERENCES watched_companies(id) ON DELETE SET NULL`, `analysis_type text NOT NULL CHECK (analysis_type IN ('other','company'))`, `title text NOT NULL CHECK (length(title) BETWEEN 1 AND 300)`, `prompt_id uuid REFERENCES prompts(id) ON DELETE SET NULL`, `prompt_name_snapshot text NOT NULL`, `prompt_body_snapshot text NOT NULL`, `prompt_description_snapshot text`, `input text NOT NULL`, `extra_context text`, `subject text` (free-text topic for `other`, free-text ticker/name for unwatched-company per FR-014), `model text NOT NULL`, `provider text NOT NULL`, `output text NOT NULL`, `sources jsonb NOT NULL DEFAULT '[]'::jsonb`, `input_tokens integer`, `output_tokens integer`, `cost_usd numeric(10,6)`, `created_at timestamptz NOT NULL DEFAULT now()`. Note: no `updated_at` — the row is immutable. CHECK consistency between `analysis_type` and the company linkage: `CHECK (analysis_type = 'company' OR (analysis_type = 'other' AND company_id IS NULL))`.
+- **`analyses`**: `id uuid PK default gen_random_uuid()`, `user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE`, `parent_analysis_id uuid REFERENCES analyses(id) ON DELETE SET NULL`, `company_id uuid REFERENCES watched_companies(id) ON DELETE SET NULL`, `analysis_type text NOT NULL CHECK (analysis_type IN ('other','company'))`, `title text NOT NULL CHECK (length(title) BETWEEN 1 AND 300)`, `prompt_id uuid REFERENCES prompts(id) ON DELETE SET NULL`, `prompt_name_snapshot text NOT NULL`, `prompt_body_snapshot text NOT NULL`, `prompt_description_snapshot text`, `input text NOT NULL`, `extra_context text`, `subject text` — nullable. For `analysis_type='other'`, holds the free-text topic. For `analysis_type='company'` with a non-null `company_id`, may be null (renderer derives display from the joined `watched_companies` row). For `analysis_type='company'` with `company_id IS NULL` (FR-014 free-text ticker/name, or FR-027 watched-company-since-deleted), holds the entered or last-known label. S-01 owns when to populate; F-01 commits only the column shape, `model text NOT NULL`, `provider text NOT NULL`, `output text NOT NULL`, `sources jsonb NOT NULL DEFAULT '[]'::jsonb`, `input_tokens integer`, `output_tokens integer`, `cost_usd numeric(10,6)`, `created_at timestamptz NOT NULL DEFAULT now()`. Note: no `updated_at` — the row is immutable. CHECK consistency between `analysis_type` and the company linkage: `CHECK (analysis_type = 'company' OR (analysis_type = 'other' AND company_id IS NULL))`.
 - **Immutability trigger**: a `BEFORE UPDATE ON analyses` trigger that always raises `cannot_modify_immutable_analysis (FR-020)`. No allow-list for v1.
 - **`updated_at` triggers**: `BEFORE UPDATE` on `prompts`, `watched_companies`, `user_settings` setting `NEW.updated_at = now()`.
 - **RLS policies** (per table, four policies each, role `authenticated`):
@@ -203,7 +204,7 @@ A repeatable, runnable SQL script that creates two synthetic users, inserts data
 4. As user A: asserts UPDATE on `analyses` raises `cannot_modify_immutable_analysis`.
 5. Tears down the two users at the end.
 
-The script uses `SET LOCAL role authenticated` and `SET LOCAL request.jwt.claim.sub = '<user-id>'` to simulate the SSR client's RLS context. Each assertion is a `DO $$ … RAISE EXCEPTION 'FAIL: …' $$` block on contradiction; success is silent.
+The script uses `SET LOCAL role TO authenticated` and `SET LOCAL "request.jwt.claims" = '{"sub":"<user-id>","role":"authenticated"}'` to simulate the SSR client's RLS context. Note: Supabase's `auth.uid()` reads the JSON `request.jwt.claims` setting (`->> 'sub'`), not a dotted `request.jwt.claim.sub` setting — getting this wrong silently passes assertions for the wrong reason. Each assertion is a `DO $$ … RAISE EXCEPTION 'FAIL: …' $$` block on contradiction; success is silent.
 
 #### 2. Wire it into the runbook
 
