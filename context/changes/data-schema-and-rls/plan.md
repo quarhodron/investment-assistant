@@ -278,10 +278,10 @@ Greenfield slice. Empty `supabase/migrations/` on disk. No data migration. No ba
 
 #### Automated
 
-- [ ] 1.1 Migration applies cleanly from empty: `npx supabase db reset` exits 0
-- [ ] 1.2 No SQL warnings about missing RLS: `psql -c "select tablename from pg_tables where schemaname='public' and rowsecurity=false"` returns 0 rows
-- [ ] 1.3 Lint passes: `npm run lint`
-- [ ] 1.4 Build passes: `npm run build`
+- [x] 1.1 Migration applies cleanly from empty: `npx supabase db reset` exits 0
+- [x] 1.2 No SQL warnings about missing RLS: `psql -c "select tablename from pg_tables where schemaname='public' and rowsecurity=false"` returns 0 rows
+- [x] 1.3 Lint passes: `npm run lint`
+- [x] 1.4 Build passes: `npm run build`
 
 #### Manual
 
