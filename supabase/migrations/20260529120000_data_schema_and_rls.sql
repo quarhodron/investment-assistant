@@ -39,6 +39,7 @@ CREATE POLICY prompts_delete ON prompts FOR DELETE TO authenticated
   USING ((SELECT auth.uid()) = user_id);
 
 REVOKE ALL ON prompts FROM anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON prompts TO authenticated;
 
 CREATE TRIGGER prompts_set_updated_at
   BEFORE UPDATE ON prompts
@@ -74,6 +75,7 @@ CREATE POLICY watched_companies_delete ON watched_companies FOR DELETE TO authen
   USING ((SELECT auth.uid()) = user_id);
 
 REVOKE ALL ON watched_companies FROM anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON watched_companies TO authenticated;
 
 CREATE TRIGGER watched_companies_set_updated_at
   BEFORE UPDATE ON watched_companies
@@ -108,6 +110,7 @@ CREATE POLICY user_settings_delete ON user_settings FOR DELETE TO authenticated
   USING ((SELECT auth.uid()) = user_id);
 
 REVOKE ALL ON user_settings FROM anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON user_settings TO authenticated;
 
 CREATE TRIGGER user_settings_set_updated_at
   BEFORE UPDATE ON user_settings
@@ -138,7 +141,10 @@ CREATE TABLE analyses (
   output_tokens             integer,
   cost_usd                  numeric(10,6),
   created_at                timestamptz NOT NULL DEFAULT now(),
-  -- analysis_type='other' must not be linked to a watched company (FR-014)
+  -- analysis_type='other' must not be linked to a watched company (FR-014).
+  -- analysis_type='company' MAY have a NULL company_id: free-text unwatched
+  -- ticker on insert (FR-014), or watched company later deleted (FR-027 via
+  -- ON DELETE SET NULL on company_id).
   CONSTRAINT analyses_type_company_check
     CHECK (analysis_type = 'company' OR (analysis_type = 'other' AND company_id IS NULL))
 );
@@ -162,7 +168,9 @@ CREATE POLICY analyses_select ON analyses FOR SELECT TO authenticated
   USING ((SELECT auth.uid()) = user_id);
 CREATE POLICY analyses_insert ON analyses FOR INSERT TO authenticated
   WITH CHECK ((SELECT auth.uid()) = user_id);
--- UPDATE policy: trigger fires first and raises, but belt-and-suspenders
+-- UPDATE policy: required to keep cross-user UPDATE attempts hidden by RLS
+-- (otherwise the immutability trigger would fire and leak existence of other
+-- users' analysis ids). Trigger handles same-user UPDATE rejection.
 CREATE POLICY analyses_update ON analyses FOR UPDATE TO authenticated
   USING ((SELECT auth.uid()) = user_id)
   WITH CHECK ((SELECT auth.uid()) = user_id);
@@ -170,6 +178,8 @@ CREATE POLICY analyses_delete ON analyses FOR DELETE TO authenticated
   USING ((SELECT auth.uid()) = user_id);
 
 REVOKE ALL ON analyses FROM anon;
+-- analyses still gets UPDATE: RLS + immutability trigger handle rejection
+GRANT SELECT, INSERT, UPDATE, DELETE ON analyses TO authenticated;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Indexes for downstream slices

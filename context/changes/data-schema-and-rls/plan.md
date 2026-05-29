@@ -318,3 +318,7 @@ Greenfield slice. Empty `supabase/migrations/` on disk. No data migration. No ba
 
 - [x] 3.4 Running the script against a freshly reset local stack produces silent success — 7a9bcb8
 - [x] 3.5 Commenting out one RLS policy and re-running causes the script to raise a `FAIL:` exception — 7a9bcb8
+
+## Implementation Notes (post-merge)
+
+- Phase 2 added `{ ignores: ["src/db/**"] }` to `eslint.config.js`. The generated `src/db/database.types.ts` would otherwise fail `tseslint.configs.strictTypeChecked` rules. This ignore was not in the original plan but is a necessary side effect of committing generated types.
