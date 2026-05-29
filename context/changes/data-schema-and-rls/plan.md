@@ -278,10 +278,10 @@ Greenfield slice. Empty `supabase/migrations/` on disk. No data migration. No ba
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly from empty: `npx supabase db reset` exits 0
-- [x] 1.2 No SQL warnings about missing RLS: `psql -c "select tablename from pg_tables where schemaname='public' and rowsecurity=false"` returns 0 rows
-- [x] 1.3 Lint passes: `npm run lint`
-- [x] 1.4 Build passes: `npm run build`
+- [x] 1.1 Migration applies cleanly from empty: `npx supabase db reset` exits 0 — 9b66c93
+- [x] 1.2 No SQL warnings about missing RLS: `psql -c "select tablename from pg_tables where schemaname='public' and rowsecurity=false"` returns 0 rows — 9b66c93
+- [x] 1.3 Lint passes: `npm run lint` — 9b66c93
+- [x] 1.4 Build passes: `npm run build` — 9b66c93
 
 #### Manual
 
@@ -296,10 +296,10 @@ Greenfield slice. Empty `supabase/migrations/` on disk. No data migration. No ba
 
 #### Automated
 
-- [ ] 2.1 Generated file exists: `test -f src/db/database.types.ts`
-- [ ] 2.2 Lint passes: `npm run lint`
-- [ ] 2.3 Build passes: `npm run build` (also runs `astro check`)
-- [ ] 2.4 Type-check finds no `any` regressions in `src/lib/supabase.ts`
+- [x] 2.1 Generated file exists: `test -f src/db/database.types.ts`
+- [x] 2.2 Lint passes: `npm run lint`
+- [x] 2.3 Build passes: `npm run build` (also runs `astro check`)
+- [x] 2.4 Type-check finds no `any` regressions in `src/lib/supabase.ts`
 
 #### Manual
 
