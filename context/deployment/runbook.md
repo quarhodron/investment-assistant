@@ -10,6 +10,18 @@
 - Account ID: `c73172f88c8ffd2bb5c67424fd9b9cd0`
 - First-deploy bundle size: **1911.73 KiB / gzip 391.08 KiB** (~382 KB gzipped)
 
+## Local dev: RLS smoke test
+
+After `npx supabase db reset`, run the RLS verification harness to confirm per-user isolation and
+analysis immutability hold:
+
+```bash
+psql "$SUPABASE_DB_URL" -f supabase/tests/rls_smoke.sql
+```
+
+Success: silent (every assertion holds). Failure: a `FAIL:` exception from the first violated
+assertion. The script runs inside a single transaction and rolls back all test data on exit.
+
 ## Routine deploy
 
 - `npm run deploy` (= `astro build && wrangler deploy`).

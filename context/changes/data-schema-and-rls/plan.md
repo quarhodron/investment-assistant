@@ -285,36 +285,36 @@ Greenfield slice. Empty `supabase/migrations/` on disk. No data migration. No ba
 
 #### Manual
 
-- [ ] 1.5 In Supabase Studio, the four tables appear with the expected columns
-- [ ] 1.6 Inserting a row as user A and querying as user B returns no rows (per table)
-- [ ] 1.7 Attempting UPDATE on `analyses` from the SQL editor signed in as the row's owner raises the immutability error
-- [ ] 1.8 Inserting an `analyses` row with `analysis_type='other'` and a non-null `company_id` is rejected by the CHECK
-- [ ] 1.9 A `watched_companies` row with ticker set and exchange null is rejected
-- [ ] 1.10 Two `watched_companies` rows with same ticker on different exchanges for the same user are both accepted
+- [x] 1.5 In Supabase Studio, the four tables appear with the expected columns
+- [x] 1.6 Inserting a row as user A and querying as user B returns no rows (per table)
+- [x] 1.7 Attempting UPDATE on `analyses` from the SQL editor signed in as the row's owner raises the immutability error
+- [x] 1.8 Inserting an `analyses` row with `analysis_type='other'` and a non-null `company_id` is rejected by the CHECK
+- [x] 1.9 A `watched_companies` row with ticker set and exchange null is rejected
+- [x] 1.10 Two `watched_companies` rows with same ticker on different exchanges for the same user are both accepted
 
 ### Phase 2: Generated TypeScript types and typed Supabase client
 
 #### Automated
 
-- [x] 2.1 Generated file exists: `test -f src/db/database.types.ts`
-- [x] 2.2 Lint passes: `npm run lint`
-- [x] 2.3 Build passes: `npm run build` (also runs `astro check`)
-- [x] 2.4 Type-check finds no `any` regressions in `src/lib/supabase.ts`
+- [x] 2.1 Generated file exists: `test -f src/db/database.types.ts` — 3483e2c
+- [x] 2.2 Lint passes: `npm run lint` — 3483e2c
+- [x] 2.3 Build passes: `npm run build` (also runs `astro check`) — 3483e2c
+- [x] 2.4 Type-check finds no `any` regressions in `src/lib/supabase.ts` — 3483e2c
 
 #### Manual
 
-- [ ] 2.5 Hovering over a `.from('prompts').select('*').single()` call shows row type `Prompt`, not `any`
-- [ ] 2.6 `src/db/database.types.ts` is committed (not gitignored)
+- [x] 2.5 Hovering over a `.from('prompts').select('*').single()` call shows row type `Prompt`, not `any`
+- [x] 2.6 `src/db/database.types.ts` is committed (not gitignored)
 
 ### Phase 3: RLS verification harness
 
 #### Automated
 
-- [ ] 3.1 Script is valid SQL: `psql --set ON_ERROR_STOP=on "$SUPABASE_DB_URL" -f supabase/tests/rls_smoke.sql` exits 0
-- [ ] 3.2 Migration still applies from empty after the script runs and tears down: `npx supabase db reset` exits 0
-- [ ] 3.3 Lint passes: `npm run lint`
+- [x] 3.1 Script is valid SQL: `psql --set ON_ERROR_STOP=on "$SUPABASE_DB_URL" -f supabase/tests/rls_smoke.sql` exits 0
+- [x] 3.2 Migration still applies from empty after the script runs and tears down: `npx supabase db reset` exits 0
+- [x] 3.3 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.4 Running the script against a freshly reset local stack produces silent success
-- [ ] 3.5 Commenting out one RLS policy and re-running causes the script to raise a `FAIL:` exception
+- [x] 3.4 Running the script against a freshly reset local stack produces silent success
+- [x] 3.5 Commenting out one RLS policy and re-running causes the script to raise a `FAIL:` exception
