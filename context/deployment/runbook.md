@@ -43,6 +43,47 @@ assertion. The script runs inside a single transaction and rolls back all test d
 - New value applies on the next request — no redeploy required.
 - Local dev: also update `.dev.vars` (gitignored) so `npm run dev` matches production.
 
+## Encryption key (F-02)
+
+`ENCRYPTION_KEY` is the master key from which every per-user AES-GCM subkey is derived (HKDF-SHA-256, info `f02-api-keys-v1`). It MUST be a base64-encoded 32-byte value.
+
+### Generate
+
+```bash
+openssl rand -base64 32
+```
+
+### Install locally
+
+Append to `.dev.vars` (gitignored):
+
+```bash
+echo "ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .dev.vars
+```
+
+Verify the round-trip works:
+
+```bash
+node scripts/encrypt-roundtrip.mjs
+```
+
+### Install in production
+
+```bash
+printf '%s' '<base64-value>' | npx wrangler secret put ENCRYPTION_KEY
+```
+
+### Rotation (v1 strategy — placeholder)
+
+The persisted ciphertext envelope includes `{"v":1,...}` so rotation is routine:
+
+1. Generate a new key, install it as `ENCRYPTION_KEY_V2` (new secret).
+2. Ship a code change that bumps `v` to `2` for new writes and continues decrypting `v:1` blobs with the old key.
+3. Run a one-shot `scripts/rotate-keys.mjs` (not yet authored — author when first rotation is needed) that pages `user_settings`, decrypts under v1, re-encrypts under v2, writes back.
+4. Drop `ENCRYPTION_KEY_V1` from secrets.
+
+The version field is what makes this routine; never store ciphertext without it.
+
 ## Logs
 
 - Live tail: `npx wrangler tail` (filter: `--status error`, `--method POST`, etc.)

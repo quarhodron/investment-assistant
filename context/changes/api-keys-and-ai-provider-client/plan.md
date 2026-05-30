@@ -513,33 +513,33 @@ No unit-test framework is configured. CLAUDE.md: "No test framework is configure
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly from empty: `npx supabase db reset` exits 0
-- [x] 1.2 After reset, `select count(*) from public.ai_models` returns the seeded roster count (4 rows)
-- [x] 1.3 Lint passes: `npm run lint`
-- [x] 1.4 Build passes: `npm run build` (also runs `astro check` against the new types)
+- [x] 1.1 Migration applies cleanly from empty: `npx supabase db reset` exits 0 — af034f3
+- [x] 1.2 After reset, `select count(*) from public.ai_models` returns the seeded roster count (4 rows) — af034f3
+- [x] 1.3 Lint passes: `npm run lint` — af034f3
+- [x] 1.4 Build passes: `npm run build` (also runs `astro check` against the new types) — af034f3
 
 #### Manual
 
-- [x] 1.5 In Supabase Studio, the `ai_models` table appears with the seeded rows; the partial unique index `(provider) WHERE is_default = true` is visible
-- [x] 1.6 Signing up a new user via `/auth/signup` produces exactly one matching row in `user_settings`
-- [x] 1.7 A second signup is also handled correctly (no PK conflict surfaced anywhere)
-- [x] 1.8 Hovering over a `.from('ai_models').select('*')` call shows the row type as `AiModel`, not `any`
+- [x] 1.5 In Supabase Studio, the `ai_models` table appears with the seeded rows; the partial unique index `(provider) WHERE is_default = true` is visible — af034f3
+- [x] 1.6 Signing up a new user via `/auth/signup` produces exactly one matching row in `user_settings` — af034f3
+- [x] 1.7 A second signup is also handled correctly (no PK conflict surfaced anywhere) — af034f3
+- [x] 1.8 Hovering over a `.from('ai_models').select('*')` call shows the row type as `AiModel`, not `any` — af034f3
 
 ### Phase 2: Encryption module + ENCRYPTION_KEY plumbing
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
-- [ ] 2.3 Roundtrip script succeeds: `node scripts/encrypt-roundtrip.mjs` exits 0
-- [ ] 2.4 Pre-commit secret check still passes; flags a literal `ENCRYPTION_KEY` in `wrangler.jsonc`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
+- [x] 2.3 Roundtrip script succeeds: `node scripts/encrypt-roundtrip.mjs` exits 0
+- [x] 2.4 Pre-commit secret check still passes; flags a literal `ENCRYPTION_KEY` in `wrangler.jsonc`
 
 #### Manual
 
-- [ ] 2.5 `.dev.vars` contains `ENCRYPTION_KEY=<base64>` (32 random bytes, base64-encoded)
-- [ ] 2.6 Hovering over a call site of `encryptApiKey` shows the typed `Promise<EncryptedBlob>` return
-- [ ] 2.7 Different `ENCRYPTION_KEY` values produce different ciphertext for the same plaintext
-- [ ] 2.8 Same key but different `userId`s produce different ciphertext for the same plaintext
+- [x] 2.5 `.dev.vars` contains `ENCRYPTION_KEY=<base64>` (32 random bytes, base64-encoded)
+- [x] 2.6 Hovering over a call site of `encryptApiKey` shows the typed `Promise<EncryptedBlob>` return
+- [x] 2.7 Different `ENCRYPTION_KEY` values produce different ciphertext for the same plaintext
+- [x] 2.8 Same key but different `userId`s produce different ciphertext for the same plaintext
 
 ### Phase 3: Settings page + API-key save / remove / default-model endpoints
 
