@@ -1,9 +1,13 @@
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
-export interface Database {
+export type Database = {
   graphql_public: {
-    Tables: Record<never, never>;
-    Views: Record<never, never>;
+    Tables: {
+      [_ in never]: never;
+    };
+    Views: {
+      [_ in never]: never;
+    };
     Functions: {
       graphql: {
         Args: {
@@ -15,11 +19,48 @@ export interface Database {
         Returns: Json;
       };
     };
-    Enums: Record<never, never>;
-    CompositeTypes: Record<never, never>;
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
   };
   public: {
     Tables: {
+      ai_models: {
+        Row: {
+          created_at: string;
+          display_name: string;
+          enabled: boolean;
+          id: string;
+          is_default: boolean;
+          provider: string;
+          sort_order: number;
+          supports_web_search: boolean;
+        };
+        Insert: {
+          created_at?: string;
+          display_name: string;
+          enabled?: boolean;
+          id: string;
+          is_default?: boolean;
+          provider: string;
+          sort_order?: number;
+          supports_web_search?: boolean;
+        };
+        Update: {
+          created_at?: string;
+          display_name?: string;
+          enabled?: boolean;
+          id?: string;
+          is_default?: boolean;
+          provider?: string;
+          sort_order?: number;
+          supports_web_search?: boolean;
+        };
+        Relationships: [];
+      };
       analyses: {
         Row: {
           analysis_type: string;
@@ -205,12 +246,20 @@ export interface Database {
         Relationships: [];
       };
     };
-    Views: Record<never, never>;
-    Functions: Record<never, never>;
-    Enums: Record<never, never>;
-    CompositeTypes: Record<never, never>;
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
+    };
   };
-}
+};
 
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
