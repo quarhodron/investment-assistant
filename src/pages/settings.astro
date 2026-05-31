@@ -1,0 +1,70 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import SettingsForm from "@/components/SettingsForm";
+import { createClient } from "@/lib/supabase";
+import type { AiModel } from "@/types";
+
+const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+const error = Astro.url.searchParams.get("error");
+const ok = Astro.url.searchParams.get("ok");
+
+type ApiKeysShape = { anthropic?: unknown; openai?: unknown } | null;
+
+let apiKeyStatus = { anthropic: { configured: false }, openai: { configured: false } };
+let models: AiModel[] = [];
+let defaultModelId: string | null = null;
+
+if (supabase && user) {
+  const [settingsResult, modelsResult] = await Promise.all([
+    supabase.from("user_settings").select("default_model, api_keys").eq("user_id", user.id).single(),
+    supabase
+      .from("ai_models")
+      .select("id, provider, display_name, is_default, sort_order, enabled, supports_web_search, created_at")
+      .eq("enabled", true)
+      .order("sort_order"),
+  ]);
+
+  if (settingsResult.data) {
+    const keys = settingsResult.data.api_keys as ApiKeysShape;
+    apiKeyStatus = {
+      anthropic: { configured: keys?.anthropic !== undefined },
+      openai: { configured: keys?.openai !== undefined },
+    };
+    defaultModelId = settingsResult.data.default_model ?? null;
+  }
+
+  if (modelsResult.data) {
+    models = modelsResult.data;
+  }
+}
+---
+
+<Layout title="Settings">
+  <div class="bg-cosmic min-h-screen p-6">
+    <div class="mx-auto max-w-2xl">
+      <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
+        Settings
+      </h1>
+
+      {
+        error && (
+          <div class="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">
+            {decodeURIComponent(error)}
+          </div>
+        )
+      }
+
+      {
+        ok && (
+          <div class="mb-4 rounded-lg border border-green-400/30 bg-green-500/10 p-3 text-sm text-green-200">
+            Settings saved successfully.
+          </div>
+        )
+      }
+
+      <SettingsForm status={apiKeyStatus} models={models} defaultModelId={defaultModelId} client:load />
+    </div>
+  </div>
+</Layout>

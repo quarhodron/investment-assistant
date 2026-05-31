@@ -529,25 +529,25 @@ No unit-test framework is configured. CLAUDE.md: "No test framework is configure
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
-- [x] 2.3 Roundtrip script succeeds: `node scripts/encrypt-roundtrip.mjs` exits 0
-- [x] 2.4 Pre-commit secret check still passes; flags a literal `ENCRYPTION_KEY` in `wrangler.jsonc`
+- [x] 2.1 Lint passes: `npm run lint` — 32f0c23
+- [x] 2.2 Build passes: `npm run build` — 32f0c23
+- [x] 2.3 Roundtrip script succeeds: `node scripts/encrypt-roundtrip.mjs` exits 0 — 32f0c23
+- [x] 2.4 Pre-commit secret check still passes; flags a literal `ENCRYPTION_KEY` in `wrangler.jsonc` — 32f0c23
 
 #### Manual
 
-- [x] 2.5 `.dev.vars` contains `ENCRYPTION_KEY=<base64>` (32 random bytes, base64-encoded)
-- [x] 2.6 Hovering over a call site of `encryptApiKey` shows the typed `Promise<EncryptedBlob>` return
-- [x] 2.7 Different `ENCRYPTION_KEY` values produce different ciphertext for the same plaintext
-- [x] 2.8 Same key but different `userId`s produce different ciphertext for the same plaintext
+- [x] 2.5 `.dev.vars` contains `ENCRYPTION_KEY=<base64>` (32 random bytes, base64-encoded) — 32f0c23
+- [x] 2.6 Hovering over a call site of `encryptApiKey` shows the typed `Promise<EncryptedBlob>` return — 32f0c23
+- [x] 2.7 Different `ENCRYPTION_KEY` values produce different ciphertext for the same plaintext — 32f0c23
+- [x] 2.8 Same key but different `userId`s produce different ciphertext for the same plaintext — 32f0c23
 
 ### Phase 3: Settings page + API-key save / remove / default-model endpoints
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build passes: `npm run build`
-- [ ] 3.3 The new shadcn/ui components are committed (input, card, label, select)
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build passes: `npm run build`
+- [x] 3.3 The new shadcn/ui components are committed (input, card, label, select)
 
 #### Manual
 
