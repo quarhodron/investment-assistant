@@ -565,19 +565,19 @@ No unit-test framework is configured. CLAUDE.md: "No test framework is configure
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint`
-- [x] 4.2 Build passes: `npm run build`
-- [x] 4.3 Bundle size budget: `wrangler deploy --dry-run --outdir dist-dryrun` reports compressed bundle under 2.5 MB
-- [x] 4.4 New SDK dependencies pinned in `package.json` + `package-lock.json`
+- [x] 4.1 Lint passes: `npm run lint` — 53dfb33
+- [x] 4.2 Build passes: `npm run build` — 53dfb33
+- [x] 4.3 Bundle size budget: `wrangler deploy --dry-run --outdir dist-dryrun` reports compressed bundle under 2.5 MB — 53dfb33
+- [x] 4.4 New SDK dependencies pinned in `package.json` + `package-lock.json` — 53dfb33
 
 #### Manual
 
-- [x] 4.5 Curl `POST /api/ai/run` with provider=anthropic streams `event: delta` frames and ends with one `event: done` frame
-- [x] 4.6 Same curl with provider=openai streams equivalent deltas and a `done` frame
-- [x] 4.7 New analysis row in Studio: `output`, `sources` envelope, `input_tokens`/`output_tokens` populated; `provider`/`model` match
-- [x] 4.8 Curl with an invalid model_id returns one `event: error` frame, writes no row
-- [x] 4.9 Curl with provider=anthropic but Anthropic key removed → `event: error` payload `{message:"api_key_not_configured",provider:"anthropic"}`
-- [x] 4.10 Corrupted ciphertext (edit `ct` in Studio) → `event: error` payload `{message:"api_key_corrupted"}`
-- [x] 4.11 Inspect logs: no `sk-ant-`/`sk-` prefix appears anywhere; no prompt body in error logs
-- [x] 4.12 Curl while signed out → 401; no row written
-- [x] 4.13 Two parallel runs for the same user complete with two distinct `analysis_id`s; no corruption
+- [x] 4.5 Curl `POST /api/ai/run` with provider=anthropic streams `event: delta` frames and ends with one `event: done` frame — 53dfb33
+- [x] 4.6 Same curl with provider=openai streams equivalent deltas and a `done` frame — 53dfb33
+- [x] 4.7 New analysis row in Studio: `output`, `sources` envelope, `input_tokens`/`output_tokens` populated; `provider`/`model` match — 53dfb33
+- [x] 4.8 Curl with an invalid model_id returns one `event: error` frame, writes no row — 53dfb33
+- [x] 4.9 Curl with provider=anthropic but Anthropic key removed → `event: error` payload `{message:"api_key_not_configured",provider:"anthropic"}` — 53dfb33
+- [x] 4.10 Corrupted ciphertext (edit `ct` in Studio) → `event: error` payload `{message:"api_key_corrupted"}` — 53dfb33
+- [x] 4.11 Inspect logs: no `sk-ant-`/`sk-` prefix appears anywhere; no prompt body in error logs — 53dfb33
+- [x] 4.12 Curl while signed out → 401; no row written — 53dfb33
+- [x] 4.13 Two parallel runs for the same user complete with two distinct `analysis_id`s; no corruption — 53dfb33
