@@ -3,7 +3,7 @@ project: Investment Assistant
 version: 1
 status: draft
 created: 2026-05-26
-updated: 2026-05-26
+updated: 2026-05-31
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
@@ -27,7 +27,7 @@ Retail amateur investors with day jobs paste one-off prompts into general-purpos
 
 | ID    | Change ID                          | Outcome (user can …)                                                                          | Prerequisites | PRD refs                                                                                  | Status   |
 | ----- | ---------------------------------- | --------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------- | -------- |
-| F-01  | data-schema-and-rls                | (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live | —             | Access Control §Isolation, NFRs §isolation, FR-020                                        | ready    |
+| F-01  | data-schema-and-rls                | (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live | —             | Access Control §Isolation, NFRs §isolation, FR-020                                        | done     |
 | F-02  | api-keys-and-ai-provider-client    | (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI    | F-01          | FR-028, FR-032, Business Logic #2                                                         | proposed |
 | S-01  | first-analysis-other-topic         | run their first analysis on a free-text "other" topic and reopen the saved result             | F-01, F-02    | US-01, FR-006, FR-007, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032 | proposed |
 | S-02  | continue-analysis-chain            | continue a saved analysis with a different prompt and/or model, with the chain preserved      | S-01          | FR-018, Business Logic #2                                                                 | proposed |
@@ -75,7 +75,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Unknowns:**
   - Per-user encryption mechanism for API keys (pgsodium vs Worker-secret-derived AES vs other) — Owner: `/10x-plan` on F-02. Block: no (key column shape is independent of encryption choice).
 - **Risk:** RLS is the single most expensive thing to retrofit — every slice depends on the multi-tenant invariant. Sequenced first because deferring it pushes "do isolation correctly" into per-route handlers, which the PRD guardrail explicitly says cannot be relied on. The mitigation is enabling RLS and writing per-operation, per-role policies for every table at creation time, not later.
-- **Status:** ready
+- **Status:** done
 
 ### F-02: Per-user API keys and AI provider client
 
@@ -250,4 +250,4 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends an entry here when a change whose `Change ID` matches a roadmap item is archived.)
+- **F-01: (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live** — Archived 2026-05-31 → `context/archive/2026-05-29-data-schema-and-rls/`. Lesson: —.
