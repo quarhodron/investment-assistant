@@ -148,7 +148,7 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
       });
 
       if (!response.body) {
-        setErrorMsg("No response stream received.");
+        setErrorFrame({ message: "No response stream received." });
         setStatus("error");
         return;
       }
@@ -184,16 +184,17 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
           if (!eventType || !dataLine) continue;
 
           try {
-            const data = JSON.parse(dataLine) as Record<string, unknown>;
-
             if (eventType === "delta") {
-              setOutput((prev) => prev + (data as unknown as string));
-            } else if (eventType === "done") {
-              setAnalysisId(data.analysis_id as string);
-              setStatus("saved");
-            } else if (eventType === "error") {
-              setErrorFrame(data as ErrorFrame);
-              setStatus("error");
+              setOutput((prev) => prev + (JSON.parse(dataLine) as string));
+            } else {
+              const data = JSON.parse(dataLine) as Record<string, unknown>;
+              if (eventType === "done") {
+                setAnalysisId(data.analysis_id as string);
+                setStatus("saved");
+              } else if (eventType === "error") {
+                setErrorFrame(data as ErrorFrame);
+                setStatus("error");
+              }
             }
           } catch {
             // malformed frame — skip

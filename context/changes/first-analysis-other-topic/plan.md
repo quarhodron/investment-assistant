@@ -253,7 +253,13 @@ Layout sections:
 - **AI output**: `<pre>` or whitespace-preserving `<div>` with full `output` text.
 - **Sources**: collapsible `<details>/<summary>` section. When `sources` is non-null and has items, render the sources list. `StoredSources` is `{ provider: 'anthropic', items: Anthropic.CitationsWebSearchResultLocation[] } | { provider: 'openai', items: OpenAI.Responses.ResponseTextOutput.URLCitation[] }`. For both providers, render each item as a numbered list entry with the URL as a hyperlink and the title (if present). When sources is null or empty: show "No sources returned."
 
-#### 3. Type-narrowing helper for StoredSources rendering
+#### 3. MarkdownOutput React island (addendum — added during implementation)
+
+**File**: `src/components/MarkdownOutput.tsx`
+
+**Intent**: Thin wrapper around `react-markdown` for rendering AI output with markdown formatting on the detail page. Added at user request; the original plan specified a `<pre>` but ReactMarkdown was already in use inline in `NewAnalysisForm.tsx`.
+
+#### 4. Type-narrowing helper for StoredSources rendering
 
 **File**: `src/lib/sources.ts`
 

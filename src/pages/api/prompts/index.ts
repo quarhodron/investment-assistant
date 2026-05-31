@@ -34,16 +34,12 @@ export const POST: APIRoute = async (context) => {
   if (typeof body !== "string" || body.trim().length < 1 || body.trim().length > 50000) {
     return context.redirect(`/prompts?error=${encodeURIComponent("Prompt body must be 1–50,000 characters")}`);
   }
-  const descValue =
-    typeof description === "string" && description.trim().length > 0
-      ? description.trim().length <= 500
-        ? description.trim()
-        : null
-      : null;
-
   if (typeof description === "string" && description.trim().length > 500) {
     return context.redirect(`/prompts?error=${encodeURIComponent("Description must be at most 500 characters")}`);
   }
+
+  const descValue =
+    typeof description === "string" && description.trim().length > 0 ? description.trim() : null;
 
   const { error } = await supabase.from("prompts").insert({
     user_id: user.id,

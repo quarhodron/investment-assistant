@@ -13,6 +13,14 @@ function sseFrame(event: string, data: unknown): string {
 }
 
 export const POST: APIRoute = async (context) => {
+  const origin = context.request.headers.get("Origin");
+  if (origin && origin !== new URL(context.request.url).origin) {
+    return new Response(sseFrame("error", { message: "forbidden" }), {
+      status: 403,
+      headers: { "Content-Type": "text/event-stream" },
+    });
+  }
+
   const user = context.locals.user;
   if (!user) {
     return new Response(null, { status: 401 });
