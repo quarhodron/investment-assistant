@@ -338,35 +338,35 @@ Layout sections:
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` completes without TypeScript errors
+- [x] 2.1 `npm run lint` passes — 7da71cc
+- [x] 2.2 `npm run build` completes without TypeScript errors — 7da71cc
 
 #### Manual
 
-- [x] 2.3 User with no prompts sees the "Create your first prompt" CTA on `/analyses/new`
-- [x] 2.4 User with prompts but no API key sees the "Configure API key" alert and Run is disabled
-- [x] 2.5 Form fills correctly: prompt selector, model selector (provider options disabled when no key), topic, extra context, title
-- [x] 2.6 Clicking Run transitions to streaming state; AI output appears delta-by-delta
-- [x] 2.7 Form inputs are frozen during streaming
-- [x] 2.8 On successful completion: "Saved — view analysis" link appears, pointing to `/analyses/<id>`
-- [x] 2.9 On provider error (e.g. wrong API key): inline error message shown, form unfrozen and filled
-- [x] 2.10 Navigating away mid-stream aborts the stream without console errors
+- [x] 2.3 User with no prompts sees the "Create your first prompt" CTA on `/analyses/new` — 7da71cc
+- [x] 2.4 User with prompts but no API key sees the "Configure API key" alert and Run is disabled — 7da71cc
+- [x] 2.5 Form fills correctly: prompt selector, model selector (provider options disabled when no key), topic, extra context, title — 7da71cc
+- [x] 2.6 Clicking Run transitions to streaming state; AI output appears delta-by-delta — 7da71cc
+- [x] 2.7 Form inputs are frozen during streaming — 7da71cc
+- [x] 2.8 On successful completion: "Saved — view analysis" link appears, pointing to `/analyses/<id>` — 7da71cc
+- [x] 2.9 On provider error (e.g. wrong API key): inline error message shown, form unfrozen and filled — 7da71cc
+- [x] 2.10 Navigating away mid-stream aborts the stream without console errors — 7da71cc
 
 ### Phase 3: Analyses List and Read-Only Detail View
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` completes without TypeScript errors
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` completes without TypeScript errors
 
 #### Manual
 
-- [ ] 3.3 `/analyses` lists all saved analyses in reverse-chronological order
-- [ ] 3.4 Empty state is shown for a new account
-- [ ] 3.5 Clicking an analysis card opens `/analyses/[id]`
-- [ ] 3.6 Detail page shows: title, type, model/provider, input, output, prompt snapshot
-- [ ] 3.7 "Not investment advice" banner is visible on every detail page
-- [ ] 3.8 Sources section is present and collapsed by default; expanding it shows source URLs as hyperlinks
-- [ ] 3.9 "No sources returned" is shown when sources is empty
-- [ ] 3.10 Visiting `/analyses/<another-users-id>` redirects to `/analyses` (RLS enforcement)
-- [ ] 3.11 Analyses page is linked from the "Saved — view analysis" CTA on New Analysis page
+- [x] 3.3 `/analyses` lists all saved analyses in reverse-chronological order
+- [x] 3.4 Empty state is shown for a new account
+- [x] 3.5 Clicking an analysis card opens `/analyses/[id]`
+- [x] 3.6 Detail page shows: title, type, model/provider, input, output, prompt snapshot
+- [x] 3.7 "Not investment advice" banner is visible on every detail page
+- [x] 3.8 Sources section is present and collapsed by default; expanding it shows source URLs as hyperlinks
+- [x] 3.9 "No sources returned" is shown when sources is empty
+- [x] 3.10 Visiting `/analyses/<another-users-id>` redirects to `/analyses` (RLS enforcement)
+- [x] 3.11 Analyses page is linked from the "Saved — view analysis" CTA on New Analysis page
