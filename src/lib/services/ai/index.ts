@@ -25,14 +25,15 @@ export interface RunAiAnalysisInput {
   provider: "anthropic" | "openai";
   model: string;
   prompt: string;
+  input: string;
   context?: string;
   apiKey: string;
 }
 
 export async function* runAiAnalysis(opts: RunAiAnalysisInput): AsyncGenerator<StreamEvent> {
   if (opts.provider === "anthropic") {
-    yield* streamAnthropic({ apiKey: opts.apiKey, model: opts.model, prompt: opts.prompt, context: opts.context });
+    yield* streamAnthropic({ apiKey: opts.apiKey, model: opts.model, prompt: opts.prompt, input: opts.input, context: opts.context });
   } else {
-    yield* streamOpenAI({ apiKey: opts.apiKey, model: opts.model, prompt: opts.prompt, context: opts.context });
+    yield* streamOpenAI({ apiKey: opts.apiKey, model: opts.model, prompt: opts.prompt, input: opts.input, context: opts.context });
   }
 }

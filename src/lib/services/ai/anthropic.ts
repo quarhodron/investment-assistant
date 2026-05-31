@@ -5,15 +5,19 @@ export default async function* streamAnthropic(opts: {
   apiKey: string;
   model: string;
   prompt: string;
+  input: string;
   context?: string;
 }): AsyncGenerator<StreamEvent> {
   const client = new Anthropic({ apiKey: opts.apiKey });
 
-  const userContent = opts.context ? `${opts.context}\n\n${opts.prompt}` : opts.prompt;
+  const parts = [`Topic: ${opts.input}`, `Instructions: ${opts.prompt}`];
+  if (opts.context) parts.push(`Additional context: ${opts.context}`);
+  const userContent = parts.join("\n\n");
 
   const stream = client.messages.stream({
     model: opts.model,
     max_tokens: 4096,
+    system: "You are a financial research assistant. Always respond in well-structured Markdown: use headings, bullet points, and bold text where appropriate.",
     messages: [{ role: "user", content: userContent }],
     tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }],
   });

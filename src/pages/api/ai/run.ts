@@ -103,6 +103,7 @@ export const POST: APIRoute = async (context) => {
           provider: input.provider,
           model: input.model_id,
           prompt: input.prompt_body,
+          input: input.input,
           context: input.extra_context,
           apiKey,
         });

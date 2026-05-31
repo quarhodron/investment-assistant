@@ -321,8 +321,8 @@ Layout sections:
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes with no new errors
-- [x] 1.2 `npm run build` completes without TypeScript errors
+- [x] 1.1 `npm run lint` passes with no new errors — 3c1a262
+- [x] 1.2 `npm run build` completes without TypeScript errors — 3c1a262
 
 #### Manual
 
@@ -338,19 +338,19 @@ Layout sections:
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` completes without TypeScript errors
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` completes without TypeScript errors
 
 #### Manual
 
-- [ ] 2.3 User with no prompts sees the "Create your first prompt" CTA on `/analyses/new`
-- [ ] 2.4 User with prompts but no API key sees the "Configure API key" alert and Run is disabled
-- [ ] 2.5 Form fills correctly: prompt selector, model selector (provider options disabled when no key), topic, extra context, title
-- [ ] 2.6 Clicking Run transitions to streaming state; AI output appears delta-by-delta
-- [ ] 2.7 Form inputs are frozen during streaming
-- [ ] 2.8 On successful completion: "Saved — view analysis" link appears, pointing to `/analyses/<id>`
-- [ ] 2.9 On provider error (e.g. wrong API key): inline error message shown, form unfrozen and filled
-- [ ] 2.10 Navigating away mid-stream aborts the stream without console errors
+- [x] 2.3 User with no prompts sees the "Create your first prompt" CTA on `/analyses/new`
+- [x] 2.4 User with prompts but no API key sees the "Configure API key" alert and Run is disabled
+- [x] 2.5 Form fills correctly: prompt selector, model selector (provider options disabled when no key), topic, extra context, title
+- [x] 2.6 Clicking Run transitions to streaming state; AI output appears delta-by-delta
+- [x] 2.7 Form inputs are frozen during streaming
+- [x] 2.8 On successful completion: "Saved — view analysis" link appears, pointing to `/analyses/<id>`
+- [x] 2.9 On provider error (e.g. wrong API key): inline error message shown, form unfrozen and filled
+- [x] 2.10 Navigating away mid-stream aborts the stream without console errors
 
 ### Phase 3: Analyses List and Read-Only Detail View
 

@@ -5,14 +5,18 @@ export default async function* streamOpenAI(opts: {
   apiKey: string;
   model: string;
   prompt: string;
+  input: string;
   context?: string;
 }): AsyncGenerator<StreamEvent> {
   const client = new OpenAI({ apiKey: opts.apiKey });
 
-  const input = opts.context ? `${opts.context}\n\n${opts.prompt}` : opts.prompt;
+  const parts = [`Topic: ${opts.input}`, `Instructions: ${opts.prompt}`];
+  if (opts.context) parts.push(`Additional context: ${opts.context}`);
+  const input = parts.join("\n\n");
 
   const stream = await client.responses.create({
     model: opts.model,
+    instructions: "You are a financial research assistant. Always respond in well-structured Markdown: use headings, bullet points, and bold text where appropriate.",
     input,
     tools: [{ type: "web_search_preview" }],
     stream: true,

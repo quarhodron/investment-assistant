@@ -1,0 +1,63 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import NewAnalysisForm from "@/components/NewAnalysisForm";
+import { createClient } from "@/lib/supabase";
+import type { Prompt, AiModel } from "@/types";
+
+const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+type ApiKeysShape = { anthropic?: unknown; openai?: unknown } | null;
+
+let prompts: Pick<Prompt, "id" | "name" | "description" | "body">[] = [];
+let models: AiModel[] = [];
+let apiKeyStatus = { anthropic: false, openai: false };
+let defaultModelId: string | null = null;
+
+if (supabase && user) {
+  const [promptsResult, modelsResult, settingsResult] = await Promise.all([
+    supabase.from("prompts").select("id, name, description, body").eq("user_id", user.id).order("name"),
+    supabase
+      .from("ai_models")
+      .select("id, provider, display_name, is_default, sort_order, enabled, supports_web_search, created_at")
+      .eq("enabled", true)
+      .order("sort_order"),
+    supabase.from("user_settings").select("default_model, api_keys").eq("user_id", user.id).single(),
+  ]);
+
+  if (promptsResult.data) {
+    prompts = promptsResult.data;
+  }
+
+  if (modelsResult.data) {
+    models = modelsResult.data;
+  }
+
+  if (settingsResult.data) {
+    const keys = settingsResult.data.api_keys as ApiKeysShape;
+    apiKeyStatus = {
+      anthropic: keys?.anthropic !== undefined,
+      openai: keys?.openai !== undefined,
+    };
+    defaultModelId = settingsResult.data.default_model ?? null;
+  }
+}
+---
+
+<Layout title="New Analysis">
+  <div class="bg-cosmic min-h-screen p-6">
+    <div class="mx-auto max-w-2xl">
+      <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
+        New Analysis
+      </h1>
+
+      <NewAnalysisForm
+        prompts={prompts}
+        models={models}
+        apiKeyStatus={apiKeyStatus}
+        defaultModelId={defaultModelId}
+        client:load
+      />
+    </div>
+  </div>
+</Layout>
