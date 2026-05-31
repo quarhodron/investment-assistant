@@ -2,6 +2,11 @@ import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 
 export const POST: APIRoute = async (context) => {
+  const origin = context.request.headers.get("Origin");
+  if (origin && origin !== new URL(context.request.url).origin) {
+    return context.redirect(`/settings?error=${encodeURIComponent("forbidden")}`);
+  }
+
   const user = context.locals.user;
   if (!user) {
     return context.redirect("/auth/signin");

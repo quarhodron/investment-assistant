@@ -53,11 +53,19 @@ export const POST: APIRoute = async (context) => {
       };
 
       try {
-        const settingsResult = await supabase.from("user_settings").select("api_keys").eq("user_id", user.id).single();
+        const [settingsResult, modelResult] = await Promise.all([
+          supabase.from("user_settings").select("api_keys").eq("user_id", user.id).single(),
+          supabase
+            .from("ai_models")
+            .select("id")
+            .eq("id", input.model_id)
+            .eq("provider", input.provider)
+            .eq("enabled", true)
+            .maybeSingle(),
+        ]);
 
-        if (!settingsResult.data) {
-          enqueue(sseFrame("error", { message: "settings_unavailable" }));
-          controller.close();
+        if (settingsResult.error) {
+          enqueue(sseFrame("error", { message: "service_unavailable" }));
           return;
         }
 
@@ -66,21 +74,15 @@ export const POST: APIRoute = async (context) => {
 
         if (!blobRaw) {
           enqueue(sseFrame("error", { message: "api_key_not_configured", provider: input.provider }));
-          controller.close();
           return;
         }
 
-        const modelResult = await supabase
-          .from("ai_models")
-          .select("id")
-          .eq("id", input.model_id)
-          .eq("provider", input.provider)
-          .eq("enabled", true)
-          .maybeSingle();
-
+        if (modelResult.error) {
+          enqueue(sseFrame("error", { message: "service_unavailable" }));
+          return;
+        }
         if (!modelResult.data) {
           enqueue(sseFrame("error", { message: "invalid_model" }));
-          controller.close();
           return;
         }
 
@@ -94,7 +96,6 @@ export const POST: APIRoute = async (context) => {
           } else {
             enqueue(sseFrame("error", { message: "decryption_unavailable" }));
           }
-          controller.close();
           return;
         }
 
@@ -139,7 +140,6 @@ export const POST: APIRoute = async (context) => {
 
           if (!insertResult.data) {
             enqueue(sseFrame("error", { message: "persist_failed" }));
-            controller.close();
             return;
           }
 
@@ -152,6 +152,7 @@ export const POST: APIRoute = async (context) => {
               provider: event.provider,
             }),
           );
+          break;
         }
       } catch (err) {
         const safe = toSafeAiError(err);

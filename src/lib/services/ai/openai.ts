@@ -25,26 +25,30 @@ export default async function* streamOpenAI(opts: {
     output_tokens: null,
   };
 
-  for await (const event of stream) {
-    if (event.type === "response.output_text.delta") {
-      output += event.delta;
-      yield { kind: "text", delta: event.delta };
-    } else if (event.type === "response.output_text.annotation.added") {
-      const ann = event.annotation;
-      if (
-        ann !== null &&
-        typeof ann === "object" &&
-        "type" in ann &&
-        (ann as { type: string }).type === "url_citation"
-      ) {
-        citations.push(ann as OpenAI.Responses.ResponseTextOutput.URLCitation);
+  try {
+    for await (const event of stream) {
+      if (event.type === "response.output_text.delta") {
+        output += event.delta;
+        yield { kind: "text", delta: event.delta };
+      } else if (event.type === "response.output_text.annotation.added") {
+        const ann = event.annotation;
+        if (
+          ann !== null &&
+          typeof ann === "object" &&
+          "type" in ann &&
+          (ann as { type: string }).type === "url_citation"
+        ) {
+          citations.push(ann as OpenAI.Responses.ResponseTextOutput.URLCitation);
+        }
+      } else if (event.type === "response.completed") {
+        usage = {
+          input_tokens: event.response.usage?.input_tokens ?? null,
+          output_tokens: event.response.usage?.output_tokens ?? null,
+        };
       }
-    } else if (event.type === "response.completed") {
-      usage = {
-        input_tokens: event.response.usage?.input_tokens ?? null,
-        output_tokens: event.response.usage?.output_tokens ?? null,
-      };
     }
+  } finally {
+    stream.controller.abort();
   }
 
   yield {

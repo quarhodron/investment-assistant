@@ -18,10 +18,14 @@ export default async function* streamAnthropic(opts: {
     tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }],
   });
 
-  for await (const event of stream) {
-    if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-      yield { kind: "text", delta: event.delta.text };
+  try {
+    for await (const event of stream) {
+      if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+        yield { kind: "text", delta: event.delta.text };
+      }
     }
+  } finally {
+    if (!stream.aborted) stream.abort();
   }
 
   const final = await stream.finalMessage();

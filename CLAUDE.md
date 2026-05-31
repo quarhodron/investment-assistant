@@ -53,3 +53,7 @@ Full server-side rendering (`output: "server"` in `astro.config.mjs`). All pages
 ## CI
 
 GitHub Actions (`.github/workflows/ci.yml`) runs lint + build on every push/PR to master. Requires `SUPABASE_URL` and `SUPABASE_KEY` repository secrets.
+
+## Manual testing
+
+If you want me to do any manual testing for AI analysis run, ask only for OpenAI models. Because I have only OpenAI API key and not Anthropic API key. So if you are giving me any command/curl example fpor some analysis, by default it should be OpenAI platform and `gpt-4o-mini` model.
