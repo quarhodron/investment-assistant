@@ -356,17 +356,17 @@ Layout sections:
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `npm run build` completes without TypeScript errors
+- [x] 3.1 `npm run lint` passes — a591895
+- [x] 3.2 `npm run build` completes without TypeScript errors — a591895
 
 #### Manual
 
-- [x] 3.3 `/analyses` lists all saved analyses in reverse-chronological order
-- [x] 3.4 Empty state is shown for a new account
-- [x] 3.5 Clicking an analysis card opens `/analyses/[id]`
-- [x] 3.6 Detail page shows: title, type, model/provider, input, output, prompt snapshot
-- [x] 3.7 "Not investment advice" banner is visible on every detail page
-- [x] 3.8 Sources section is present and collapsed by default; expanding it shows source URLs as hyperlinks
-- [x] 3.9 "No sources returned" is shown when sources is empty
-- [x] 3.10 Visiting `/analyses/<another-users-id>` redirects to `/analyses` (RLS enforcement)
-- [x] 3.11 Analyses page is linked from the "Saved — view analysis" CTA on New Analysis page
+- [x] 3.3 `/analyses` lists all saved analyses in reverse-chronological order — a591895
+- [x] 3.4 Empty state is shown for a new account — a591895
+- [x] 3.5 Clicking an analysis card opens `/analyses/[id]` — a591895
+- [x] 3.6 Detail page shows: title, type, model/provider, input, output, prompt snapshot — a591895
+- [x] 3.7 "Not investment advice" banner is visible on every detail page — a591895
+- [x] 3.8 Sources section is present and collapsed by default; expanding it shows source URLs as hyperlinks — a591895
+- [x] 3.9 "No sources returned" is shown when sources is empty — a591895
+- [x] 3.10 Visiting `/analyses/<another-users-id>` redirects to `/analyses` (RLS enforcement) — a591895
+- [x] 3.11 Analyses page is linked from the "Saved — view analysis" CTA on New Analysis page — a591895
