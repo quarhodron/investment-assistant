@@ -28,7 +28,7 @@ Retail amateur investors with day jobs paste one-off prompts into general-purpos
 | ID    | Change ID                          | Outcome (user can …)                                                                          | Prerequisites | PRD refs                                                                                  | Status   |
 | ----- | ---------------------------------- | --------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------- | -------- |
 | F-01  | data-schema-and-rls                | (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live | —             | Access Control §Isolation, NFRs §isolation, FR-020                                        | done     |
-| F-02  | api-keys-and-ai-provider-client    | (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI    | F-01          | FR-028, FR-032, Business Logic #2                                                         | proposed |
+| F-02  | api-keys-and-ai-provider-client    | (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI    | F-01          | FR-028, FR-032, Business Logic #2                                                         | done     |
 | S-01  | first-analysis-other-topic         | run their first analysis on a free-text "other" topic and reopen the saved result             | F-01, F-02    | US-01, FR-006, FR-007, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032 | proposed |
 | S-02  | continue-analysis-chain            | continue a saved analysis with a different prompt and/or model, with the chain preserved      | S-01          | FR-018, Business Logic #2                                                                 | proposed |
 | S-03  | filter-analyses-list               | filter and sort the analyses list by date, type, and associated company                       | S-01          | FR-017                                                                                    | proposed |
@@ -91,7 +91,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
   - AI model variants registry shape (file vs DB vs env-driven) — Owner: `/10x-plan` on F-02 / S-01. Block: no (S-01 can ship with a hardcoded list; F-02 picks the long-term shape).
   - Input validation library choice (CLAUDE.md: "propose rather than assume zod") — Owner: `/10x-plan` on F-02. Block: no (the AI client's input shape is small enough to live without a library on day one).
 - **Risk:** Encryption-at-rest is irreversible once keys are stored — picking the mechanism wrong and migrating later is per-key key-rotation, not a schema migration. Sequenced before any user-facing flow that needs a key (S-01) so the choice is made deliberately, not retrofitted.
-- **Status:** proposed
+- **Status:** done
 
 ## Slices
 
@@ -251,3 +251,4 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 ## Done
 
 - **F-01: (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live** — Archived 2026-05-31 → `context/archive/2026-05-29-data-schema-and-rls/`. Lesson: —.
+- **F-02: (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI** — Archived 2026-05-31 → `context/archive/2026-05-30-api-keys-and-ai-provider-client/`. Lesson: —.

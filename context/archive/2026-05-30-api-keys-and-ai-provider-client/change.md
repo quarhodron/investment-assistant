@@ -1,10 +1,10 @@
 ---
 change_id: api-keys-and-ai-provider-client
 title: Api keys and ai provider client
-status: impl_reviewed
+status: archived
 created: 2026-05-30
 updated: 2026-05-31
-archived_at: null
+archived_at: 2026-05-31T17:02:20Z
 ---
 
 ## Notes
