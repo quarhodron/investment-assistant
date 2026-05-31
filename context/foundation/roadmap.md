@@ -29,7 +29,7 @@ Retail amateur investors with day jobs paste one-off prompts into general-purpos
 | ----- | ---------------------------------- | --------------------------------------------------------------------------------------------- | ------------- | ----------------------------------------------------------------------------------------- | -------- |
 | F-01  | data-schema-and-rls                | (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live | —             | Access Control §Isolation, NFRs §isolation, FR-020                                        | done     |
 | F-02  | api-keys-and-ai-provider-client    | (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI    | F-01          | FR-028, FR-032, Business Logic #2                                                         | done     |
-| S-01  | first-analysis-other-topic         | run their first analysis on a free-text "other" topic and reopen the saved result             | F-01, F-02    | US-01, FR-006, FR-007, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032 | proposed |
+| S-01  | first-analysis-other-topic         | run their first analysis on a free-text "other" topic and reopen the saved result             | F-01, F-02    | US-01, FR-006, FR-007, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032 | done     |
 | S-02  | continue-analysis-chain            | continue a saved analysis with a different prompt and/or model, with the chain preserved      | S-01          | FR-018, Business Logic #2                                                                 | proposed |
 | S-03  | filter-analyses-list               | filter and sort the analyses list by date, type, and associated company                       | S-01          | FR-017                                                                                    | proposed |
 | S-04  | prompts-management                 | edit and delete saved prompts; prior analyses retain their snapshot                           | S-01          | FR-008, FR-009                                                                            | proposed |
@@ -106,7 +106,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Unknowns:**
   - Input validation library — Owner: `/10x-plan` on S-01. Block: no.
 - **Risk:** This slice puts every load-bearing PRD invariant in production at once — snapshot-on-save (Business Logic #1), guarded API-key handling (FR-028 + NFR), source-verbatim rendering (FR-032). Sequenced as the first user-visible slice because the wedge (S-02) cannot be tested until at least one analysis exists; S-01's job is to make that "first analysis" minimal and end-to-end, not feature-rich.
-- **Status:** proposed
+- **Status:** done
 
 ### S-02: Continue-analysis chain — NORTH STAR
 
@@ -252,3 +252,4 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 
 - **F-01: (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live** — Archived 2026-05-31 → `context/archive/2026-05-29-data-schema-and-rls/`. Lesson: —.
 - **F-02: (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI** — Archived 2026-05-31 → `context/archive/2026-05-30-api-keys-and-ai-provider-client/`. Lesson: —.
+- **S-01: run their first analysis on a free-text "other" topic and reopen the saved result** — Archived 2026-05-31 → `context/archive/2026-05-31-first-analysis-other-topic/`. Lesson: —.
