@@ -19,3 +19,5 @@ export type UserSettingsUpdate = Database["public"]["Tables"]["user_settings"]["
 export type AiModel = Database["public"]["Tables"]["ai_models"]["Row"];
 export type AiModelInsert = Database["public"]["Tables"]["ai_models"]["Insert"];
 export type AiModelUpdate = Database["public"]["Tables"]["ai_models"]["Update"];
+
+export type { StreamEvent, StoredSources } from "@/lib/services/ai";

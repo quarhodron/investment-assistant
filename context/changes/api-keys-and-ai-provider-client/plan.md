@@ -545,39 +545,39 @@ No unit-test framework is configured. CLAUDE.md: "No test framework is configure
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint`
-- [x] 3.2 Build passes: `npm run build`
-- [x] 3.3 The new shadcn/ui components are committed (input, card, label, select)
+- [x] 3.1 Lint passes: `npm run lint` — 7db23d9
+- [x] 3.2 Build passes: `npm run build` — 7db23d9
+- [x] 3.3 The new shadcn/ui components are committed (input, card, label, select) — 7db23d9
 
 #### Manual
 
-- [ ] 3.4 Sign up, navigate to `/settings`, see two empty cards and a default-model selector populated from `ai_models`
-- [ ] 3.5 Paste an Anthropic key and submit; reload shows "Anthropic key configured" with Replace and Remove buttons
-- [ ] 3.6 In Supabase Studio, the user's `user_settings.api_keys` is the encrypted envelope; no plaintext anywhere
-- [ ] 3.7 Click Remove; row updates to `{}`
-- [ ] 3.8 Save an OpenAI key; the Anthropic blob stays unchanged
-- [ ] 3.9 Save the same plaintext key for two different users; ciphertexts differ (HKDF-per-user diversification)
-- [ ] 3.10 Pick a default model, save, reload — selection persists; `default_model` matches the row id
-- [ ] 3.11 `POST /api/settings/api-keys` with `provider=garbage` redirects with no key in the URL
-- [ ] 3.12 Visiting `/settings` while signed out redirects to `/auth/signin`
+- [x] 3.4 Sign up, navigate to `/settings`, see two empty cards and a default-model selector populated from `ai_models`
+- [x] 3.5 Paste an Anthropic key and submit; reload shows "Anthropic key configured" with Replace and Remove buttons
+- [x] 3.6 In Supabase Studio, the user's `user_settings.api_keys` is the encrypted envelope; no plaintext anywhere
+- [x] 3.7 Click Remove; row updates to `{}`
+- [x] 3.8 Save an OpenAI key; the Anthropic blob stays unchanged
+- [x] 3.9 Save the same plaintext key for two different users; ciphertexts differ (HKDF-per-user diversification)
+- [x] 3.10 Pick a default model, save, reload — selection persists; `default_model` matches the row id
+- [x] 3.11 `POST /api/settings/api-keys` with `provider=garbage` redirects with no key in the URL
+- [x] 3.12 Visiting `/settings` while signed out redirects to `/auth/signin`
 
 ### Phase 4: AI provider client + streaming `POST /api/ai/run` endpoint
 
 #### Automated
 
-- [ ] 4.1 Lint passes: `npm run lint`
-- [ ] 4.2 Build passes: `npm run build`
-- [ ] 4.3 Bundle size budget: `wrangler deploy --dry-run --outdir dist-dryrun` reports compressed bundle under 2.5 MB
-- [ ] 4.4 New SDK dependencies pinned in `package.json` + `package-lock.json`
+- [x] 4.1 Lint passes: `npm run lint`
+- [x] 4.2 Build passes: `npm run build`
+- [x] 4.3 Bundle size budget: `wrangler deploy --dry-run --outdir dist-dryrun` reports compressed bundle under 2.5 MB
+- [x] 4.4 New SDK dependencies pinned in `package.json` + `package-lock.json`
 
 #### Manual
 
-- [ ] 4.5 Curl `POST /api/ai/run` with provider=anthropic streams `event: delta` frames and ends with one `event: done` frame
-- [ ] 4.6 Same curl with provider=openai streams equivalent deltas and a `done` frame
-- [ ] 4.7 New analysis row in Studio: `output`, `sources` envelope, `input_tokens`/`output_tokens` populated; `provider`/`model` match
-- [ ] 4.8 Curl with an invalid model_id returns one `event: error` frame, writes no row
-- [ ] 4.9 Curl with provider=anthropic but Anthropic key removed → `event: error` payload `{message:"api_key_not_configured",provider:"anthropic"}`
-- [ ] 4.10 Corrupted ciphertext (edit `ct` in Studio) → `event: error` payload `{message:"api_key_corrupted"}`
-- [ ] 4.11 Inspect logs: no `sk-ant-`/`sk-` prefix appears anywhere; no prompt body in error logs
-- [ ] 4.12 Curl while signed out → 401; no row written
-- [ ] 4.13 Two parallel runs for the same user complete with two distinct `analysis_id`s; no corruption
+- [x] 4.5 Curl `POST /api/ai/run` with provider=anthropic streams `event: delta` frames and ends with one `event: done` frame
+- [x] 4.6 Same curl with provider=openai streams equivalent deltas and a `done` frame
+- [x] 4.7 New analysis row in Studio: `output`, `sources` envelope, `input_tokens`/`output_tokens` populated; `provider`/`model` match
+- [x] 4.8 Curl with an invalid model_id returns one `event: error` frame, writes no row
+- [x] 4.9 Curl with provider=anthropic but Anthropic key removed → `event: error` payload `{message:"api_key_not_configured",provider:"anthropic"}`
+- [x] 4.10 Corrupted ciphertext (edit `ct` in Studio) → `event: error` payload `{message:"api_key_corrupted"}`
+- [x] 4.11 Inspect logs: no `sk-ant-`/`sk-` prefix appears anywhere; no prompt body in error logs
+- [x] 4.12 Curl while signed out → 401; no row written
+- [x] 4.13 Two parallel runs for the same user complete with two distinct `analysis_id`s; no corruption
