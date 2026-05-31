@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import Banner from "@/components/Banner.astro";
+import Topbar from "@/components/Topbar.astro";
 import { missingConfigs } from "@/lib/config-status";
 
 interface Props {
@@ -35,7 +36,18 @@ const { title = "10x Astro Starter" } = Astro.props;
         </Banner>
       ))
     }
+    <div class="mx-auto max-w-2xl px-4 pt-4">
+      <Topbar />
+    </div>
     <slot />
+    <script>
+      const u = new URL(location.href);
+      if (u.searchParams.has("ok") || u.searchParams.has("error")) {
+        u.searchParams.delete("ok");
+        u.searchParams.delete("error");
+        history.replaceState(null, "", u.toString());
+      }
+    </script>
   </body>
 </html>
 

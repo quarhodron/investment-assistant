@@ -1,0 +1,126 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import type { Prompt } from "@/types";
+
+const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+const error = Astro.url.searchParams.get("error");
+const ok = Astro.url.searchParams.get("ok");
+
+let prompts: Pick<Prompt, "id" | "name" | "description" | "created_at">[] = [];
+
+if (supabase && user) {
+  const { data } = await supabase
+    .from("prompts")
+    .select("id, name, description, created_at")
+    .eq("user_id", user.id)
+    .order("name");
+  if (data) {
+    prompts = data;
+  }
+}
+---
+
+<Layout title="Prompts">
+  <div class="bg-cosmic min-h-screen p-6">
+    <div class="mx-auto max-w-2xl">
+      <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
+        Prompts
+      </h1>
+
+      {
+        error && (
+          <div class="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">
+            {decodeURIComponent(error)}
+          </div>
+        )
+      }
+
+      {
+        ok && (
+          <div class="mb-4 rounded-lg border border-green-400/30 bg-green-500/10 p-3 text-sm text-green-200">
+            Prompt created successfully.
+          </div>
+        )
+      }
+
+      {
+        prompts.length === 0 ? (
+          <div class="mb-8 rounded-lg border border-white/10 bg-white/5 p-6 text-center text-white/60">
+            <p class="mb-2 text-base font-medium text-white/80">No prompts yet</p>
+            <p class="text-sm">
+              Prompts are reusable instructions that guide the AI analysis. Create your first one below.
+            </p>
+          </div>
+        ) : (
+          <div class="mb-8 space-y-3">
+            {prompts.map((prompt) => (
+              <div class="rounded-lg border border-white/10 bg-white/5 p-4">
+                <p class="font-medium text-white/90">{prompt.name}</p>
+                {prompt.description && <p class="mt-1 text-sm text-white/50">{prompt.description}</p>}
+              </div>
+            ))}
+          </div>
+        )
+      }
+
+      <div class="rounded-lg border border-white/10 bg-white/5 p-6">
+        <h2 class="mb-4 text-lg font-semibold text-white/90">Create a prompt</h2>
+        <form method="POST" action="/api/prompts" class="space-y-4">
+          <div>
+            <label for="name" class="mb-1 block text-sm font-medium text-white/70"
+              >Name <span class="text-red-400">*</span></label
+            >
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              maxlength="200"
+              placeholder="e.g. Sector overview"
+              class="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-purple-400 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label for="description" class="mb-1 block text-sm font-medium text-white/70"
+              >Description <span class="text-white/40">(optional)</span></label
+            >
+            <input
+              type="text"
+              id="description"
+              name="description"
+              maxlength="500"
+              placeholder="Short description of when to use this prompt"
+              class="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-purple-400 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label for="body" class="mb-1 block text-sm font-medium text-white/70"
+              >Prompt body <span class="text-red-400">*</span></label
+            >
+            <textarea
+              id="body"
+              name="body"
+              required
+              maxlength="50000"
+              rows={6}
+              placeholder="The full prompt text sent to the AI model. The user's topic will be appended."
+              class="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-purple-400 focus:outline-none"
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500"
+          >
+            Create prompt
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</Layout>
