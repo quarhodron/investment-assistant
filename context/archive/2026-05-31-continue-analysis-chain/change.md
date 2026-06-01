@@ -1,10 +1,10 @@
 ---
 change_id: continue-analysis-chain
 title: Continue analysis chain
-status: impl_reviewed
+status: archived
 created: 2026-05-31
 updated: 2026-06-01
-archived_at: null
+archived_at: 2026-06-01T18:32:05Z
 ---
 
 ## Notes

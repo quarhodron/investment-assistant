@@ -3,7 +3,7 @@ project: Investment Assistant
 version: 1
 status: draft
 created: 2026-05-26
-updated: 2026-05-31
+updated: 2026-06-01
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
@@ -30,7 +30,7 @@ Retail amateur investors with day jobs paste one-off prompts into general-purpos
 | F-01  | data-schema-and-rls                | (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live | —             | Access Control §Isolation, NFRs §isolation, FR-020                                        | done     |
 | F-02  | api-keys-and-ai-provider-client    | (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI    | F-01          | FR-028, FR-032, Business Logic #2                                                         | done     |
 | S-01  | first-analysis-other-topic         | run their first analysis on a free-text "other" topic and reopen the saved result             | F-01, F-02    | US-01, FR-006, FR-007, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032 | done     |
-| S-02  | continue-analysis-chain            | continue a saved analysis with a different prompt and/or model, with the chain preserved      | S-01          | FR-018, Business Logic #2                                                                 | proposed |
+| S-02  | continue-analysis-chain            | continue a saved analysis with a different prompt and/or model, with the chain preserved      | S-01          | FR-018, Business Logic #2                                                                 | done     |
 | S-03  | filter-analyses-list               | filter and sort the analyses list by date, type, and associated company                       | S-01          | FR-017                                                                                    | proposed |
 | S-04  | prompts-management                 | edit and delete saved prompts; prior analyses retain their snapshot                           | S-01          | FR-008, FR-009                                                                            | proposed |
 | S-05  | watchlist-crud                     | add, list, view, edit, and delete watched companies; deletes preserve tied analyses           | F-01          | FR-021, FR-022, FR-023, FR-027                                                            | proposed |
@@ -119,7 +119,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Unknowns:**
   - —
 - **Risk:** This is the wedge — the trait that makes Investment Assistant not-ChatGPT. The risk is not implementation complexity (the FR is small); the risk is that verbatim parent-output context turns out to feel useless in real research and the differentiator does not actually hold. The roadmap surfaces this risk by making S-02 the validation milestone — `main_goal: market-feedback` is exactly the bias that says "find out fast".
-- **Status:** proposed
+- **Status:** done
 
 ### S-03: Filter and sort the analyses list
 
@@ -253,3 +253,4 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **F-01: (foundation) per-user isolated schema for prompts, analyses, watched companies, settings live** — Archived 2026-05-31 → `context/archive/2026-05-29-data-schema-and-rls/`. Lesson: —.
 - **F-02: (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI** — Archived 2026-05-31 → `context/archive/2026-05-30-api-keys-and-ai-provider-client/`. Lesson: —.
 - **S-01: run their first analysis on a free-text "other" topic and reopen the saved result** — Archived 2026-05-31 → `context/archive/2026-05-31-first-analysis-other-topic/`. Lesson: —.
+- **S-02: From the detail view of a saved analysis, the user runs "Continue analysis", picks a different prompt and/or model than the original, and the new analysis is saved as a child linked to the parent via `parent_analysis_id`. The next AI request receives the parent analysis's full AI output verbatim as context, followed by the new prompt and the new input. Detail views render parent ↔ child linkage so the chain is traversable.** — Archived 2026-06-01 → `context/archive/2026-05-31-continue-analysis-chain/`. Lesson: —.
