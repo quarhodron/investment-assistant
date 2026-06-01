@@ -29,23 +29,23 @@ const analysis = data as Analysis;
 const sources = flattenSources(analysis.sources as StoredSources | null);
 const createdAt = new Date(analysis.created_at).toLocaleString();
 
-const parentAnalysis =
+const [parentAnalysis, { data: childrenData }] = await Promise.all([
   analysis.parent_analysis_id
-    ? await supabase
+    ? supabase
         .from("analyses")
         .select("id, title")
         .eq("id", analysis.parent_analysis_id)
         .eq("user_id", user.id)
         .single()
         .then(({ data }) => data)
-    : null;
-
-const { data: childrenData } = await supabase
-  .from("analyses")
-  .select("id, title, created_at")
-  .eq("parent_analysis_id", analysis.id)
-  .eq("user_id", user.id)
-  .order("created_at", { ascending: true });
+    : Promise.resolve(null),
+  supabase
+    .from("analyses")
+    .select("id, title, created_at")
+    .eq("parent_analysis_id", analysis.id)
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: true }),
+]);
 
 const children = childrenData ?? [];
 ---
@@ -106,6 +106,9 @@ const children = childrenData ?? [];
                     >
                       {child.title}
                     </a>
+                    <span class="ml-2 text-xs text-slate-400">
+                      {new Date(child.created_at).toLocaleDateString()}
+                    </span>
                   </li>
                 ))}
               </ul>

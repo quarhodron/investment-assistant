@@ -31,7 +31,7 @@ const [parentResult, promptsResult, modelsResult, settingsResult] = await Promis
 ]);
 
 if (parentResult.error || !parentResult.data) {
-  return Astro.redirect("/analyses/" + id);
+  return Astro.redirect("/analyses");
 }
 
 const parentAnalysis = parentResult.data;

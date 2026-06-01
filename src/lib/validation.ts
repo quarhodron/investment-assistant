@@ -64,6 +64,9 @@ export function validateRunInput(body: unknown):
   if (typeof b.title !== "string" || b.title.length === 0) {
     return { ok: false, error: "title_required" };
   }
+  if (b.title.length > 300) {
+    return { ok: false, error: "title_too_long" };
+  }
   const validAnalysisTypes = ["other", "company"];
   if (!validAnalysisTypes.includes(b.analysis_type as string)) {
     return { ok: false, error: "invalid_analysis_type" };

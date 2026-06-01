@@ -333,7 +333,7 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               disabled={frozen}
-              maxLength={200}
+              maxLength={300}
               placeholder="e.g. Renewable energy sector overview"
               className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-purple-400 focus:outline-none disabled:opacity-50"
             />
