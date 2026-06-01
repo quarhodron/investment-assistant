@@ -258,8 +258,8 @@ Update `/analyses/[id].astro` to show parent ↔ child linkage. A "Continued fro
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes with no new errors
-- [x] 1.2 `npm run build` completes without TypeScript errors
+- [x] 1.1 `npm run lint` passes with no new errors — 08ff9b6
+- [x] 1.2 `npm run build` completes without TypeScript errors — 08ff9b6
 
 #### Manual
 
@@ -272,22 +272,22 @@ Update `/analyses/[id].astro` to show parent ↔ child linkage. A "Continued fro
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes with no new errors
-- [ ] 2.2 `npm run build` completes without TypeScript errors
+- [x] 2.1 `npm run lint` passes with no new errors
+- [x] 2.2 `npm run build` completes without TypeScript errors
 
 #### Manual
 
-- [ ] 2.3 "Continue analysis" button visible on any analysis detail page
-- [ ] 2.4 Button navigates to `/analyses/<id>/continue`
-- [ ] 2.5 Continue form pre-fills correctly (prompt, model, analysis_type, input, title)
-- [ ] 2.6 All fields are editable
-- [ ] 2.7 Empty-prompts CTA shown when user has no prompts
-- [ ] 2.8 Missing API key alert shown and Run disabled when provider key absent
-- [ ] 2.9 Submitting valid continuation streams correctly; output reflects parent context
-- [ ] 2.10 "Saved — view analysis" link appears on completion pointing to child
-- [ ] 2.11 Child analysis has parent_analysis_id set (verify via Supabase Studio or Phase 3 chain display)
-- [ ] 2.12 Parent-not-found error shows inline error and unfreezes form
-- [ ] 2.13 Navigating away mid-stream aborts cleanly
+- [x] 2.3 "Continue analysis" button visible on any analysis detail page
+- [x] 2.4 Button navigates to `/analyses/<id>/continue`
+- [x] 2.5 Continue form pre-fills correctly (prompt, model, analysis_type, input, title)
+- [x] 2.6 All fields are editable
+- [x] 2.7 Empty-prompts CTA shown when user has no prompts
+- [x] 2.8 Missing API key alert shown and Run disabled when provider key absent
+- [x] 2.9 Submitting valid continuation streams correctly; output reflects parent context
+- [x] 2.10 "Saved — view analysis" link appears on completion pointing to child
+- [x] 2.11 Child analysis has parent_analysis_id set (verify via Supabase Studio or Phase 3 chain display)
+- [x] 2.12 Parent-not-found error shows inline error and unfreezes form
+- [x] 2.13 Navigating away mid-stream aborts cleanly
 
 ### Phase 3: Chain Display on Detail Page
 

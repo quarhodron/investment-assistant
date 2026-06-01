@@ -1,0 +1,85 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import ContinueAnalysisForm from "@/components/ContinueAnalysisForm";
+import { createClient } from "@/lib/supabase";
+import type { Prompt, AiModel } from "@/types";
+
+const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const { id } = Astro.params;
+
+if (!supabase || !user || !id) {
+  return Astro.redirect("/analyses");
+}
+
+type ApiKeysShape = { anthropic?: unknown; openai?: unknown } | null;
+
+const [parentResult, promptsResult, modelsResult, settingsResult] = await Promise.all([
+  supabase
+    .from("analyses")
+    .select("id, title, analysis_type, input, extra_context, prompt_id, prompt_name_snapshot")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .single(),
+  supabase.from("prompts").select("id, name, description, body").eq("user_id", user.id).order("name"),
+  supabase
+    .from("ai_models")
+    .select("id, provider, display_name, is_default, sort_order, enabled, supports_web_search, created_at")
+    .eq("enabled", true)
+    .order("sort_order"),
+  supabase.from("user_settings").select("default_model, api_keys").eq("user_id", user.id).single(),
+]);
+
+if (parentResult.error || !parentResult.data) {
+  return Astro.redirect("/analyses/" + id);
+}
+
+const parentAnalysis = parentResult.data;
+
+let prompts: Pick<Prompt, "id" | "name" | "description" | "body">[] = [];
+let models: AiModel[] = [];
+let apiKeyStatus = { anthropic: false, openai: false };
+let defaultModelId: string | null = null;
+
+if (promptsResult.data) {
+  prompts = promptsResult.data;
+}
+
+if (modelsResult.data) {
+  models = modelsResult.data;
+}
+
+if (settingsResult.data) {
+  const keys = settingsResult.data.api_keys as ApiKeysShape;
+  apiKeyStatus = {
+    anthropic: keys?.anthropic !== undefined,
+    openai: keys?.openai !== undefined,
+  };
+  defaultModelId = settingsResult.data.default_model ?? null;
+}
+---
+
+<Layout title={"Continue: " + parentAnalysis.title}>
+  <div class="bg-cosmic min-h-screen p-6">
+    <div class="mx-auto max-w-2xl">
+      <div class="mb-2">
+        <a href={`/analyses/${id}`} class="text-sm text-slate-400 hover:text-slate-200">
+          ← Back to analysis
+        </a>
+      </div>
+      <h1 class="mb-1 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
+        Continue Analysis
+      </h1>
+      <p class="mb-6 text-sm text-slate-400">{parentAnalysis.title}</p>
+
+      <ContinueAnalysisForm
+        parentAnalysis={parentAnalysis}
+        prompts={prompts}
+        models={models}
+        apiKeyStatus={apiKeyStatus}
+        defaultModelId={defaultModelId}
+        client:load
+      />
+    </div>
+  </div>
+</Layout>
