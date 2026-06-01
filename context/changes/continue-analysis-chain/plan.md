@@ -293,15 +293,15 @@ Update `/analyses/[id].astro` to show parent ↔ child linkage. A "Continued fro
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes with no new errors
-- [x] 3.2 `npm run build` completes without TypeScript errors
+- [x] 3.1 `npm run lint` passes with no new errors — fd14aeb
+- [x] 3.2 `npm run build` completes without TypeScript errors — fd14aeb
 
 #### Manual
 
-- [x] 3.3 Root analysis detail page shows no "Continued from" link and no "Continued as" section
-- [x] 3.4 Parent detail page shows "Continued as:" section after continuation is run
-- [x] 3.5 Child detail page shows "Continued from: <parent title>" link above header
-- [x] 3.6 "Continued from" link navigates to parent
-- [x] 3.7 Child link in "Continued as:" navigates to child
-- [x] 3.8 Depth-3 chain: middle analysis shows both parent link and child link
-- [x] 3.9 Deleted parent: child's "Continued from" section disappears gracefully (no broken link)
+- [x] 3.3 Root analysis detail page shows no "Continued from" link and no "Continued as" section — fd14aeb
+- [x] 3.4 Parent detail page shows "Continued as:" section after continuation is run — fd14aeb
+- [x] 3.5 Child detail page shows "Continued from: <parent title>" link above header — fd14aeb
+- [x] 3.6 "Continued from" link navigates to parent — fd14aeb
+- [x] 3.7 Child link in "Continued as:" navigates to child — fd14aeb
+- [x] 3.8 Depth-3 chain: middle analysis shows both parent link and child link — fd14aeb
+- [x] 3.9 Deleted parent: child's "Continued from" section disappears gracefully (no broken link) — fd14aeb
