@@ -107,12 +107,32 @@ export const POST: APIRoute = async (context) => {
           return;
         }
 
+        let resolvedContext = input.extra_context;
+
+        if (input.parent_analysis_id) {
+          const { data: parentData, error: parentError } = await supabase
+            .from("analyses")
+            .select("output")
+            .eq("id", input.parent_analysis_id)
+            .eq("user_id", user.id)
+            .single();
+
+          if (parentError || !parentData) {
+            enqueue(sseFrame("error", { message: "parent_not_found" }));
+            return;
+          }
+
+          resolvedContext = input.extra_context
+            ? parentData.output + "\n\n" + input.extra_context
+            : parentData.output;
+        }
+
         const generator = runAiAnalysis({
           provider: input.provider,
           model: input.model_id,
           prompt: input.prompt_body,
           input: input.input,
-          context: input.extra_context,
+          context: resolvedContext,
           apiKey,
         });
 
