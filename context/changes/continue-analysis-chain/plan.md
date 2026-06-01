@@ -263,7 +263,7 @@ Update `/analyses/[id].astro` to show parent ↔ child linkage. A "Continued fro
 
 #### Manual
 
-- [ ] 1.3 POST with valid parent_analysis_id runs and saves child with parent output as context
+- [x] 1.3 POST with valid parent_analysis_id runs and saves child with parent output as context
 - [x] 1.4 POST with non-existent parent_analysis_id returns SSE error `parent_not_found`
 - [x] 1.5 POST with parent_analysis_id from another user returns `parent_not_found`
 - [x] 1.6 POST without parent_analysis_id (normal flow) still works unchanged
@@ -272,8 +272,8 @@ Update `/analyses/[id].astro` to show parent ↔ child linkage. A "Continued fro
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes with no new errors
-- [x] 2.2 `npm run build` completes without TypeScript errors
+- [x] 2.1 `npm run lint` passes with no new errors — e39db51
+- [x] 2.2 `npm run build` completes without TypeScript errors — e39db51
 
 #### Manual
 
@@ -293,15 +293,15 @@ Update `/analyses/[id].astro` to show parent ↔ child linkage. A "Continued fro
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes with no new errors
-- [ ] 3.2 `npm run build` completes without TypeScript errors
+- [x] 3.1 `npm run lint` passes with no new errors
+- [x] 3.2 `npm run build` completes without TypeScript errors
 
 #### Manual
 
-- [ ] 3.3 Root analysis detail page shows no "Continued from" link and no "Continued as" section
-- [ ] 3.4 Parent detail page shows "Continued as:" section after continuation is run
-- [ ] 3.5 Child detail page shows "Continued from: <parent title>" link above header
-- [ ] 3.6 "Continued from" link navigates to parent
-- [ ] 3.7 Child link in "Continued as:" navigates to child
-- [ ] 3.8 Depth-3 chain: middle analysis shows both parent link and child link
-- [ ] 3.9 Deleted parent: child's "Continued from" section disappears gracefully (no broken link)
+- [x] 3.3 Root analysis detail page shows no "Continued from" link and no "Continued as" section
+- [x] 3.4 Parent detail page shows "Continued as:" section after continuation is run
+- [x] 3.5 Child detail page shows "Continued from: <parent title>" link above header
+- [x] 3.6 "Continued from" link navigates to parent
+- [x] 3.7 Child link in "Continued as:" navigates to child
+- [x] 3.8 Depth-3 chain: middle analysis shows both parent link and child link
+- [x] 3.9 Deleted parent: child's "Continued from" section disappears gracefully (no broken link)

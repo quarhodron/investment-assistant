@@ -28,6 +28,26 @@ if (error || !data) {
 const analysis = data as Analysis;
 const sources = flattenSources(analysis.sources as StoredSources | null);
 const createdAt = new Date(analysis.created_at).toLocaleString();
+
+const parentAnalysis =
+  analysis.parent_analysis_id
+    ? await supabase
+        .from("analyses")
+        .select("id, title")
+        .eq("id", analysis.parent_analysis_id)
+        .eq("user_id", user.id)
+        .single()
+        .then(({ data }) => data)
+    : null;
+
+const { data: childrenData } = await supabase
+  .from("analyses")
+  .select("id, title, created_at")
+  .eq("parent_analysis_id", analysis.id)
+  .eq("user_id", user.id)
+  .order("created_at", { ascending: true });
+
+const children = childrenData ?? [];
 ---
 
 <Layout title={analysis.title}>
@@ -37,6 +57,19 @@ const createdAt = new Date(analysis.created_at).toLocaleString();
 
   <div class="bg-cosmic min-h-screen p-6">
     <div class="mx-auto max-w-3xl">
+      {
+        parentAnalysis && (
+          <div class="mb-4">
+            <a
+              href={`/analyses/${parentAnalysis.id}`}
+              class="text-sm text-purple-300 hover:text-purple-200"
+            >
+              ← Continued from: {parentAnalysis.title}
+            </a>
+          </div>
+        )
+      }
+
       <div class="mb-6">
         <div class="mb-2 flex flex-wrap items-center gap-2">
           <span class="rounded-full bg-purple-500/20 px-2.5 py-0.5 text-xs text-purple-300">
@@ -58,15 +91,36 @@ const createdAt = new Date(analysis.created_at).toLocaleString();
             Continue analysis
           </a>
         </div>
+        {
+          children.length > 0 && (
+            <div class="mt-3">
+              <span class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Continued as:
+              </span>
+              <ul class="mt-1 space-y-1">
+                {children.map((child) => (
+                  <li>
+                    <a
+                      href={`/analyses/${child.id}`}
+                      class="text-sm text-blue-300 underline hover:text-blue-200"
+                    >
+                      {child.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
       </div>
 
       <section class="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
-        <h2 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Input</h2>
+        <h2 class="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Topic</h2>
         <p class="whitespace-pre-wrap text-sm text-slate-200">{analysis.input}</p>
         {
           analysis.extra_context && (
             <div class="mt-3">
-              <h3 class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Extra Context</h3>
+              <h3 class="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">Extra context</h3>
               <p class="whitespace-pre-wrap text-sm text-slate-200">{analysis.extra_context}</p>
             </div>
           )
@@ -120,6 +174,7 @@ const createdAt = new Date(analysis.created_at).toLocaleString();
           }
         </div>
       </details>
+
     </div>
   </div>
 </Layout>
