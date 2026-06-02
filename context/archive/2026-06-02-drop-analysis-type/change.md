@@ -1,10 +1,10 @@
 ---
 change_id: drop-analysis-type
 title: Drop analysis type
-status: implemented
+status: archived
 created: 2026-06-02
 updated: 2026-06-02
-archived_at: null
+archived_at: 2026-06-02T18:49:43Z
 ---
 
 ## Notes
