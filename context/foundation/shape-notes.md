@@ -2,7 +2,7 @@
 project: "Investment Assistant"
 context_type: greenfield
 created: 2026-05-23
-updated: 2026-05-23
+updated: 2026-06-01
 product_type: web-app
 target_scale:
   users: small
@@ -35,26 +35,32 @@ checkpoint:
     - topic: "MVP timeline"
       decision: "1–3 weeks of after-hours work; no hard deadline; no sustained-effort acknowledgment required (timeline within the 3-week comfort threshold)"
     - topic: "analyses filtering"
-      decision: "FR-017 (filter analyses by date/type/company) is must-have — analyses page IS the work-history surface"
+      decision: "FR-017 (filter analyses by date/company) is must-have — analyses page IS the work-history surface. Filter-by-type was dropped in the 2026-06-01 reshape (see follow-up resolutions); filter dimensions are date and watched-company."
     - topic: "sector vs company flow"
-      decision: "single New-analysis screen with a sector/company type toggle (matches idea-notes 3.4)"
+      decision: "single New-analysis screen with an optional watched-company picker (no type toggle as of 2026-06-01 reshape; was originally a sector/company toggle then briefly other/company)."
     - topic: "user notes scope"
       decision: "user notes only on watched companies, per idea-notes; prompts and analyses do not have a notes field"
     - topic: "analysis type axis"
-      decision: "renamed from 'sector / company' to **'other / company'**; 'other' covers any non-company subject (sectors, macro, news, geopolitical) — wider than idea-notes' literal 'branża'. Company branch uses a watchlist picker with free-text fallback for unwatched stocks. Industry/sector survives as a watchlist-row field."
+      decision: "REMOVED in 2026-06-01 reshape. The discriminator 'is this tied to a tracked company?' is modeled as `company_id` on the analysis row, not as an enum. Originally renamed from 'sector/company' to 'other/company' during shaping; the 2026-06-01 reshape removed the axis entirely after S-02 shipped — see follow-up resolutions."
     - topic: "unwatched-company analysis flow"
-      decision: "no automatic watchlist creation; user can promote an analysis to watchlist later via FR-019"
+      decision: "no automatic watchlist creation; user can promote an analysis to watchlist later via FR-019, or link an existing watched company via FR-019b (added 2026-06-01)."
     - topic: "continue-analysis context-passing"
-      decision: "next AI call receives the parent analysis's full AI output verbatim, plus the new prompt and the new input. No auto-summarization; chain depth = token cost."
+      decision: "next AI call receives the parent analysis's full AI output verbatim, plus the new prompt, the new Topic, and any new additional context. No auto-summarization; chain depth = token cost."
     - topic: "watchlist injection"
-      decision: "prepend a structured block (Company / Ticker / Exchange / Industry / User note) before the prompt body. No placeholder substitution; user does not need to author prompts with templating."
+      decision: "REMOVED in 2026-06-01 reshape. Originally prepended a structured block (Company / Ticker / Exchange / Industry / User note) before the prompt body. As of 2026-06-01, only the Topic field reaches the AI; Topic auto-populates with `name (ticker)` when a watched company is picked, and is user-editable. Industry / exchange / user note are watchlist-row filing metadata only."
     - topic: "product type"
       decision: "web-app"
     - topic: "target scale"
       decision: "small (handful of users; multi-tenant from v1 but realistic load is single-digit users)"
     - topic: "scale Socrates probe"
       decision: "at 10x+ scale, continue-analysis token cost becomes the first feature to revisit (auto-summarization or context-trimming would be needed)"
-  frs_drafted: 33
+    - topic: "continue-analysis company-link freeze"
+      decision: "Added 2026-06-01. `company_id` is frozen on continue-analysis — child inherits parent's company link unchanged; user cannot re-pick or unset within a chain. Re-filing across chains is via FR-019b after the fact."
+    - topic: "link existing analysis to existing watched company"
+      decision: "Added 2026-06-01 as FR-019b. FR-019 covers the create-and-back-link path; FR-019b covers the file-under-existing-company path. Without FR-019b, only originating analyses ever get back-linked and pre-watchlist research stays orphaned."
+    - topic: "analysis content immutability vs filing carve-out"
+      decision: "Refined 2026-06-01. FR-020 immutability covers analytical content (title, prompt, Topic, additional context, output, sources, notes). The watched-company link (`company_id`) is the one mutable field — filing metadata, not content; the AI did not see the watchlist row at run time."
+  frs_drafted: 34
   quality_check_status: accepted
 ---
 
@@ -290,6 +296,24 @@ The rest of the analytical reasoning is in the user's prompts. The application d
 - **Existing repo state (informational only — greenfield context_type means stack is open).** The current directory contains an Astro 6 SSR + React 19 + Supabase auth + Tailwind 4 + shadcn/ui scaffold. The user has explicitly chosen greenfield framing, so this scaffold is not binding — the tech-stack-selector step is free to confirm or change it.
 
 ---
+
+## 2026-06-01 reshape — analysis type axis removal
+
+After F-01, F-02, S-01, and S-02 shipped, a re-read of the PRD surfaced that the analysis `type` column ({other, company}) was carrying very little weight: the structural axis the product actually cares about is `company_id IS NOT NULL` on the analysis row, not an enum. The user confirmed they want a single rule — "any analysis can be linked to any watched company" — and that picking a watched company on the new-analysis screen is the only company-shaped affordance they need.
+
+Decisions in this reshape (all reflected in PRD v1):
+
+1. **Drop the `type` column from schema, API, and UI.** The discriminator becomes `company_id` (already present). Originally added as a roadmap slice; the reshape predates that slice's plan/implementation steps.
+2. **Single new-analysis flow.** No type toggle. The user optionally picks a watched company; the Topic field auto-populates with `name (ticker)` and remains editable.
+3. **Drop watchlist-injected prompt composition (Business Logic #3).** Only the Topic field reaches the AI. Industry / exchange / user note / `company_id` are user-facing filing metadata only. The user steers the AI's lens via the editable Topic.
+4. **Add FR-019b.** Link an existing analysis to an existing watched company. Pairs with FR-019 (which still covers create-and-back-link).
+5. **`company_id` is the one mutable field on a saved analysis** (FR-020 carve-out). It is filing metadata; the AI never saw it. Content remains immutable.
+6. **Continue-analysis freezes `company_id`.** Child inherits parent's link unchanged. Re-filing within a chain is not supported in v1; FR-019b is the after-the-fact escape hatch.
+7. **Drop filter-by-type from FR-017.** The remaining filter dimensions are date and watched-company.
+
+S-01 stays as-shipped; S-06 absorbs all the new-analysis picker work; S-07 expands to cover both promote-new-company (FR-019) and link-existing-company (FR-019b). A new dedicated slice removes `type` from the existing schema and surfaces.
+
+The original "watchlist injection" decision in `gray_areas_resolved` is preserved with a REMOVED tag rather than deleted, so the historical trace of the choice survives.
 
 ## Quality cross-check
 

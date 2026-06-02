@@ -7,6 +7,9 @@ updated: 2026-06-01
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
+reshape_log:
+  - date: 2026-06-01
+    summary: "Removed analysis type axis. Added S-10 (drop-analysis-type cleanup), expanded S-07 to cover FR-019b (link-existing-company), rewrote S-06 (no type branching, no watchlist injection block), trimmed S-03 (date + company only). PRD v1 updated in place; shape-notes.md carries the reshape narrative."
 ---
 
 # Roadmap: Investment Assistant
@@ -31,11 +34,12 @@ Retail amateur investors with day jobs paste one-off prompts into general-purpos
 | F-02  | api-keys-and-ai-provider-client    | (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI    | F-01          | FR-028, FR-032, Business Logic #2                                                         | done     |
 | S-01  | first-analysis-other-topic         | run their first analysis on a free-text "other" topic and reopen the saved result             | F-01, F-02    | US-01, FR-006, FR-007, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032 | done     |
 | S-02  | continue-analysis-chain            | continue a saved analysis with a different prompt and/or model, with the chain preserved      | S-01          | FR-018, Business Logic #2                                                                 | done     |
-| S-03  | filter-analyses-list               | filter and sort the analyses list by date, type, and associated company                       | S-01          | FR-017                                                                                    | proposed |
+| S-10  | drop-analysis-type                 | (cleanup) `type` column gone from schema, API, and UI — `company_id` is the sole discriminator | S-02          | FR-010 (post-2026-06-01 reshape), FR-014, FR-017                                          | ready    |
+| S-03  | filter-analyses-list               | filter and sort the analyses list by date and by associated watched company                   | S-01, S-10    | FR-017                                                                                    | proposed |
 | S-04  | prompts-management                 | edit and delete saved prompts; prior analyses retain their snapshot                           | S-01          | FR-008, FR-009                                                                            | proposed |
 | S-05  | watchlist-crud                     | add, list, view, edit, and delete watched companies; deletes preserve tied analyses           | F-01          | FR-021, FR-022, FR-023, FR-027                                                            | proposed |
-| S-06  | company-bound-analysis             | run a saved prompt against a watched company and continue that chain from the company view   | S-02, S-05    | FR-010 (company branch), FR-024, FR-025, FR-026, Business Logic #3                        | proposed |
-| S-07  | promote-company-from-result        | open the watchlist add-form from an analysis detail view and back-link the originating analysis | S-01, S-05    | FR-019                                                                                    | proposed |
+| S-06  | company-bound-analysis             | pick a watched company on new-analysis (Topic auto-populates `name (ticker)`, editable); run / continue from the company detail view; continue inherits the company link unchanged | S-02, S-05, S-10 | FR-010 (picker), FR-024, FR-025, FR-026, Business Logic #3                              | proposed |
+| S-07  | link-company-from-analysis         | promote a new company from an analysis (FR-019) AND link an analysis to an existing watched company (FR-019b); both flows back-link / file the analysis under the company | S-01, S-05, S-10 | FR-019, FR-019b, FR-020 (filing carve-out)                                              | proposed |
 | S-08  | dashboard-recent                   | see recent analyses and watched companies on the Dashboard as a quick-nav surface             | S-01, S-05    | FR-031                                                                                    | proposed |
 | S-09  | password-reset                     | request a password reset link via email and set a new password                                | —             | FR-001, FR-002, FR-003, FR-004, FR-005                                                    | ready    |
 
@@ -46,8 +50,9 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | Stream | Theme                            | Chain                                  | Note                                                                                       |
 | ------ | -------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------ |
 | A      | Wedge (validation milestone)     | `F-01` → `F-02` → `S-01` → `S-02`      | Path to the north star. `main_goal: market-feedback` means everything else waits on this.  |
-| B      | Workspace navigation             | `S-03` → `S-04` → `S-08`               | Read-side polish; sequenced after the wedge ships. Joins Stream A at `S-01`.                |
-| C      | Company-bound research           | `S-05` → `S-06` → `S-07`               | Second wedge prong (watchlist-injected prompts). `S-06` joins Stream A at `S-02`; `S-07` joins Stream A at `S-01`. |
+| A'     | Reshape cleanup                  | `S-10`                                 | Drops `type` from schema/API/UI after the 2026-06-01 reshape. Joins Stream A at `S-02`; gates `S-03` and `S-06` so they don't re-introduce the dropped column. |
+| B      | Workspace navigation             | `S-03` → `S-04` → `S-08`               | Read-side polish; sequenced after the wedge + S-10 ship. Joins Stream A at `S-01`.          |
+| C      | Company-bound research           | `S-05` → `S-06` → `S-07`               | Second wedge prong. With the 2026-06-01 reshape, the wedge is "watched-company link + Topic auto-populate" rather than "watchlist injection". `S-06` joins Stream A at `S-02` and Stream A' at `S-10`; `S-07` joins Stream A at `S-01` and Stream A' at `S-10`. |
 | D      | Auth completeness                | `S-09`                                 | Closes the FR-005 gap; can ship anytime — no foundation prerequisite.                       |
 
 ## Baseline
@@ -82,7 +87,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Outcome:** (foundation) `user_settings.api_keys` stores per-provider keys encrypted at rest and never re-rendered to the client; a thin `runAiAnalysis(provider, model, prompt, context?)` server function streams from Anthropic and OpenAI and returns text + sources verbatim.
 - **Change ID:** api-keys-and-ai-provider-client
 - **PRD refs:** FR-028 (per-user keys, encrypted, never disclosed), FR-029 (default model from Settings), FR-030 (model variants registry), FR-032 (sources verbatim), Business Logic #2 (continue-analysis context composition contract)
-- **Unlocks:** S-01 (run + save), S-02 (continue-analysis context composition lives in the client's `context?` param), S-06 (watchlist-injected prompt composition prepends a structured block before the prompt body sent to the same client). Blocking unknown reduced: model variants registry shape (file vs DB vs env-driven) is settled before any user-facing flow touches it.
+- **Unlocks:** S-01 (run + save), S-02 (continue-analysis context composition lives in the client's `context?` param), S-06 (company-bound analysis sends only the user's prompt + Topic + additional context — Business Logic #3 as revised 2026-06-01 means no application-side injection block). Blocking unknown reduced: model variants registry shape (file vs DB vs env-driven) is settled before any user-facing flow touches it.
 - **Prerequisites:** F-01
 - **Parallel with:** S-09
 - **Blockers:** —
@@ -98,6 +103,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 ### S-01: First analysis on a free-text "other" topic
 
 - **Outcome:** A signed-in user saves an API key in Settings, creates a minimal prompt, runs an analysis with type=`other` and a free-text topic, sees the AI result + verbatim sources rendered, saves it, and reopens it read-only. Empty-state CTAs guide the user from Dashboard → Prompts → Settings → New analysis when any prerequisite is missing.
+- **Note (post-2026-06-01 reshape):** S-01 shipped with the original `type` axis. S-10 retroactively drops the column from schema, API, and UI; existing S-01-era analyses continue to work with `company_id IS NULL` after the migration. The Outcome above is preserved verbatim as historical record.
 - **Change ID:** first-analysis-other-topic
 - **PRD refs:** US-01, FR-006, FR-007, FR-010 (other branch only), FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032
 - **Prerequisites:** F-01, F-02
@@ -123,15 +129,15 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 
 ### S-03: Filter and sort the analyses list
 
-- **Outcome:** The Analyses page lets the user filter by date range, by analysis type (`other` / `company`), and by associated company; sort by date asc/desc.
+- **Outcome:** The Analyses page lets the user filter by date range and by associated watched company; sort by date asc/desc.
 - **Change ID:** filter-analyses-list
 - **PRD refs:** FR-017
-- **Prerequisites:** S-01
-- **Parallel with:** S-02, S-04, S-05, S-08, S-09
+- **Prerequisites:** S-01, S-10
+- **Parallel with:** S-04, S-05, S-08, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
-- **Risk:** Filtering becomes load-bearing once the user has ≥ ~20 analyses (Socratic note in PRD). Sequenced after S-01 (so the page exists) but parallel with the wedge so it doesn't block validation.
+- **Risk:** Filtering becomes load-bearing once the user has ≥ ~20 analyses (Socratic note in PRD). Sequenced after S-10 to avoid coding a filter against a column that's about to be removed; the meaningful partition is `company_id IS NULL` vs not, plus per-company filtering.
 - **Status:** proposed
 
 ### S-04: Prompts management — edit and delete
@@ -160,30 +166,30 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Risk:** Standard CRUD against an RLS-isolated table; the only product-level subtlety is the preserve-on-delete default (FR-027 Socratic resolution). This slice does NOT yet include "run an analysis from the company detail view" — that's S-06.
 - **Status:** proposed
 
-### S-06: Company-bound analysis (new + continue, with watchlist-injected prompt composition)
+### S-06: Company-bound analysis (picker + Topic auto-populate + continue inheritance)
 
-- **Outcome:** From the New-analysis screen with type=`company`, the user picks a watched company (or types a free-text ticker/name for an unwatched one — FR-014's carve-out). When the company is watched, the application transparently prepends a structured block (Company / Ticker / Exchange / Industry / User note) to the prompt body before sending it to the AI client. From the watched company's detail view, the user can run a saved prompt or continue an existing analysis of that company. Continued analyses are dual-linked: `parent_analysis_id` to the parent, `company_id` to the watched company.
+- **Outcome:** The new-analysis screen exposes an optional watched-company picker. When the user picks a watched company, the Topic field auto-populates with `name (ticker)` and remains editable; the resulting analysis is linked via `company_id`. From the watched company's detail view, the user can launch a new analysis (with the company pre-selected) or continue an existing analysis of that company. Continued analyses dual-link: `parent_analysis_id` to the parent and `company_id` inherited from the parent unchanged (no re-pick or unset on continue). Only the user's prompt + Topic + additional context reach the AI — no watchlist-injection block (Business Logic #3 as revised 2026-06-01).
 - **Change ID:** company-bound-analysis
-- **PRD refs:** FR-010 (company branch), FR-024, FR-025, FR-026, Business Logic #3 (watchlist injection)
-- **Prerequisites:** S-02, S-05
+- **PRD refs:** FR-010 (picker + Topic auto-populate), FR-024, FR-025, FR-026 (company-link freeze on continue), Business Logic #3 (Topic-only AI input)
+- **Prerequisites:** S-02, S-05, S-10
 - **Parallel with:** S-03, S-04, S-08, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
-- **Risk:** This is the second wedge prong — combines the chain (S-02) with the watchlist injection block (Business Logic #3) so the user experiences "research about a specific company over time" rather than "list of one-shot prompts". Sequenced after both S-02 and S-05 because dual-linking requires both.
+- **Risk:** The reshape moved this slice's center of gravity from "transparent injection of structured company facts into the prompt" to "predictable Topic-driven prompt + filing via `company_id`". The mitigation for losing injection is the editable Topic — the user can paste any company facts they want into Topic / additional context if a particular run benefits. If real use shows users routinely re-typing industry / exchange into Topic, that's a signal Business Logic #3 should be revisited (post-v1).
 - **Status:** proposed
 
-### S-07: Promote a company from an analysis result
+### S-07: Link an analysis to a watched company (promote-new + link-existing)
 
-- **Outcome:** An "Add to watchlist" button on the analysis detail view opens the watchlist add-form (the same form built in S-05) with the originating analysis tracked as a back-link. The user types every field manually. When the originating analysis is type=`company` with a free-text subject (FR-014's free-text-unwatched carve-out), the form pre-fills `name` from that subject — that is the only structured signal the system has. On save, if the originating analysis was type=`company`, it is linked to the new company row so it appears under FR-023's "all analyses tied to that company" view.
-- **Change ID:** promote-company-from-result
-- **PRD refs:** FR-019
-- **Prerequisites:** S-01, S-05
-- **Parallel with:** S-02, S-03, S-04, S-06, S-08, S-09
+- **Outcome:** Two affordances on the analysis detail view: (1) "Add to watchlist" — opens the S-05 watchlist add-form with the originating analysis tracked as a back-link; on save the new watchlist row is created and the originating analysis is filed under it (`company_id` set). (2) "Link to watched company" — opens a picker of the user's existing watched companies; on confirm the analysis's `company_id` is set to the chosen row. Both flows are available on every analysis whose `company_id` is currently null; "Link to watched company" can also clear an existing link back to null. The user types every watchlist field manually in flow (1) — no AI-prose parsing.
+- **Change ID:** link-company-from-analysis
+- **PRD refs:** FR-019, FR-019b, FR-020 (filing carve-out — `company_id` is the one mutable field)
+- **Prerequisites:** S-01, S-05, S-10
+- **Parallel with:** S-03, S-04, S-06, S-08, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
-- **Risk:** The deliberate constraint is "no parsing of AI prose to extract structured company data". FR-019's word "manually" is load-bearing — the value is navigation convenience (no force-navigate to the Watchlist page mid-insight), not data extraction. Sequenced late because it is pure convenience over S-05's existing form, not a wedge slice.
+- **Risk:** With the type axis removed, both flows are available on every analysis (not just type=`company`) — that's the intent. The watchlist-add path stays "user types every field manually" (FR-019); the link-existing path is a picker only. The risk is mostly UX clarity — "Add to watchlist" and "Link to watched company" must be visually distinct so the user does not pick "Link" intending to create a new row. Sequenced late because it is convenience over S-05's existing form + FR-019b is a small affordance over the existing detail view.
 - **Status:** proposed
 
 ### S-08: Dashboard recent
@@ -205,11 +211,24 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Change ID:** password-reset
 - **PRD refs:** FR-001 (baseline-satisfied), FR-002 (baseline-satisfied), FR-003 (baseline-satisfied), FR-004 (baseline-satisfied), FR-005 (this slice)
 - **Prerequisites:** —
-- **Parallel with:** F-01, F-02, S-01, S-02, S-03, S-04, S-05, S-06, S-07, S-08
+- **Parallel with:** F-01, F-02, S-01, S-02, S-03, S-04, S-05, S-06, S-07, S-08, S-10
 - **Blockers:** —
 - **Unknowns:**
   - —
 - **Risk:** Auth baseline is already present (`src/lib/supabase.ts`, `src/middleware.ts`, signin/signup/signout/confirm-email all live). Closing this `must-have` FR is mechanical Supabase-API plumbing — kept as its own slice rather than a foundation because the wedge does not depend on it.
+- **Status:** ready
+
+### S-10: Drop analysis `type` (post-reshape cleanup)
+
+- **Outcome:** The `type` column is removed from the `analyses` table (migration), from the API response and request shapes, and from every UI surface (new-analysis form, analysis detail view, analysis list rows). `company_id` becomes the sole discriminator between "tied to a watched company" and "not". Analyses created during S-01 / S-02 with `type=other` continue to work unchanged — they simply have `company_id IS NULL`. No data loss.
+- **Change ID:** drop-analysis-type
+- **PRD refs:** FR-010 (post-2026-06-01 reshape — picker, no toggle), FR-014 (no `type` in saved analysis), FR-017 (filter dimensions: date + company)
+- **Prerequisites:** S-02
+- **Parallel with:** S-04, S-09
+- **Blockers:** S-03, S-06, S-07 (sequenced after S-10 to avoid coding against a column being removed)
+- **Unknowns:**
+  - —
+- **Risk:** Forward migration on a live schema column. Mitigations: (1) S-02 is the latest shipped slice, so the migration runs against a known set of analyses; (2) the column is informational (the discriminator the application relies on going forward is `company_id`); (3) drop is preceded by code paths stopping reads of `type` so the migration is a final structural cleanup, not a flag flip. This slice is the one place the reshape touches the existing schema — kept small and self-contained so the wedge slices that ship after it can assume `type` is gone.
 - **Status:** ready
 
 ## Backlog Handoff
@@ -220,11 +239,12 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 | F-02       | api-keys-and-ai-provider-client | Encrypted per-user API keys + Anthropic / OpenAI streaming client              | no                    | Waits on F-01                       |
 | S-01       | first-analysis-other-topic      | First analysis end-to-end on a free-text "other" topic (US-01)                 | no                    | Waits on F-01, F-02                 |
 | S-02       | continue-analysis-chain         | Continue-analysis with prompt/model swap — wedge milestone                     | no                    | NORTH STAR. Waits on S-01           |
-| S-03       | filter-analyses-list            | Filter / sort the Analyses page by date, type, company                         | no                    | Waits on S-01                       |
+| S-10       | drop-analysis-type              | Drop `type` from analyses schema, API, and UI (post-2026-06-01 reshape)        | yes                   | Run `/10x-plan drop-analysis-type`  |
+| S-03       | filter-analyses-list            | Filter / sort the Analyses page by date and watched company                    | no                    | Waits on S-01, S-10                 |
 | S-04       | prompts-management              | Edit and delete saved prompts (snapshot retained on prior analyses)            | no                    | Waits on S-01                       |
 | S-05       | watchlist-crud                  | Watchlist CRUD — add / list / view / edit / delete with preserve-tied-analyses | no                    | Waits on F-01                       |
-| S-06       | company-bound-analysis          | Company-bound new + continue analysis with watchlist-injected prompt block     | no                    | Waits on S-02, S-05                 |
-| S-07       | promote-company-from-result     | "Add to watchlist" from analysis detail with manual entry + back-link          | no                    | Waits on S-01, S-05                 |
+| S-06       | company-bound-analysis          | Company-bound new + continue analysis (picker + Topic auto-populate)           | no                    | Waits on S-02, S-05, S-10           |
+| S-07       | link-company-from-analysis      | Promote-new (FR-019) + link-existing (FR-019b) from an analysis detail view    | no                    | Waits on S-01, S-05, S-10           |
 | S-08       | dashboard-recent                | Dashboard quick-nav for recent analyses + watched companies                    | no                    | Waits on S-01, S-05                 |
 | S-09       | password-reset                  | Email-link password reset (FR-005)                                             | yes                   | Run `/10x-plan password-reset`      |
 
@@ -246,6 +266,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **No offline operation** — Why parked: PRD §Non-Goals; v1 requires network access to read or run analyses.
 - **FR-033 cost / token-usage display** — Why parked: PRD `nice-to-have`, not on the must-have path. Will revisit after the wedge ships.
 - **Continue-analysis auto-summarization at 10× scale** — Why parked: PRD §Open Questions item 4 explicitly defers to v2 planning.
+- **Watchlist-injected prompt composition (original Business Logic #3)** — Why parked: removed in the 2026-06-01 reshape in favor of "Topic-only AI input + auto-populate `name (ticker)`". Revisit only if real use shows users routinely re-typing industry / exchange / note into the Topic or additional context — i.e., if the watchlist row is genuinely carrying signal the user wants the AI to see. Until that signal exists, predictable Topic-driven prompts stay simpler than transparent injection.
 - **App-level observability (Sentry / structured logging / OTEL)** — Why parked: `top_blocker: time` plus baseline already has Cloudflare platform observability + `wrangler tail`. Revisit if the wedge ships and incident-response surfaces a real gap.
 
 ## Done
