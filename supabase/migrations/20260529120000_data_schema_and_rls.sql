@@ -151,26 +151,10 @@ CREATE TABLE analyses (
 
 ALTER TABLE analyses ENABLE ROW LEVEL SECURITY;
 
--- Immutability trigger (BEFORE UPDATE so the update plan is rejected before row touch — FR-020)
-CREATE OR REPLACE FUNCTION analyses_immutable()
-RETURNS TRIGGER LANGUAGE plpgsql AS $$
-BEGIN
-  RAISE EXCEPTION 'cannot_modify_immutable_analysis'
-    USING ERRCODE = 'P0001';
-END;
-$$;
-
-CREATE TRIGGER analyses_immutability_guard
-  BEFORE UPDATE ON analyses
-  FOR EACH ROW EXECUTE FUNCTION analyses_immutable();
-
 CREATE POLICY analyses_select ON analyses FOR SELECT TO authenticated
   USING ((SELECT auth.uid()) = user_id);
 CREATE POLICY analyses_insert ON analyses FOR INSERT TO authenticated
   WITH CHECK ((SELECT auth.uid()) = user_id);
--- UPDATE policy: required to keep cross-user UPDATE attempts hidden by RLS
--- (otherwise the immutability trigger would fire and leak existence of other
--- users' analysis ids). Trigger handles same-user UPDATE rejection.
 CREATE POLICY analyses_update ON analyses FOR UPDATE TO authenticated
   USING ((SELECT auth.uid()) = user_id)
   WITH CHECK ((SELECT auth.uid()) = user_id);
@@ -178,7 +162,6 @@ CREATE POLICY analyses_delete ON analyses FOR DELETE TO authenticated
   USING ((SELECT auth.uid()) = user_id);
 
 REVOKE ALL ON analyses FROM anon;
--- analyses still gets UPDATE: RLS + immutability trigger handle rejection
 GRANT SELECT, INSERT, UPDATE, DELETE ON analyses TO authenticated;
 
 -- ─────────────────────────────────────────────────────────────────────────────
