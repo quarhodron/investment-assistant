@@ -163,8 +163,8 @@ New Astro SSR page `/prompts/[id]/edit` with a pre-filled form + updated `prompt
 
 #### Automated
 
-- [x] 2.1 Lint and type check pass: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint and type check pass: `npm run lint` — 310d202
+- [x] 2.2 Build passes: `npm run build` — 310d202
 
 #### Manual
 
