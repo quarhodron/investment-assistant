@@ -35,8 +35,8 @@ CREATE UNIQUE INDEX ai_models_default_per_provider_uidx
 INSERT INTO ai_models (id, provider, display_name, supports_web_search, is_default, sort_order, enabled) VALUES
   ('claude-opus-4-8',   'anthropic', 'Claude Opus 4.8',   true, true,  10, true),
   ('claude-sonnet-4-6', 'anthropic', 'Claude Sonnet 4.6', true, false, 20, true),
-  ('gpt-5.1',           'openai',    'GPT-5.1',           true, true,  10, true),
-  ('gpt-5.1-mini',      'openai',    'GPT-5.1 mini',      true, false, 20, true);
+  ('gpt-4.5',           'openai',    'GPT-4.5',           true, true,  10, true),
+  ('gpt-4o-mini',       'openai',    'GPT-4o mini',       true, false, 20, true);
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- user_settings auto-create on signup (closes F-01 F3).

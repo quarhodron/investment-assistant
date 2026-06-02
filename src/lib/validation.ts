@@ -33,7 +33,6 @@ export function validateRunInput(body: unknown):
         prompt_description?: string;
         input: string;
         extra_context?: string;
-        analysis_type: string;
         subject?: string;
         parent_analysis_id?: string;
         company_id?: string;
@@ -67,11 +66,6 @@ export function validateRunInput(body: unknown):
   if (b.title.length > 300) {
     return { ok: false, error: "title_too_long" };
   }
-  const validAnalysisTypes = ["other", "company"];
-  if (!validAnalysisTypes.includes(b.analysis_type as string)) {
-    return { ok: false, error: "invalid_analysis_type" };
-  }
-
   return {
     ok: true,
     value: {
@@ -83,7 +77,6 @@ export function validateRunInput(body: unknown):
       prompt_description: typeof b.prompt_description === "string" ? b.prompt_description : undefined,
       input: b.input,
       extra_context: typeof b.extra_context === "string" ? b.extra_context : undefined,
-      analysis_type: b.analysis_type as string,
       subject: typeof b.subject === "string" ? b.subject : undefined,
       parent_analysis_id: typeof b.parent_analysis_id === "string" ? b.parent_analysis_id : undefined,
       company_id: typeof b.company_id === "string" ? b.company_id : undefined,

@@ -145,7 +145,6 @@ export const POST: APIRoute = async (context) => {
           // kind === "done"
           const row: AnalysisInsert = {
             user_id: user.id,
-            analysis_type: input.analysis_type,
             title: input.title,
             input: input.input,
             output: event.output,

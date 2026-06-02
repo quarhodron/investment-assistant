@@ -214,9 +214,9 @@ No data migration required. All existing analyses have `analysis_type` set to ei
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npx supabase db reset` (or `npx supabase migration up`) completes without error
-- [x] 1.2 `database.types.ts` no longer contains `analysis_type`: `grep -c 'analysis_type' src/db/database.types.ts` outputs `0`
-- [x] 1.3 Type check passes (stale callsites surface as errors): `npx astro check`
+- [x] 1.1 Migration applies cleanly: `npx supabase db reset` (or `npx supabase migration up`) completes without error — 12ac8bf
+- [x] 1.2 `database.types.ts` no longer contains `analysis_type`: `grep -c 'analysis_type' src/db/database.types.ts` outputs `0` — 12ac8bf
+- [x] 1.3 Type check passes (stale callsites surface as errors): `npx astro check` — 12ac8bf
 
 #### Manual
 
@@ -226,14 +226,14 @@ No data migration required. All existing analyses have `analysis_type` set to ei
 
 #### Automated
 
-- [ ] 2.1 No remaining `analysis_type` references in source: `grep -r 'analysis_type' src/` outputs nothing
-- [ ] 2.2 Type check passes: `npx astro check`
-- [ ] 2.3 Lint passes: `npm run lint`
-- [ ] 2.4 Build succeeds: `npm run build`
+- [x] 2.1 No remaining `analysis_type` references in source: `grep -r 'analysis_type' src/` outputs nothing
+- [x] 2.2 Type check passes: `npx astro check`
+- [x] 2.3 Lint passes: `npm run lint`
+- [x] 2.4 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.5 Analyses list renders without a type badge; all other fields display correctly
-- [ ] 2.6 Analysis detail page shows no type badge in the header row
-- [ ] 2.7 Continue form has no "Analysis type" dropdown; form submits and creates a new analysis successfully
-- [ ] 2.8 Newly created analysis appears in list without type badge and detail view loads correctly
+- [x] 2.5 Analyses list renders without a type badge; all other fields display correctly
+- [x] 2.6 Analysis detail page shows no type badge in the header row
+- [x] 2.7 Continue form has no "Analysis type" dropdown; form submits and creates a new analysis successfully
+- [x] 2.8 Newly created analysis appears in list without type badge and detail view loads correctly

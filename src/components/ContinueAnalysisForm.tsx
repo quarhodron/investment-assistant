@@ -6,7 +6,6 @@ import type { Prompt, AiModel } from "@/types";
 interface ParentAnalysis {
   id: string;
   title: string;
-  analysis_type: string;
   input: string;
   extra_context: string | null;
   prompt_id: string | null;
@@ -102,11 +101,6 @@ function groupByProvider(models: AiModel[]): Partial<Record<string, AiModel[]>> 
 
 const PROVIDER_LABELS: Record<string, string> = { anthropic: "Anthropic", openai: "OpenAI" };
 
-const ANALYSIS_TYPES = [
-  { value: "other", label: "Other / General" },
-  { value: "company", label: "Company" },
-];
-
 export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, apiKeyStatus, defaultModelId }: Props) {
   const firstModelId = models[0]?.id ?? "";
   const initialModelId = defaultModelId ?? firstModelId;
@@ -117,7 +111,6 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
 
   const [promptId, setPromptId] = useState(initialPromptId);
   const [modelId, setModelId] = useState(initialModelId);
-  const [analysisType, setAnalysisType] = useState(parentAnalysis.analysis_type);
   const [input, setInput] = useState(parentAnalysis.input);
   const [extraContext, setExtraContext] = useState("");
   const [title, setTitle] = useState(initialTitle);
@@ -154,7 +147,6 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
       prompt_body: selectedPrompt.body,
       prompt_name: selectedPrompt.name,
       input,
-      analysis_type: analysisType,
       subject: input,
       title,
       parent_analysis_id: parentAnalysis.id,
@@ -317,28 +309,6 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
               </a>
             </div>
           )}
-
-          {/* Analysis type */}
-          <div>
-            <label htmlFor="analysis_type" className="mb-1 block text-sm font-medium text-white/70">
-              Analysis type <span className="text-red-400">*</span>
-            </label>
-            <select
-              id="analysis_type"
-              value={analysisType}
-              onChange={(e) => {
-                setAnalysisType(e.target.value);
-              }}
-              disabled={frozen}
-              className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:border-purple-400 focus:outline-none disabled:opacity-50"
-            >
-              {ANALYSIS_TYPES.map((t) => (
-                <option key={t.value} value={t.value} className="bg-slate-800">
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
 
           {/* Topic */}
           <div>

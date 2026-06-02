@@ -128,7 +128,6 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
       prompt_body: selectedPrompt.body,
       prompt_name: selectedPrompt.name,
       input,
-      analysis_type: "other",
       subject: input,
       title,
     };

@@ -17,7 +17,7 @@ type ApiKeysShape = { anthropic?: unknown; openai?: unknown } | null;
 const [parentResult, promptsResult, modelsResult, settingsResult] = await Promise.all([
   supabase
     .from("analyses")
-    .select("id, title, analysis_type, input, extra_context, prompt_id, prompt_name_snapshot")
+    .select("id, title, input, extra_context, prompt_id, prompt_name_snapshot")
     .eq("id", id)
     .eq("user_id", user.id)
     .single(),
