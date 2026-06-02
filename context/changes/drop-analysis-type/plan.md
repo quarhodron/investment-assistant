@@ -226,14 +226,14 @@ No data migration required. All existing analyses have `analysis_type` set to ei
 
 #### Automated
 
-- [x] 2.1 No remaining `analysis_type` references in source: `grep -r 'analysis_type' src/` outputs nothing
-- [x] 2.2 Type check passes: `npx astro check`
-- [x] 2.3 Lint passes: `npm run lint`
-- [x] 2.4 Build succeeds: `npm run build`
+- [x] 2.1 No remaining `analysis_type` references in source: `grep -r 'analysis_type' src/` outputs nothing — b07977a
+- [x] 2.2 Type check passes: `npx astro check` — b07977a
+- [x] 2.3 Lint passes: `npm run lint` — b07977a
+- [x] 2.4 Build succeeds: `npm run build` — b07977a
 
 #### Manual
 
-- [x] 2.5 Analyses list renders without a type badge; all other fields display correctly
-- [x] 2.6 Analysis detail page shows no type badge in the header row
-- [x] 2.7 Continue form has no "Analysis type" dropdown; form submits and creates a new analysis successfully
-- [x] 2.8 Newly created analysis appears in list without type badge and detail view loads correctly
+- [x] 2.5 Analyses list renders without a type badge; all other fields display correctly — b07977a
+- [x] 2.6 Analysis detail page shows no type badge in the header row — b07977a
+- [x] 2.7 Continue form has no "Analysis type" dropdown; form submits and creates a new analysis successfully — b07977a
+- [x] 2.8 Newly created analysis appears in list without type badge and detail view loads correctly — b07977a
