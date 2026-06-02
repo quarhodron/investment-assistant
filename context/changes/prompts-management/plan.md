@@ -151,7 +151,7 @@ New Astro SSR page `/prompts/[id]/edit` with a pre-filled form + updated `prompt
 
 #### Automated
 
-- [x] 1.1 Lint and type check pass: `npm run lint`
+- [x] 1.1 Lint and type check pass: `npm run lint` — f475c59
 
 #### Manual
 
@@ -163,12 +163,12 @@ New Astro SSR page `/prompts/[id]/edit` with a pre-filled form + updated `prompt
 
 #### Automated
 
-- [ ] 2.1 Lint and type check pass: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint and type check pass: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 Edit page pre-fills fields and shows "Prompt saved." on submit
-- [ ] 2.4 Delete toggle shows confirm/cancel and resets on cancel
-- [ ] 2.5 Confirmed delete removes row and shows "Prompt deleted." banner
-- [ ] 2.6 Saved analysis retains prompt snapshot after prompt edit/delete
+- [x] 2.3 Edit page pre-fills fields and shows "Prompt saved." on submit
+- [x] 2.4 Delete toggle shows confirm/cancel and resets on cancel
+- [x] 2.5 Confirmed delete removes row and shows "Prompt deleted." banner
+- [x] 2.6 Saved analysis retains prompt snapshot after prompt edit/delete

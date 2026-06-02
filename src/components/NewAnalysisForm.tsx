@@ -86,7 +86,8 @@ function groupByProvider(models: AiModel[]): Partial<Record<string, AiModel[]>> 
 const PROVIDER_LABELS: Record<string, string> = { anthropic: "Anthropic", openai: "OpenAI" };
 
 export default function NewAnalysisForm({ prompts, models, apiKeyStatus, defaultModelId }: Props) {
-  const firstModelId = models[0]?.id ?? "";
+  const firstWithKey = models.find((m) => apiKeyStatus[m.provider as keyof typeof apiKeyStatus]);
+  const firstModelId = firstWithKey?.id ?? models[0]?.id ?? "";
   const initialModelId = defaultModelId ?? firstModelId;
 
   const [promptId, setPromptId] = useState(prompts[0]?.id ?? "");
