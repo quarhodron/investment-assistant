@@ -9,7 +9,7 @@ main_goal: market-feedback
 top_blocker: time
 reshape_log:
   - date: 2026-06-01
-    summary: "Removed analysis type axis. Added S-10 (drop-analysis-type cleanup), expanded S-07 to cover FR-019b (link-existing-company), rewrote S-06 (no type branching, no watchlist injection block), trimmed S-03 (date + company only). PRD v1 updated in place; shape-notes.md carries the reshape narrative."
+    summary: "Removed analysis type axis. Added S-10 (drop-analysis-type cleanup), expanded S-07 to cover FR-019b (link-existing-company), rewrote S-06 (no type branching, no watchlist injection block). PRD v1 updated in place; shape-notes.md carries the reshape narrative."
 ---
 
 # Roadmap: Investment Assistant
@@ -34,8 +34,7 @@ Retail amateur investors with day jobs paste one-off prompts into general-purpos
 | F-02  | api-keys-and-ai-provider-client    | (foundation) per-user API keys stored encrypted; thin AI client streams Anthropic / OpenAI    | F-01          | FR-028, FR-032, Business Logic #2                                                         | done     |
 | S-01  | first-analysis-other-topic         | run their first analysis on a free-text "other" topic and reopen the saved result             | F-01, F-02    | US-01, FR-006, FR-007, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032 | done     |
 | S-02  | continue-analysis-chain            | continue a saved analysis with a different prompt and/or model, with the chain preserved      | S-01          | FR-018, Business Logic #2                                                                 | done     |
-| S-10  | drop-analysis-type                 | (cleanup) `type` column gone from schema, API, and UI — `company_id` is the sole discriminator | S-02          | FR-010 (post-2026-06-01 reshape), FR-014, FR-017                                          | done     |
-| S-03  | filter-analyses-list               | filter and sort the analyses list by date and by associated watched company                   | S-01, S-10    | FR-017                                                                                    | proposed |
+| S-10  | drop-analysis-type                 | (cleanup) `type` column gone from schema, API, and UI — `company_id` is the sole discriminator | S-02          | FR-010 (post-2026-06-01 reshape), FR-014                                                  | done     |
 | S-04  | prompts-management                 | edit and delete saved prompts; prior analyses retain their snapshot                           | S-01          | FR-008, FR-009                                                                            | proposed |
 | S-05  | watchlist-crud                     | add, list, view, edit, and delete watched companies; deletes preserve tied analyses           | F-01          | FR-021, FR-022, FR-023, FR-027                                                            | proposed |
 | S-06  | company-bound-analysis             | pick a watched company on new-analysis (Topic auto-populates `name (ticker)`, editable); run / continue from the company detail view; continue inherits the company link unchanged | S-02, S-05, S-10 | FR-010 (picker), FR-024, FR-025, FR-026, Business Logic #3                              | proposed |
@@ -50,8 +49,8 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 | Stream | Theme                            | Chain                                  | Note                                                                                       |
 | ------ | -------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------ |
 | A      | Wedge (validation milestone)     | `F-01` → `F-02` → `S-01` → `S-02`      | Path to the north star. `main_goal: market-feedback` means everything else waits on this.  |
-| A'     | Reshape cleanup                  | `S-10`                                 | Drops `type` from schema/API/UI after the 2026-06-01 reshape. Joins Stream A at `S-02`; gates `S-03` and `S-06` so they don't re-introduce the dropped column. |
-| B      | Workspace navigation             | `S-03` → `S-04` → `S-08`               | Read-side polish; sequenced after the wedge + S-10 ship. Joins Stream A at `S-01`.          |
+| A'     | Reshape cleanup                  | `S-10`                                 | Drops `type` from schema/API/UI after the 2026-06-01 reshape. Joins Stream A at `S-02`; gates `S-06` and `S-07` so they don't re-introduce the dropped column. |
+| B      | Workspace navigation             | `S-04` → `S-08`                         | Read-side polish; sequenced after the wedge + S-10 ship. Joins Stream A at `S-01`.          |
 | C      | Company-bound research           | `S-05` → `S-06` → `S-07`               | Second wedge prong. With the 2026-06-01 reshape, the wedge is "watched-company link + Topic auto-populate" rather than "watchlist injection". `S-06` joins Stream A at `S-02` and Stream A' at `S-10`; `S-07` joins Stream A at `S-01` and Stream A' at `S-10`. |
 | D      | Auth completeness                | `S-09`                                 | Closes the FR-005 gap; can ship anytime — no foundation prerequisite.                       |
 
@@ -73,7 +72,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Outcome:** (foundation) Postgres schema for prompts, analyses (with `parent_analysis_id` self-reference and a `company_id` nullable FK for dual-linking per FR-026), watched_companies, and user_settings is live with RLS policies enforcing per-user isolation across every table.
 - **Change ID:** data-schema-and-rls
 - **PRD refs:** Access Control §Isolation, NFRs §isolation guardrail, FR-020 (analysis immutability — enforced as schema-level constraints / triggers, not at the application layer)
-- **Unlocks:** S-01 (analyses + prompts + user_settings), S-02 (parent_analysis_id traversal), S-03 (analyses indexes for filter dimensions), S-04 (prompts edit/delete), S-05 (watched_companies), S-06 (analyses.company_id), S-07 (analysis ↔ company back-link), S-08 (recent-by-user reads). Verification path: every downstream slice can rely on RLS for isolation rather than re-implementing per-route auth checks.
+- **Unlocks:** S-01 (analyses + prompts + user_settings), S-02 (parent_analysis_id traversal), S-04 (prompts edit/delete), S-05 (watched_companies), S-06 (analyses.company_id), S-07 (analysis ↔ company back-link), S-08 (recent-by-user reads). Verification path: every downstream slice can rely on RLS for isolation rather than re-implementing per-route auth checks.
 - **Prerequisites:** —
 - **Parallel with:** S-09
 - **Blockers:** —
@@ -120,25 +119,12 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Change ID:** continue-analysis-chain
 - **PRD refs:** FR-018, Business Logic #2 (verbatim parent output, no auto-summarization in v1)
 - **Prerequisites:** S-01
-- **Parallel with:** S-03, S-04, S-05, S-09
+- **Parallel with:** S-04, S-05, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
 - **Risk:** This is the wedge — the trait that makes Investment Assistant not-ChatGPT. The risk is not implementation complexity (the FR is small); the risk is that verbatim parent-output context turns out to feel useless in real research and the differentiator does not actually hold. The roadmap surfaces this risk by making S-02 the validation milestone — `main_goal: market-feedback` is exactly the bias that says "find out fast".
 - **Status:** done
-
-### S-03: Filter and sort the analyses list
-
-- **Outcome:** The Analyses page lets the user filter by date range and by associated watched company; sort by date asc/desc.
-- **Change ID:** filter-analyses-list
-- **PRD refs:** FR-017
-- **Prerequisites:** S-01, S-10
-- **Parallel with:** S-04, S-05, S-08, S-09
-- **Blockers:** —
-- **Unknowns:**
-  - —
-- **Risk:** Filtering becomes load-bearing once the user has ≥ ~20 analyses (Socratic note in PRD). Sequenced after S-10 to avoid coding a filter against a column that's about to be removed; the meaningful partition is `company_id IS NULL` vs not, plus per-company filtering.
-- **Status:** proposed
 
 ### S-04: Prompts management — edit and delete
 
@@ -146,7 +132,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Change ID:** prompts-management
 - **PRD refs:** FR-008, FR-009
 - **Prerequisites:** S-01
-- **Parallel with:** S-02, S-03, S-05, S-08, S-09
+- **Parallel with:** S-02, S-05, S-08, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
@@ -159,7 +145,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Change ID:** watchlist-crud
 - **PRD refs:** FR-021, FR-022, FR-023, FR-027
 - **Prerequisites:** F-01
-- **Parallel with:** S-02, S-03, S-04, S-08, S-09
+- **Parallel with:** S-02, S-04, S-08, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
@@ -172,7 +158,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Change ID:** company-bound-analysis
 - **PRD refs:** FR-010 (picker + Topic auto-populate), FR-024, FR-025, FR-026 (company-link freeze on continue), Business Logic #3 (Topic-only AI input)
 - **Prerequisites:** S-02, S-05, S-10
-- **Parallel with:** S-03, S-04, S-08, S-09
+- **Parallel with:** S-04, S-08, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
@@ -185,7 +171,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Change ID:** link-company-from-analysis
 - **PRD refs:** FR-019, FR-019b, FR-020 (filing carve-out — `company_id` is the one mutable field)
 - **Prerequisites:** S-01, S-05, S-10
-- **Parallel with:** S-03, S-04, S-06, S-08, S-09
+- **Parallel with:** S-04, S-06, S-08, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
@@ -198,7 +184,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Change ID:** dashboard-recent
 - **PRD refs:** FR-031
 - **Prerequisites:** S-01, S-05
-- **Parallel with:** S-02, S-03, S-04, S-06, S-07, S-09
+- **Parallel with:** S-02, S-04, S-06, S-07, S-09
 - **Blockers:** —
 - **Unknowns:**
   - —
@@ -211,7 +197,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Change ID:** password-reset
 - **PRD refs:** FR-001 (baseline-satisfied), FR-002 (baseline-satisfied), FR-003 (baseline-satisfied), FR-004 (baseline-satisfied), FR-005 (this slice)
 - **Prerequisites:** —
-- **Parallel with:** F-01, F-02, S-01, S-02, S-03, S-04, S-05, S-06, S-07, S-08, S-10
+- **Parallel with:** F-01, F-02, S-01, S-02, S-04, S-05, S-06, S-07, S-08, S-10
 - **Blockers:** —
 - **Unknowns:**
   - —
@@ -222,13 +208,13 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 
 - **Outcome:** The `type` column is removed from the `analyses` table (migration), from the API response and request shapes, and from every UI surface (new-analysis form, analysis detail view, analysis list rows). `company_id` becomes the sole discriminator between "tied to a watched company" and "not". Analyses created during S-01 / S-02 with `type=other` continue to work unchanged — they simply have `company_id IS NULL`. No data loss.
 - **Change ID:** drop-analysis-type
-- **PRD refs:** FR-010 (post-2026-06-01 reshape — picker, no toggle), FR-014 (no `type` in saved analysis), FR-017 (filter dimensions: date + company)
+- **PRD refs:** FR-010 (post-2026-06-01 reshape — picker, no toggle), FR-014 (no `type` in saved analysis)
 - **Prerequisites:** S-02
 - **Parallel with:** S-04, S-09
-- **Blockers:** S-03, S-06, S-07 (sequenced after S-10 to avoid coding against a column being removed)
+- **Blockers:** S-06, S-07 (sequenced after S-10 to avoid coding against a column being removed)
 - **Unknowns:**
   - —
-- **Risk:** Forward migration on a live schema column. Mitigations: (1) S-02 is the latest shipped slice, so the migration runs against a known set of analyses; (2) the column is informational (the discriminator the application relies on going forward is `company_id`); (3) drop is preceded by code paths stopping reads of `type` so the migration is a final structural cleanup, not a flag flip. This slice is the one place the reshape touches the existing schema — kept small and self-contained so the wedge slices that ship after it can assume `type` is gone.
+- **Risk:** Forward migration on a live schema column. Mitigations: (1) S-02 is the latest shipped slice, so the migration runs against a known set of analyses; (2) the column is informational (the discriminator the application relies on going forward is `company_id`); (3) drop is preceded by code paths stopping reads of `type` so the migration is a final structural cleanup, not a flag flip. This slice is the one place the reshape touches the existing schema — kept small and self-contained so the slices that ship after it can assume `type` is gone.
 - **Status:** done
 
 ## Backlog Handoff
@@ -240,7 +226,6 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 | S-01       | first-analysis-other-topic      | First analysis end-to-end on a free-text "other" topic (US-01)                 | no                    | Waits on F-01, F-02                 |
 | S-02       | continue-analysis-chain         | Continue-analysis with prompt/model swap — wedge milestone                     | no                    | NORTH STAR. Waits on S-01           |
 | S-10       | drop-analysis-type              | Drop `type` from analyses schema, API, and UI (post-2026-06-01 reshape)        | yes                   | Run `/10x-plan drop-analysis-type`  |
-| S-03       | filter-analyses-list            | Filter / sort the Analyses page by date and watched company                    | no                    | Waits on S-01, S-10                 |
 | S-04       | prompts-management              | Edit and delete saved prompts (snapshot retained on prior analyses)            | no                    | Waits on S-01                       |
 | S-05       | watchlist-crud                  | Watchlist CRUD — add / list / view / edit / delete with preserve-tied-analyses | no                    | Waits on F-01                       |
 | S-06       | company-bound-analysis          | Company-bound new + continue analysis (picker + Topic auto-populate)           | no                    | Waits on S-02, S-05, S-10           |

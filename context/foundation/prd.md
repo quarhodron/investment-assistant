@@ -45,7 +45,6 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 
 ### Secondary
 
-- A user can browse the full history of their analyses and filter by date and by associated company.
 - A user can edit prompts; the new version applies on the next run, and prior analyses keep the prompt text they were originally run with (analyses are immutable — see guardrails).
 
 ### Guardrails
@@ -123,8 +122,6 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
   > Socrates: Standard list surface for the work-history workspace; no counter-argument. Stands as written.
 - FR-016: User can open a saved analysis and view it in read-only mode (full result + prompt used + Topic + additional context + sources + model + watched-company link if any). Priority: must-have
   > Socrates: Read-only view follows directly from FR-020 immutability. Stands as written.
-- FR-017: User can filter / sort the analyses list by date and by associated watched company. Priority: must-have
-  > Socrates: Counter-argument considered: "plain chronological list is enough for v1." Resolution: kept must-have. The analyses page IS the work-history surface; without filter dimensions the user has to scroll-and-pray once they have ≥ ~20 analyses. Filter-by-type was dropped along with the type axis — the meaningful partition is "tied to a watched company" vs "not", which `company_id` already expresses.
 - FR-018: From an analysis detail view, user can run "Continue analysis" — which starts a new analysis with the current analysis's result as context, lets the user pick a different prompt and/or a different model, and saves the resulting analysis as a child of the parent. Priority: must-have
   > Socrates: Counter-argument considered: "continue-analysis is exotic; user could just start a new analysis and paste the prior result manually." Resolution: kept. Continue-analysis is the core differentiator vs ChatGPT/Claude Projects — without it the product is just a CRUD list of one-shot prompts. The chain (parent linkage, prompt/model swap mid-chain) is what makes it a research workspace.
 - FR-019: From an analysis detail view, user can manually add any company surfaced in the result to their watchlist. The act of promoting a company from an analysis links that originating analysis to the new watchlist row (sets `company_id` on the analysis). Available on every analysis regardless of how it was originally run. Priority: must-have
