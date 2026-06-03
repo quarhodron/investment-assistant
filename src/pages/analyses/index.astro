@@ -51,7 +51,9 @@ if (supabase && user) {
                     <span class="text-base font-medium text-white">{analysis.title}</span>
                   </div>
                   <div class="mt-1.5 flex items-center gap-3 text-xs text-slate-400">
-                    <span>{analysis.provider} / {analysis.model}</span>
+                    <span>
+                      {analysis.provider} / {analysis.model}
+                    </span>
                     <span>·</span>
                     <span>{new Date(analysis.created_at).toLocaleDateString()}</span>
                   </div>

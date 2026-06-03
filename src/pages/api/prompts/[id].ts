@@ -32,10 +32,16 @@ export const POST: APIRoute = async (context) => {
   const action = form.get("action");
 
   if (action === "delete") {
-    const { error } = await supabase.from("prompts").delete().eq("id", id).eq("user_id", user.id);
+    const { data: deleted, error } = await supabase
+      .from("prompts")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .select("id")
+      .single();
 
-    if (error) {
-      return context.redirect(`/prompts?error=${encodeURIComponent("Failed to delete prompt")}`);
+    if (error || !deleted) {
+      return context.redirect(`/prompts?error=${encodeURIComponent("Prompt not found")}`);
     }
 
     return context.redirect("/prompts?ok=deleted");
@@ -62,13 +68,15 @@ export const POST: APIRoute = async (context) => {
 
   const descValue = typeof description === "string" && description.trim().length > 0 ? description.trim() : null;
 
-  const { error } = await supabase
+  const { data: updated, error } = await supabase
     .from("prompts")
     .update({ name: name.trim(), body: body.trim(), description: descValue })
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", user.id)
+    .select("id")
+    .single();
 
-  if (error) {
+  if (error || !updated) {
     return context.redirect(`/prompts/${id}/edit?error=${encodeURIComponent("Failed to update prompt")}`);
   }
 

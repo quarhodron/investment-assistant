@@ -122,9 +122,7 @@ export const POST: APIRoute = async (context) => {
             return;
           }
 
-          resolvedContext = input.extra_context
-            ? parentData.output + "\n\n" + input.extra_context
-            : parentData.output;
+          resolvedContext = input.extra_context ? parentData.output + "\n\n" + input.extra_context : parentData.output;
         }
 
         const generator = runAiAnalysis({

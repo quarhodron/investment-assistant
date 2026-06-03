@@ -32,9 +32,7 @@ if (supabase && user) {
 
       {
         error && (
-          <div class="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">
-            {decodeURIComponent(error)}
-          </div>
+          <div class="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">{error}</div>
         )
       }
 
@@ -72,39 +70,21 @@ if (supabase && user) {
                     {prompt.description && <p class="mt-1 text-sm text-white/50">{prompt.description}</p>}
                   </div>
                   <div class="flex shrink-0 items-center gap-3">
-                    <a
-                      href={`/prompts/${prompt.id}/edit`}
-                      class="text-sm text-white/50 hover:text-white/80"
-                    >
+                    <a href={`/prompts/${prompt.id}/edit`} class="text-sm text-white/50 hover:text-white/80">
                       Edit
                     </a>
                     <div data-delete-initial>
-                      <button
-                        type="button"
-                        data-confirm-delete
-                        class="text-sm text-red-400/70 hover:text-red-400"
-                      >
+                      <button type="button" data-confirm-delete class="text-sm text-red-400/70 hover:text-red-400">
                         Delete
                       </button>
                     </div>
                     <div data-delete-confirm hidden>
-                      <form
-                        method="POST"
-                        action={`/api/prompts/${prompt.id}`}
-                        class="flex items-center gap-2"
-                      >
+                      <form method="POST" action={`/api/prompts/${prompt.id}`} class="flex items-center gap-2">
                         <input type="hidden" name="action" value="delete" />
-                        <button
-                          type="submit"
-                          class="text-sm text-red-400 hover:text-red-300"
-                        >
+                        <button type="submit" class="text-sm text-red-400 hover:text-red-300">
                           Confirm delete
                         </button>
-                        <button
-                          type="button"
-                          data-delete-cancel
-                          class="text-sm text-white/50 hover:text-white/80"
-                        >
+                        <button type="button" data-delete-cancel class="text-sm text-white/50 hover:text-white/80">
                           Cancel
                         </button>
                       </form>
@@ -174,18 +154,18 @@ if (supabase && user) {
       </div>
     </div>
   </div>
-<script>
-  document.querySelectorAll("[data-prompt-row]").forEach((row) => {
-    const initial = row.querySelector("[data-delete-initial]");
-    const confirm = row.querySelector("[data-delete-confirm]");
-    row.querySelector("[data-confirm-delete]")?.addEventListener("click", () => {
-      initial?.setAttribute("hidden", "");
-      confirm?.removeAttribute("hidden");
+  <script>
+    document.querySelectorAll("[data-prompt-row]").forEach((row) => {
+      const initial = row.querySelector("[data-delete-initial]");
+      const confirm = row.querySelector("[data-delete-confirm]");
+      row.querySelector("[data-confirm-delete]")?.addEventListener("click", () => {
+        initial?.setAttribute("hidden", "");
+        confirm?.removeAttribute("hidden");
+      });
+      row.querySelector("[data-delete-cancel]")?.addEventListener("click", () => {
+        confirm?.setAttribute("hidden", "");
+        initial?.removeAttribute("hidden");
+      });
     });
-    row.querySelector("[data-delete-cancel]")?.addEventListener("click", () => {
-      confirm?.setAttribute("hidden", "");
-      initial?.removeAttribute("hidden");
-    });
-  });
-</script>
+  </script>
 </Layout>

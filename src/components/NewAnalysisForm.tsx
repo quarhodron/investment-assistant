@@ -22,7 +22,8 @@ function friendlyError(e: ErrorFrame): string {
   const { message, status, code } = e;
 
   if (message === "api_key_not_configured") return "No API key configured for this provider. Add one in Settings.";
-  if (message === "api_key_corrupted") return "The stored API key appears corrupted. Remove it in Settings and add it again.";
+  if (message === "api_key_corrupted")
+    return "The stored API key appears corrupted. Remove it in Settings and add it again.";
   if (message === "invalid_model") return "The selected model is not available. Try a different model.";
   if (message === "persist_failed") return "Analysis completed but could not be saved. Try again.";
   if (message === "service_unavailable") return "Service unavailable. Check that Supabase is reachable.";
@@ -31,7 +32,8 @@ function friendlyError(e: ErrorFrame): string {
     const provider = message === "openai_api_error" ? "OpenAI" : "Anthropic";
     if (status === 401) return `${provider} rejected the API key. Check it is correct in Settings.`;
     if (status === 403) return `${provider} access denied. Your key may lack the required permissions.`;
-    if (status === 429 && code === "insufficient_quota") return `${provider} quota exhausted. Check your account has credits.`;
+    if (status === 429 && code === "insufficient_quota")
+      return `${provider} quota exhausted. Check your account has credits.`;
     if (status === 429) return `${provider} rate limit reached. Wait a moment and try again.`;
     if (status && status >= 500) return `${provider} is having issues (${status}). Try again shortly.`;
     return `${provider} returned an error. Check your API key in Settings.`;
@@ -52,21 +54,25 @@ function FieldHint({ text }: { text: string }) {
       }
     }
     document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
   }, [open]);
 
   return (
     <span ref={ref} className="relative inline-flex items-center">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          setOpen((v) => !v);
+        }}
         className="ml-1 text-white/30 hover:text-white/60 focus:outline-none"
         aria-label="More info"
       >
         <Info size={13} />
       </button>
       {open && (
-        <span className="absolute left-5 top-0 z-10 w-64 rounded-md border border-white/15 bg-slate-800 px-3 py-2 text-xs leading-relaxed text-white/70 shadow-lg">
+        <span className="absolute top-0 left-5 z-10 w-64 rounded-md border border-white/15 bg-slate-800 px-3 py-2 text-xs leading-relaxed text-white/70 shadow-lg">
           {text}
         </span>
       )}
@@ -108,7 +114,6 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
   const selectedModel = models.find((m) => m.id === modelId);
   const selectedProvider = selectedModel?.provider ?? "";
   const hasApiKey = selectedProvider ? apiKeyStatus[selectedProvider as keyof typeof apiKeyStatus] : false;
-
 
   async function handleRun() {
     const selectedPrompt = prompts.find((p) => p.id === promptId);
@@ -242,7 +247,9 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
             <select
               id="prompt_id"
               value={promptId}
-              onChange={(e) => setPromptId(e.target.value)}
+              onChange={(e) => {
+                setPromptId(e.target.value);
+              }}
               disabled={frozen}
               className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:border-purple-400 focus:outline-none disabled:opacity-50"
             >
@@ -262,7 +269,9 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
             <select
               id="model_id"
               value={modelId}
-              onChange={(e) => setModelId(e.target.value)}
+              onChange={(e) => {
+                setModelId(e.target.value);
+              }}
               disabled={frozen}
               className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:border-purple-400 focus:outline-none disabled:opacity-50"
             >
@@ -298,7 +307,9 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
               type="text"
               id="input"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value);
+              }}
               disabled={frozen}
               placeholder="e.g. renewable energy sector, S&P 500 index, Tesla"
               className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-purple-400 focus:outline-none disabled:opacity-50"
@@ -313,7 +324,9 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
             <textarea
               id="extra_context"
               value={extraContext}
-              onChange={(e) => setExtraContext(e.target.value)}
+              onChange={(e) => {
+                setExtraContext(e.target.value);
+              }}
               disabled={frozen}
               rows={2}
               placeholder="Any additional context for the analysis"
@@ -331,7 +344,9 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
               type="text"
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
               disabled={frozen}
               maxLength={300}
               placeholder="e.g. Renewable energy sector overview"
@@ -355,14 +370,12 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
       {(status === "streaming" || status === "saved" || status === "error") && (
         <div className="rounded-lg border border-white/10 bg-white/5 p-6">
           {output && (
-            <div className="mb-4 text-sm leading-relaxed text-white/85 [&_h1]:mb-2 [&_h1]:mt-4 [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-white [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:text-white [&_h3]:mb-1 [&_h3]:mt-3 [&_h3]:font-semibold [&_h3]:text-white/90 [&_li]:ml-4 [&_ol]:my-2 [&_ol]:list-decimal [&_p]:mb-2 [&_strong]:font-semibold [&_strong]:text-white [&_ul]:my-2 [&_ul]:list-disc">
+            <div className="mb-4 text-sm leading-relaxed text-white/85 [&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-white [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:text-white [&_h3]:mt-3 [&_h3]:mb-1 [&_h3]:font-semibold [&_h3]:text-white/90 [&_li]:ml-4 [&_ol]:my-2 [&_ol]:list-decimal [&_p]:mb-2 [&_strong]:font-semibold [&_strong]:text-white [&_ul]:my-2 [&_ul]:list-disc">
               <ReactMarkdown>{output}</ReactMarkdown>
             </div>
           )}
 
-          {status === "streaming" && (
-            <p className="text-sm text-purple-300 animate-pulse">Receiving response…</p>
-          )}
+          {status === "streaming" && <p className="animate-pulse text-sm text-purple-300">Receiving response…</p>}
 
           {status === "saved" && analysisId && (
             <div className="rounded-md border border-green-400/30 bg-green-500/10 p-3 text-sm text-green-200">

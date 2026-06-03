@@ -16,7 +16,8 @@ export default async function* streamOpenAI(opts: {
 
   const stream = await client.responses.create({
     model: opts.model,
-    instructions: "You are a financial research assistant. Always respond in well-structured Markdown: use headings, bullet points, and bold text where appropriate.",
+    instructions:
+      "You are a financial research assistant. Always respond in well-structured Markdown: use headings, bullet points, and bold text where appropriate.",
     input,
     tools: [{ type: "web_search_preview" }],
     stream: true,

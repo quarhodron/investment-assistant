@@ -38,8 +38,7 @@ export const POST: APIRoute = async (context) => {
     return context.redirect(`/prompts?error=${encodeURIComponent("Description must be at most 500 characters")}`);
   }
 
-  const descValue =
-    typeof description === "string" && description.trim().length > 0 ? description.trim() : null;
+  const descValue = typeof description === "string" && description.trim().length > 0 ? description.trim() : null;
 
   const { error } = await supabase.from("prompts").insert({
     user_id: user.id,

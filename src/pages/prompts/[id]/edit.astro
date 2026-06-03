@@ -7,7 +7,10 @@ const { user } = Astro.locals;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 const { id } = Astro.params;
 
-if (!supabase || !user || !id) {
+if (!user) {
+  return Astro.redirect("/auth/signin");
+}
+if (!supabase || !id) {
   return Astro.redirect("/prompts");
 }
 
@@ -35,9 +38,7 @@ const ok = Astro.url.searchParams.get("ok");
 
       {
         error && (
-          <div class="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">
-            {decodeURIComponent(error)}
-          </div>
+          <div class="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">{error}</div>
         )
       }
 
