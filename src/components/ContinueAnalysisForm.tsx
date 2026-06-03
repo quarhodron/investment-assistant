@@ -49,7 +49,7 @@ function friendlyError(e: ErrorFrame): string {
     return `${provider} returned an error. Check your API key in Settings.`;
   }
 
-  return message ?? "An unexpected error occurred.";
+  return message || "An unexpected error occurred.";
 }
 
 function FieldHint({ text }: { text: string }) {
@@ -90,11 +90,11 @@ function FieldHint({ text }: { text: string }) {
   );
 }
 
-function groupByProvider(models: AiModel[]): Partial<Record<string, AiModel[]>> {
-  const groups: Partial<Record<string, AiModel[]>> = {};
+function groupByProvider(models: AiModel[]): Record<string, AiModel[]> {
+  const groups: Record<string, AiModel[]> = {};
   for (const model of models) {
-    groups[model.provider] ??= [];
-    groups[model.provider]!.push(model);
+    const list = (groups[model.provider] ??= []);
+    list.push(model);
   }
   return groups;
 }
@@ -103,11 +103,11 @@ const PROVIDER_LABELS: Record<string, string> = { anthropic: "Anthropic", openai
 
 export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, apiKeyStatus, defaultModelId }: Props) {
   const firstWithKey = models.find((m) => apiKeyStatus[m.provider as keyof typeof apiKeyStatus]);
-  const firstModelId = firstWithKey?.id ?? models[0]?.id ?? "";
+  const firstModelId = firstWithKey?.id ?? models.at(0)?.id ?? "";
   const initialModelId = defaultModelId ?? firstModelId;
 
   const parentPromptInList = prompts.find((p) => p.id === parentAnalysis.prompt_id);
-  const initialPromptId = parentPromptInList?.id ?? prompts[0]?.id ?? "";
+  const initialPromptId = parentPromptInList?.id ?? prompts.at(0)?.id ?? "";
   const initialTitle = "Continue: " + parentAnalysis.title.slice(0, 290);
 
   const [promptId, setPromptId] = useState(initialPromptId);
@@ -177,6 +177,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
       const decoder = new TextDecoder();
       let buffer = "";
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -291,7 +292,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
             >
               {Object.entries(grouped).map(([prov, provModels]) => (
                 <optgroup key={prov} label={PROVIDER_LABELS[prov] ?? prov}>
-                  {provModels!.map((m) => (
+                  {provModels.map((m) => (
                     <option key={m.id} value={m.id} className="bg-slate-800">
                       {m.display_name}
                     </option>

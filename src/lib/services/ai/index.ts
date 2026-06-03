@@ -4,7 +4,7 @@ import streamAnthropic from "./anthropic";
 import streamOpenAI from "./openai";
 
 export type AnthropicCitation = Anthropic.CitationsWebSearchResultLocation;
-export type OpenAIUrlCitation = OpenAI.Responses.ResponseTextOutput.URLCitation;
+export type OpenAIUrlCitation = OpenAI.Responses.ResponseOutputText.URLCitation;
 
 export type StoredSources =
   | { provider: "anthropic"; items: AnthropicCitation[] }

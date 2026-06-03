@@ -39,7 +39,7 @@ function friendlyError(e: ErrorFrame): string {
     return `${provider} returned an error. Check your API key in Settings.`;
   }
 
-  return message ?? "An unexpected error occurred.";
+  return message || "An unexpected error occurred.";
 }
 
 function FieldHint({ text }: { text: string }) {
@@ -80,11 +80,11 @@ function FieldHint({ text }: { text: string }) {
   );
 }
 
-function groupByProvider(models: AiModel[]): Partial<Record<string, AiModel[]>> {
-  const groups: Partial<Record<string, AiModel[]>> = {};
+function groupByProvider(models: AiModel[]): Record<string, AiModel[]> {
+  const groups: Record<string, AiModel[]> = {};
   for (const model of models) {
-    groups[model.provider] ??= [];
-    groups[model.provider]!.push(model);
+    const list = (groups[model.provider] ??= []);
+    list.push(model);
   }
   return groups;
 }
@@ -93,10 +93,10 @@ const PROVIDER_LABELS: Record<string, string> = { anthropic: "Anthropic", openai
 
 export default function NewAnalysisForm({ prompts, models, apiKeyStatus, defaultModelId }: Props) {
   const firstWithKey = models.find((m) => apiKeyStatus[m.provider as keyof typeof apiKeyStatus]);
-  const firstModelId = firstWithKey?.id ?? models[0]?.id ?? "";
+  const firstModelId = firstWithKey?.id ?? models.at(0)?.id ?? "";
   const initialModelId = defaultModelId ?? firstModelId;
 
-  const [promptId, setPromptId] = useState(prompts[0]?.id ?? "");
+  const [promptId, setPromptId] = useState(prompts.at(0)?.id ?? "");
   const [modelId, setModelId] = useState(initialModelId);
   const [input, setInput] = useState("");
   const [extraContext, setExtraContext] = useState("");
@@ -162,6 +162,7 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
       const decoder = new TextDecoder();
       let buffer = "";
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -277,7 +278,7 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
             >
               {Object.entries(grouped).map(([prov, provModels]) => (
                 <optgroup key={prov} label={PROVIDER_LABELS[prov] ?? prov}>
-                  {provModels!.map((m) => (
+                  {provModels.map((m) => (
                     <option key={m.id} value={m.id} className="bg-slate-800">
                       {m.display_name}
                     </option>

@@ -117,7 +117,7 @@ export const POST: APIRoute = async (context) => {
             .eq("user_id", user.id)
             .single();
 
-          if (parentError || !parentData) {
+          if (parentError) {
             enqueue(sseFrame("error", { message: "parent_not_found" }));
             return;
           }
@@ -182,6 +182,7 @@ export const POST: APIRoute = async (context) => {
         }
       } catch (err) {
         const safe = toSafeAiError(err);
+        // eslint-disable-next-line no-console
         console.error("ai_run_failed", safe);
         enqueue(sseFrame("error", safe));
       } finally {

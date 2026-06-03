@@ -23,7 +23,7 @@ export default async function* streamOpenAI(opts: {
     stream: true,
   });
 
-  const citations: OpenAI.Responses.ResponseTextOutput.URLCitation[] = [];
+  const citations: OpenAI.Responses.ResponseOutputText.URLCitation[] = [];
   let output = "";
   let usage: { input_tokens: number | null; output_tokens: number | null } = {
     input_tokens: null,
@@ -43,7 +43,7 @@ export default async function* streamOpenAI(opts: {
           "type" in ann &&
           (ann as { type: string }).type === "url_citation"
         ) {
-          citations.push(ann as OpenAI.Responses.ResponseTextOutput.URLCitation);
+          citations.push(ann as OpenAI.Responses.ResponseOutputText.URLCitation);
         }
       } else if (event.type === "response.completed") {
         usage = {

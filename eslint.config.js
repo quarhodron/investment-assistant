@@ -12,6 +12,8 @@ import tseslint from "typescript-eslint";
 const gitignorePath = path.resolve(import.meta.dirname, ".gitignore");
 
 const baseConfig = tseslint.config({
+  files: ["**/*.{js,mjs,cjs,ts,tsx,jsx}"],
+  ignores: ["**/*.astro/**"],
   extends: [eslint.configs.recommended, tseslint.configs.strictTypeChecked, tseslint.configs.stylisticTypeChecked],
   languageOptions: {
     parserOptions: {
@@ -90,5 +92,5 @@ export default tseslint.config(
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
   scriptsConfig,
-  eslintPluginPrettier,
+  { ...eslintPluginPrettier, ignores: ["**/*.astro/**"] },
 );

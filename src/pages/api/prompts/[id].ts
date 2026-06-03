@@ -32,15 +32,9 @@ export const POST: APIRoute = async (context) => {
   const action = form.get("action");
 
   if (action === "delete") {
-    const { data: deleted, error } = await supabase
-      .from("prompts")
-      .delete()
-      .eq("id", id)
-      .eq("user_id", user.id)
-      .select("id")
-      .single();
+    const { error } = await supabase.from("prompts").delete().eq("id", id).eq("user_id", user.id).select("id").single();
 
-    if (error || !deleted) {
+    if (error) {
       return context.redirect(`/prompts?error=${encodeURIComponent("Prompt not found")}`);
     }
 
@@ -68,7 +62,7 @@ export const POST: APIRoute = async (context) => {
 
   const descValue = typeof description === "string" && description.trim().length > 0 ? description.trim() : null;
 
-  const { data: updated, error } = await supabase
+  const { error } = await supabase
     .from("prompts")
     .update({ name: name.trim(), body: body.trim(), description: descValue })
     .eq("id", id)
@@ -76,7 +70,7 @@ export const POST: APIRoute = async (context) => {
     .select("id")
     .single();
 
-  if (error || !updated) {
+  if (error) {
     return context.redirect(`/prompts/${id}/edit?error=${encodeURIComponent("Failed to update prompt")}`);
   }
 
