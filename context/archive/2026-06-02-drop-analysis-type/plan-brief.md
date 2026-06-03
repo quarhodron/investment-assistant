@@ -16,21 +16,23 @@ The `analyses` table has no `analysis_type` column, no `analyses_type_company_ch
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| DB types update strategy | Regenerate via `npx supabase gen types` | Canonical source of truth; avoids hand-editing a generated file |
-| Existing rows with `type=company, company_id=NULL` | Acceptable — no migration needed | Pre-production data; the column is informational and `company_id` is already the forward discriminator |
-| Type badge replacement | Remove entirely | Company context display belongs to S-06; this slice keeps strictly to deletion |
-| Company context in continue form | Strict removal only | Any company display in the continue flow is S-06 scope |
+| Decision                                           | Choice                                  | Why (1 sentence)                                                                                       |
+| -------------------------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| DB types update strategy                           | Regenerate via `npx supabase gen types` | Canonical source of truth; avoids hand-editing a generated file                                        |
+| Existing rows with `type=company, company_id=NULL` | Acceptable — no migration needed        | Pre-production data; the column is informational and `company_id` is already the forward discriminator |
+| Type badge replacement                             | Remove entirely                         | Company context display belongs to S-06; this slice keeps strictly to deletion                         |
+| Company context in continue form                   | Strict removal only                     | Any company display in the continue flow is S-06 scope                                                 |
 
 ## Scope
 
 **In scope:**
+
 - SQL migration: drop `analyses_type_company_check` constraint, `analyses_user_type_created_idx` index, and `analysis_type` column
 - Regenerate `src/db/database.types.ts`
 - Remove `analysis_type` from validation (`src/lib/validation.ts`), API handler (`src/pages/api/ai/run.ts`), both React forms, and three Astro pages
 
 **Out of scope:**
+
 - Data backfill or row migration
 - Any `company_id`-based badge, filter, or display logic (S-03/S-06/S-07)
 - Company context in the continue form (S-06)
@@ -41,10 +43,10 @@ Sequential two-phase approach: schema first, application code second. Applying t
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Schema Migration & Type Regeneration | Migration applied, `database.types.ts` regenerated, compiler flags stale callsites | Requires Docker + local Supabase to run `gen types` |
-| 2. Application Code Cleanup | All `analysis_type` references removed, lint + build passing, UI verified | Missing a callsite that compiles but is silently wrong |
+| Phase                                   | What it delivers                                                                   | Key risk                                               |
+| --------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 1. Schema Migration & Type Regeneration | Migration applied, `database.types.ts` regenerated, compiler flags stale callsites | Requires Docker + local Supabase to run `gen types`    |
+| 2. Application Code Cleanup             | All `analysis_type` references removed, lint + build passing, UI verified          | Missing a callsite that compiles but is silently wrong |
 
 **Prerequisites:** S-02 must be shipped (analyses with `analysis_type` values exist in the DB). Docker must be available to run `npx supabase start` for type regeneration.
 

@@ -68,6 +68,7 @@ When `parent_analysis_id` is present in the run payload, the server fetches the 
 **Intent**: After the existing API-key validation block (before the `runAiAnalysis` call at line 110), add a conditional branch: if `input.parent_analysis_id` is set, fetch the parent analysis from Supabase, verify `user_id` matches, extract `parent.output`, and build the composed context string. If the parent is not found, emit an SSE error frame and return. Pass the composed context (or the plain `extra_context` for non-continuations) into `runAiAnalysis`.
 
 **Contract**: Insert after line 108 (after the `apiKey` is resolved, before `runAiAnalysis`). New logic:
+
 - Query: `supabase.from("analyses").select("output").eq("id", input.parent_analysis_id).eq("user_id", user.id).single()`
 - If `error` or `!data`: `enqueue(sseFrame("error", { message: "parent_not_found" })); return;`
 - Build `context`: `parentData.output + (input.extra_context ? "\n\n" + input.extra_context : "")`
@@ -122,6 +123,7 @@ Add the `ContinueAnalysisForm.tsx` island and the `/analyses/[id]/continue.astro
 **Intent**: Handles the full lifecycle of a continuation run: pre-filled form → streaming → saved/error. Mirrors `NewAnalysisForm.tsx` structurally but is pre-filled and includes `parent_analysis_id` in the payload.
 
 **Contract**: Props:
+
 ```
 parentAnalysis: { id: string; title: string; analysis_type: string; input: string; extra_context: string | null; prompt_id: string | null; }
 prompts: Pick<Prompt, "id" | "name" | "description" | "body">[]
@@ -133,6 +135,7 @@ defaultModelId: string | null
 State machine (same as `NewAnalysisForm`): `idle → streaming → saved | error`.
 
 **Pre-fill on mount** (initial state values):
+
 - `promptId`: parent's `prompt_id` if it exists in the `prompts` prop list, else first prompt's id
 - `modelId`: `defaultModelId` if set, else first enabled model
 - `analysisType`: parent's `analysis_type` (editable `<select>` with both options)
@@ -141,6 +144,7 @@ State machine (same as `NewAnalysisForm`): `idle → streaming → saved | error
 - `title`: `"Continue: " + parent.title.slice(0, 290)` (editable)
 
 **Payload** sent to `POST /api/ai/run` — same shape as `NewAnalysisForm` with these additions:
+
 - `parent_analysis_id: parentAnalysis.id`
 - `analysis_type`: from the editable select (pre-filled from parent)
 - `subject`: same as `input` for type `other`
@@ -199,6 +203,7 @@ Update `/analyses/[id].astro` to show parent ↔ child linkage. A "Continued fro
 **Intent**: After the existing analysis query, conditionally fetch: (a) the parent analysis title if `analysis.parent_analysis_id` is set, and (b) all direct child analyses (id, title, created_at) ordered by `created_at` ascending. Add two UI sections to the template.
 
 **Contract**: Two additional queries (run only when relevant):
+
 - Parent: `supabase.from("analyses").select("id, title").eq("id", analysis.parent_analysis_id).eq("user_id", user.id).single()` — only when `analysis.parent_analysis_id` is non-null. Renders as `<a href={"/analyses/" + parent.id}>"Continued from: " + parent.title</a>` above the page header (before the title `<h1>`).
 - Children: `supabase.from("analyses").select("id, title, created_at").eq("parent_analysis_id", analysis.id).eq("user_id", user.id).order("created_at", { ascending: true })` — always run (returns empty array for root analyses). Renders a "Continued as:" section below the sources collapsible when `children.length > 0`. Each child is an `<a href={"/analyses/" + child.id}>{child.title}</a>` list item with the `created_at` date.
 

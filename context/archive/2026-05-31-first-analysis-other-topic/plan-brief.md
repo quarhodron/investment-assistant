@@ -16,19 +16,20 @@ A user lands on `/analyses/new`, is guided to create a prompt if none exist, fil
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-|---|---|---|
-| Streaming display | Inline below the form, form stays visible | Simplest state machine; matches the SSE endpoint's design |
-| Post-save UX | Stay on page, show "Saved" + link to detail | User can finish reading before navigating; no abrupt redirect |
-| Sources rendering | Collapsible panel below output | Keeps output uncluttered for analyses with many citations |
-| Empty-state prompt CTA | Link to `/prompts` page, not inline modal | Matches US-01 acceptance criteria; no modal scope |
-| Run error handling | Inline error, discard partial output, unfreeze form | Satisfies PRD guardrail (failed run must not corrupt data) |
-| Navigate-away abort | AbortController on unmount, silent discard | Clean resource cleanup; `/api/ai/run.ts` already handles abort signal |
-| Topbar nav | Add Analyses, Prompts, New Analysis links | All major surfaces reachable; no Dashboard-CTA dependency |
+| Decision               | Choice                                              | Why (1 sentence)                                                      |
+| ---------------------- | --------------------------------------------------- | --------------------------------------------------------------------- |
+| Streaming display      | Inline below the form, form stays visible           | Simplest state machine; matches the SSE endpoint's design             |
+| Post-save UX           | Stay on page, show "Saved" + link to detail         | User can finish reading before navigating; no abrupt redirect         |
+| Sources rendering      | Collapsible panel below output                      | Keeps output uncluttered for analyses with many citations             |
+| Empty-state prompt CTA | Link to `/prompts` page, not inline modal           | Matches US-01 acceptance criteria; no modal scope                     |
+| Run error handling     | Inline error, discard partial output, unfreeze form | Satisfies PRD guardrail (failed run must not corrupt data)            |
+| Navigate-away abort    | AbortController on unmount, silent discard          | Clean resource cleanup; `/api/ai/run.ts` already handles abort signal |
+| Topbar nav             | Add Analyses, Prompts, New Analysis links           | All major surfaces reachable; no Dashboard-CTA dependency             |
 
 ## Scope
 
 **In scope:**
+
 - `POST /api/prompts` — create a prompt
 - `/prompts` — list + create form (no edit/delete — S-04)
 - `/analyses/new` — run form with SSE streaming (type=`other` only)
@@ -39,6 +40,7 @@ A user lands on `/analyses/new`, is guided to create a prompt if none exist, fil
 - `src/lib/sources.ts` helper to flatten discriminated `StoredSources` union for rendering
 
 **Out of scope:**
+
 - Prompt edit / delete (S-04)
 - Analyses list filtering (S-03)
 - Continue analysis (S-02)
@@ -53,11 +55,11 @@ Three-layer pattern consistent with the existing codebase: Astro page frontmatte
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Prompts, Navigation, Route Protection | Prompt CRUD + Topbar nav + protected routes | Low — straightforward CRUD following existing patterns |
-| 2. New Analysis — Form, Streaming, Save | The core interactive island: SSE consumer, empty-state CTAs, error handling | Medium — SSE consumer state machine has several edge cases (abort, error frame, provider mismatch) |
-| 3. Analyses List and Detail View | Read-only list + detail with sources, metadata, advice notice | Low — static Astro pages; `StoredSources` union type requires care when flattening |
+| Phase                                    | What it delivers                                                            | Key risk                                                                                           |
+| ---------------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 1. Prompts, Navigation, Route Protection | Prompt CRUD + Topbar nav + protected routes                                 | Low — straightforward CRUD following existing patterns                                             |
+| 2. New Analysis — Form, Streaming, Save  | The core interactive island: SSE consumer, empty-state CTAs, error handling | Medium — SSE consumer state machine has several edge cases (abort, error frame, provider mismatch) |
+| 3. Analyses List and Detail View         | Read-only list + detail with sources, metadata, advice notice               | Low — static Astro pages; `StoredSources` union type requires care when flattening                 |
 
 **Prerequisites:** F-01 (schema + RLS) and F-02 (API keys + AI client) — both done.
 **Estimated effort:** ~3 sessions across 3 phases.

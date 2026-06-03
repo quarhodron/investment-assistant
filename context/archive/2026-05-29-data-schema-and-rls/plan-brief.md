@@ -16,24 +16,26 @@ Stand up the multi-tenant Postgres schema (prompts, analyses, watched_companies,
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Prompt snapshot on `analyses` | Inline `prompt_*_snapshot` columns + nullable `prompt_id` FK | Survives prompt edit/delete by construction — FR-008/FR-009 cannot break FR-020. | Plan |
-| FR-020 immutability enforcement | `BEFORE UPDATE` trigger on `analyses` that always raises | Roadmap explicitly says schema-level constraints/triggers, not app layer; trigger holds against any client. | Plan |
-| `analyses.sources` shape | `jsonb NOT NULL DEFAULT '[]'` | Verbatim per FR-032 guardrail — provider shapes differ between Anthropic and OpenAI; JSONB stores both unchanged. | Plan |
-| Ticker / exchange uniqueness | `CHECK ((ticker IS NULL) = (exchange IS NULL))` + partial unique on `(user_id, exchange, ticker)` | Ticker is ambiguous without exchange (BMW XETRA ≠ pink-sheet BMWYY); deliberate refinement of PRD's "exchange optional" wording. | Plan |
-| Company-delete behavior (FR-027) | `analyses.company_id` ON DELETE SET NULL, no snapshot | Preserves analyses per FR-027; the PRD does not require post-delete identifier rendering, so we don't denormalize. | Plan |
-| `user_settings` shape | One row per user (PK = user_id), `api_keys jsonb`, `default_model text`, `pgcrypto` enabled | Encryption-agnostic: F-02 picks pgsodium / Worker-AES / other without a schema migration. | Plan |
-| FR-033 cost columns | Added now as nullable (`input_tokens`, `output_tokens`, `cost_usd`) | Avoids a future migration on an immutable table; aligns with the cost-visibility guardrail. | Plan |
+| Decision                         | Choice                                                                                            | Why (1 sentence)                                                                                                                 | Source |
+| -------------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Prompt snapshot on `analyses`    | Inline `prompt_*_snapshot` columns + nullable `prompt_id` FK                                      | Survives prompt edit/delete by construction — FR-008/FR-009 cannot break FR-020.                                                 | Plan   |
+| FR-020 immutability enforcement  | `BEFORE UPDATE` trigger on `analyses` that always raises                                          | Roadmap explicitly says schema-level constraints/triggers, not app layer; trigger holds against any client.                      | Plan   |
+| `analyses.sources` shape         | `jsonb NOT NULL DEFAULT '[]'`                                                                     | Verbatim per FR-032 guardrail — provider shapes differ between Anthropic and OpenAI; JSONB stores both unchanged.                | Plan   |
+| Ticker / exchange uniqueness     | `CHECK ((ticker IS NULL) = (exchange IS NULL))` + partial unique on `(user_id, exchange, ticker)` | Ticker is ambiguous without exchange (BMW XETRA ≠ pink-sheet BMWYY); deliberate refinement of PRD's "exchange optional" wording. | Plan   |
+| Company-delete behavior (FR-027) | `analyses.company_id` ON DELETE SET NULL, no snapshot                                             | Preserves analyses per FR-027; the PRD does not require post-delete identifier rendering, so we don't denormalize.               | Plan   |
+| `user_settings` shape            | One row per user (PK = user_id), `api_keys jsonb`, `default_model text`, `pgcrypto` enabled       | Encryption-agnostic: F-02 picks pgsodium / Worker-AES / other without a schema migration.                                        | Plan   |
+| FR-033 cost columns              | Added now as nullable (`input_tokens`, `output_tokens`, `cost_usd`)                               | Avoids a future migration on an immutable table; aligns with the cost-visibility guardrail.                                      | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - Four tables with constraints, indexes, RLS policies, immutability trigger
 - Generated TypeScript types and typed `createClient`
 - Repeatable RLS smoke script
 
 **Out of scope:**
+
 - API-key encryption mechanism (F-02)
 - AI model variants registry (F-02 / S-01)
 - Application logic, API routes, UI changes
@@ -46,11 +48,11 @@ One forward-only migration, ordered: extensions → tables (FK order: prompts �
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Schema + RLS + immutability | Migration file with tables, constraints, indexes, trigger, policies | Missing a policy on a table leaks rows cross-user — caught by Phase 3 smoke + manual Studio check |
-| 2. Generated types + client | `Database` type wired through `src/lib/supabase.ts`; `src/types.ts` exports entity types | Type drift if a future migration is forgotten — convention: regenerate on every migration |
-| 3. RLS verification harness | `supabase/tests/rls_smoke.sql` runnable via `psql` against any local stack | False sense of safety if assertions are silent on success — verified by the "comment out one policy" smoke check |
+| Phase                          | What it delivers                                                                         | Key risk                                                                                                         |
+| ------------------------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 1. Schema + RLS + immutability | Migration file with tables, constraints, indexes, trigger, policies                      | Missing a policy on a table leaks rows cross-user — caught by Phase 3 smoke + manual Studio check                |
+| 2. Generated types + client    | `Database` type wired through `src/lib/supabase.ts`; `src/types.ts` exports entity types | Type drift if a future migration is forgotten — convention: regenerate on every migration                        |
+| 3. RLS verification harness    | `supabase/tests/rls_smoke.sql` runnable via `psql` against any local stack               | False sense of safety if assertions are silent on success — verified by the "comment out one policy" smoke check |
 
 **Prerequisites:** Local Docker for `npx supabase start`. No prior schema state.
 **Estimated effort:** ~1 session across 3 phases for a single-developer push.

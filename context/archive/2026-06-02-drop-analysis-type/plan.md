@@ -65,6 +65,7 @@ Write and apply the SQL migration that drops the constraint, index, and column f
 **Intent**: Create a forward-only migration that removes the `analysis_type` column and its associated named constraint and index from the `analyses` table.
 
 **Contract**: The migration must execute in this order:
+
 1. `ALTER TABLE analyses DROP CONSTRAINT analyses_type_company_check;`
 2. `DROP INDEX analyses_user_type_created_idx;`
 3. `ALTER TABLE analyses DROP COLUMN analysis_type;`
@@ -134,6 +135,7 @@ Remove every reference to `analysis_type` from validation, API handler, React co
 **Intent**: Remove all `analysis_type` references — the `ParentAnalysis` interface prop, the `ANALYSIS_TYPES` constant, the `analysisType` state, the dropdown UI block, and the payload field.
 
 **Contract**: Remove:
+
 - `analysis_type: string;` from the `ParentAnalysis` interface (line 9)
 - The `ANALYSIS_TYPES` constant (lines 105–108)
 - `const [analysisType, setAnalysisType] = useState(parentAnalysis.analysis_type);` (line 120)
@@ -196,7 +198,7 @@ Remove every reference to `analysis_type` from validation, API handler, React co
 
 ## Migration Notes
 
-No data migration required. All existing analyses have `analysis_type` set to either `'other'` or `'company'`. The column is informational — the application will read `company_id` instead going forward. Dropping the column does not affect query results beyond removing the field from SELECT *.
+No data migration required. All existing analyses have `analysis_type` set to either `'other'` or `'company'`. The column is informational — the application will read `company_id` instead going forward. Dropping the column does not affect query results beyond removing the field from SELECT \*.
 
 ## References
 

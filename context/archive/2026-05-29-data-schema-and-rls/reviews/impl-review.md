@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: Data Schema and RLS (F-01)
 
 - **Plan**: context/changes/data-schema-and-rls/plan.md
@@ -9,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | WARNING |
-| Scope Discipline | WARNING |
-| Safety & Quality | WARNING |
-| Architecture | PASS |
-| Pattern Consistency | PASS |
-| Success Criteria | PASS |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | WARNING |
+| Scope Discipline    | WARNING |
+| Safety & Quality    | WARNING |
+| Architecture        | PASS    |
+| Pattern Consistency | PASS    |
+| Success Criteria    | PASS    |
 
 ## Findings
 
@@ -41,7 +42,7 @@
 - **Dimension**: Plan Adherence
 - **Location**: supabase/tests/rls_smoke.sql:131-179
 - **Detail**: Plan's Phase 3 contract: "As user B: …UPDATE returns zero rows affected; DELETE returns zero rows affected" on every table. Actual: UPDATE checks cover only `prompts` and `watched_companies`. DELETE checks cover only `prompts` and `analyses`. `user_settings` UPDATE is unchecked; `user_settings` and `watched_companies` DELETE are unchecked.
-- **Fix**: Add the three missing assertion blocks, mirroring the existing shape (SELECT count(*); IF affected != 0 RAISE 'FAIL:…').
+- **Fix**: Add the three missing assertion blocks, mirroring the existing shape (SELECT count(\*); IF affected != 0 RAISE 'FAIL:…').
 - **Decision**: FIXED — added user_settings UPDATE; watched_companies and user_settings DELETE assertions.
 
 ### F3 — user_settings has no auto-create or documented upsert path
@@ -93,7 +94,7 @@
 - **Fix**: Change line 152 to `RAISE EXCEPTION 'cannot_modify_immutable_analysis (FR-020)'`.
 - **Decision**: SKIPPED — comment carries the FR pointer; no functional impact.
 
-### F7 — Unplanned eslint.config.js ignore for src/db/**
+### F7 — Unplanned eslint.config.js ignore for src/db/\*\*
 
 - **Severity**: 📝 OBSERVATION
 - **Impact**: 🏃 LOW — quick decision; fix is obvious and narrowly scoped

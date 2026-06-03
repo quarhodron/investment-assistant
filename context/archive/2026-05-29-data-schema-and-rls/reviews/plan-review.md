@@ -1,4 +1,5 @@
 <!-- PLAN-REVIEW-REPORT -->
+
 # Plan Review: Data Schema and RLS (F-01) — RETROSPECTIVE
 
 - **Plan**: context/changes/data-schema-and-rls/plan.md
@@ -9,13 +10,13 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| End-State Alignment | PASS |
-| Lean Execution | WARNING |
-| Architectural Fitness | PASS |
-| Blind Spots | WARNING |
-| Plan Completeness | WARNING |
+| Dimension             | Verdict |
+| --------------------- | ------- |
+| End-State Alignment   | PASS    |
+| Lean Execution        | WARNING |
+| Architectural Fitness | PASS    |
+| Blind Spots           | WARNING |
+| Plan Completeness     | WARNING |
 
 ## Grounding
 
@@ -76,7 +77,7 @@
 - **Impact**: 🔎 MEDIUM
 - **Dimension**: Lean Execution
 - **Location**: plan.md Phase 1 — Indexes bullet
-- **Detail**: Six indexes each justified by an unbuilt S-* slice. None of those slices' query plans are locked. analyses is "immutable-but-frequently-inserted" — every speculative index pays write-amp on every insert forever. Also: `analyses_user_created_idx` is fully covered by the prefix of `analyses_user_type_created_idx`.
+- **Detail**: Six indexes each justified by an unbuilt S-\* slice. None of those slices' query plans are locked. analyses is "immutable-but-frequently-inserted" — every speculative index pays write-amp on every insert forever. Also: `analyses_user_created_idx` is fully covered by the prefix of `analyses_user_type_created_idx`.
 - **Decision**: SKIPPED — pure plan edit would create plan↔code drift (indexes already exist in the live migration). Re-evaluating would need a follow-up migration. Not a documentation-only fix.
 
 ### F7 — analyses.subject column shape underspecified

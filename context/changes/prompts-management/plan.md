@@ -15,6 +15,7 @@ S-04 from the roadmap: expose FR-008 (edit prompt) and FR-009 (delete prompt) so
 ## Desired End State
 
 From the Prompts page a signed-in user can:
+
 - Click "Edit" on any prompt → land on `/prompts/[id]/edit` with a pre-filled form; submit saves changes and returns to the edit page with a "Prompt saved." banner
 - Click "Delete" on any prompt → confirm inline (without a modal); confirmed delete removes the row and redirects to `/prompts?ok=deleted`
 
@@ -53,6 +54,7 @@ New `src/pages/api/prompts/[id].ts` handles both mutations on a single prompt ro
 **Intent**: POST handler that updates or deletes a prompt owned by the authenticated user. Enforces CSRF origin check, auth, and explicit `.eq("user_id", user.id)` ownership guard on every Supabase call (defence-in-depth on top of RLS).
 
 **Contract**:
+
 - `action=delete` — `.delete().eq("id", id).eq("user_id", user.id)` → redirect `/prompts?ok=deleted`
 - default (update) — validate name/body/description with the same rules as `index.ts:31-38` → `.update({name, body, description}).eq("id", id).eq("user_id", user.id)` → redirect `/prompts/[id]/edit?ok=1` on success, `/prompts/[id]/edit?error=<msg>` on failure
 - `id` comes from `context.params.id`; treat a missing/invalid id the same as auth failure → redirect `/prompts`
@@ -86,6 +88,7 @@ New Astro SSR page `/prompts/[id]/edit` with a pre-filled form + updated `prompt
 **Intent**: Pre-filled edit form for a single prompt. Fetches the prompt by `id` at request time (RLS auto-enforces ownership), shows `?ok` / `?error` banners, and provides a Cancel link back to `/prompts`.
 
 **Contract**:
+
 - If Supabase returns null for the prompt id (not found or not owned), redirect to `/prompts`
 - Form fields: name (text, maxlength=200, required), description (text, maxlength=500, optional), body (textarea, maxlength=50000, required) — all pre-filled from the fetched row
 - Form `method="POST" action="/api/prompts/[id]"`, no explicit `action` hidden input (update is the default)
@@ -97,6 +100,7 @@ New Astro SSR page `/prompts/[id]/edit` with a pre-filled form + updated `prompt
 **Intent**: Add Edit link and Delete affordance to each prompt card; show "Prompt deleted." when `?ok=deleted` is present.
 
 **Contract**:
+
 - Each card gets `data-prompt-row` attribute; inside: Edit link (`href="/prompts/[id]/edit"`) + a delete group with `data-delete-initial` (shows "Delete" button with `data-confirm-delete`) and `data-delete-confirm` (initially `hidden`, shows "Confirm delete" form + "Cancel" button with `data-delete-cancel`)
 - Delete form: `method="POST" action="/api/prompts/[id]"`, hidden input `name="action" value="delete"`
 - `<script>` tag in the page wires the toggle — `data-confirm-delete` click hides initial group and unhides confirm group; `data-delete-cancel` click reverses it. Astro processes `<script>` tags after DOM is ready, so no `DOMContentLoaded` wrapper is needed.

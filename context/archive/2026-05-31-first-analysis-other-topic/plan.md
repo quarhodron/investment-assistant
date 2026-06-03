@@ -149,6 +149,7 @@ Build `src/pages/analyses/new.astro` + the `NewAnalysisForm.tsx` React island. T
 State machine (single `status` discriminant): `idle` → `streaming` → `saved | error`. The `idle` state renders the form; `streaming` renders the form frozen + live output panel; `saved` renders the form frozen + output + "Saved — view analysis" link; `error` renders the form (inputs restored/unfrozen) + inline error message.
 
 **Form fields** (type=`other` only for S-01):
+
 - Prompt selector: `<select>` populated from `prompts` prop; each option value = prompt `id`.
 - Model selector: `<select>` grouped by provider; each option value = `model.id`; pre-selected from `defaultModelId` prop, falling back to first enabled model. When a provider has no configured API key (from `apiKeyStatus`), those options show as disabled with a "(no API key)" label.
 - Topic / input: `<textarea>` — free-text topic (maps to `input` field in the run payload).
@@ -156,6 +157,7 @@ State machine (single `status` discriminant): `idle` → `streaming` → `saved 
 - Title: `<input>` — auto-derived as the first 100 chars of the topic input (trimmed), editable.
 
 **Empty-state CTAs**:
+
 - When `prompts.length === 0`: show a "Create your first prompt" CTA block with link to `/prompts` instead of (or above) the prompt selector.
 - When the selected model's provider has `apiKeyStatus[provider] === false`: show a "Configure your [Provider] API key in Settings" inline alert; disable the Run button.
 
@@ -167,7 +169,7 @@ const abortRef = useRef<AbortController | null>(null);
 async function handleRun() {
   const ac = new AbortController();
   abortRef.current = ac;
-  setStatus('streaming');
+  setStatus("streaming");
   // ... fetch /api/ai/run with signal: ac.signal, stream reader loop
 }
 
@@ -183,6 +185,7 @@ Read the stream with `response.body.getReader()`. **Buffered parse contract**: n
 **Intent**: The `NewAnalysisForm` must send the exact payload shape `validateRunInput()` expects, including all required and optional fields.
 
 **Contract** (payload sent to `POST /api/ai/run`):
+
 ```
 {
   provider,          // from selected model's provider
@@ -246,6 +249,7 @@ Build `src/pages/analyses/index.astro` (analyses list, FR-015) and `src/pages/an
 **Contract**: Query `supabase.from("analyses").select("*").eq("id", id).eq("user_id", user.id).single()` — the RLS `user_id` filter ensures a 404-equivalent if the analysis belongs to another user (`.single()` returns an error when no row is found). If `error` or `!data`: return `Astro.redirect("/analyses")`.
 
 Layout sections:
+
 - **Header**: title, `analysis_type` badge, timestamp, provider + model badge.
 - **"Not investment advice" notice**: always visible, styled as an info banner using the existing `Banner.astro` component with `variant="info"`.
 - **Prompt used**: collapsible section showing `prompt_name_snapshot`, `prompt_description_snapshot`, `prompt_body_snapshot`.

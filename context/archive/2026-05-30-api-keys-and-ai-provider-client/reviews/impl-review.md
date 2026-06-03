@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: API Keys and AI Provider Client (F-02)
 
 - **Plan**: context/changes/api-keys-and-ai-provider-client/plan.md
@@ -9,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | PASS |
-| Scope Discipline | PASS |
-| Safety & Quality | FAIL → FIXED |
-| Architecture | PASS |
-| Pattern Consistency | PASS |
-| Success Criteria | PASS |
+| Dimension           | Verdict      |
+| ------------------- | ------------ |
+| Plan Adherence      | PASS         |
+| Scope Discipline    | PASS         |
+| Safety & Quality    | FAIL → FIXED |
+| Architecture        | PASS         |
+| Pattern Consistency | PASS         |
+| Success Criteria    | PASS         |
 
 ## Findings
 

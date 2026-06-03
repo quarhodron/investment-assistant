@@ -16,11 +16,11 @@ Each prompt card shows an Edit link (navigates to a pre-filled `/prompts/[id]/ed
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| Edit UI shape | Separate Astro page `/prompts/[id]/edit` | Fits the Astro-first SSR pattern; no React needed; consistent with the create flow |
-| Delete confirmation | Inline toggle (no modal) | App has zero modal dialogs; mirrors the `replacing` toggle pattern in `ApiKeyCard` |
-| API route structure | Single `[id].ts`, `action` param | Mirrors `api/settings/api-keys.ts` exactly; one place for auth + ownership guard |
+| Decision            | Choice                                   | Why (1 sentence)                                                                   |
+| ------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------- |
+| Edit UI shape       | Separate Astro page `/prompts/[id]/edit` | Fits the Astro-first SSR pattern; no React needed; consistent with the create flow |
+| Delete confirmation | Inline toggle (no modal)                 | App has zero modal dialogs; mirrors the `replacing` toggle pattern in `ApiKeyCard` |
+| API route structure | Single `[id].ts`, `action` param         | Mirrors `api/settings/api-keys.ts` exactly; one place for auth + ownership guard   |
 
 ## Scope
 
@@ -34,10 +34,10 @@ Pure SSR Astro + form POST throughout. New file `api/prompts/[id].ts` handles bo
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. API endpoint | `POST /api/prompts/[id]` — update + delete with ownership guard | Cross-user id must not mutate foreign rows |
-| 2. Edit page + list UI | `/prompts/[id]/edit` page + edit/delete affordances on cards | Inline JS toggle must reset correctly; snapshot invariant must hold |
+| Phase                  | What it delivers                                                | Key risk                                                            |
+| ---------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------- |
+| 1. API endpoint        | `POST /api/prompts/[id]` — update + delete with ownership guard | Cross-user id must not mutate foreign rows                          |
+| 2. Edit page + list UI | `/prompts/[id]/edit` page + edit/delete affordances on cards    | Inline JS toggle must reset correctly; snapshot invariant must hold |
 
 **Prerequisites:** S-01 done (prompts table live, create flow working). No schema migration needed.
 **Estimated effort:** ~1 session across 2 phases.

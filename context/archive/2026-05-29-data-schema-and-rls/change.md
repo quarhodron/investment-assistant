@@ -6,7 +6,6 @@ status: archived
 created: 2026-05-29
 updated: 2026-05-31
 archived_at: 2026-05-31T16:56:20Z
-
 ---
 
 # Change: data-schema-and-rls

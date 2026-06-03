@@ -247,6 +247,7 @@ A `/settings` Astro page rendering React cards for Anthropic and OpenAI API keys
 **Intent**: Server-rendered page that loads the current user's `user_settings` row and the `ai_models` registry, then renders a single-form React island for editing. Adds `/settings` to `PROTECTED_ROUTES` in `src/middleware.ts:1` so unauthenticated access redirects to signin.
 
 **Contract**: Astro frontmatter:
+
 - Loads `context.locals.user` (set by middleware).
 - Calls `supabase.from('user_settings').select('default_model, api_keys').eq('user_id', user.id).single()` — RLS makes the predicate redundant but explicit; the auto-create trigger from Phase 1 means the row always exists.
 - Calls `supabase.from('ai_models').select('id, provider, display_name, is_default, sort_order').eq('enabled', true).order('sort_order')`.
@@ -261,6 +262,7 @@ A `/settings` Astro page rendering React cards for Anthropic and OpenAI API keys
 **Intent**: Client component with three input groups (Anthropic key, OpenAI key, default-model selector). Each provider section shows either a "key configured" status with Replace/Remove buttons, or a paste-input + Save. Default-model is a `<select>` grouped by provider (use the `optgroup` element).
 
 **Contract**:
+
 - Props: `{ status: { anthropic: { configured: boolean }, openai: { configured: boolean } }, models: AiModel[], defaultModelId: string | null }`.
 - Submit handlers POST to `/api/settings/api-keys` (provider, key plaintext) for save, DELETE to `/api/settings/api-keys?provider=...` for remove, POST to `/api/settings/default-model` (model_id) for the selector.
 - Each submit redirects via the form action's response (server returns a redirect with `?ok=1` or `?error=...` query param). Pure progressive-enhancement form-submit; no fetch / SWR.
@@ -273,6 +275,7 @@ A `/settings` Astro page rendering React cards for Anthropic and OpenAI API keys
 **Intent**: Server endpoint owning every encrypt-on-save / remove flow. Handles `POST` (save) and `DELETE` (remove). Auth-checked via `context.locals.user`; null user → 401. Uses the SSR Supabase client (RLS predicate is `(SELECT auth.uid()) = user_id`).
 
 **Contract**:
+
 - `POST` body (form-encoded): `provider in {'anthropic','openai'}`, `api_key string` (1..256 chars). Validation by hand-rolled `validateApiKeyInput()` in a new `src/lib/validation.ts` (returns `{ok, value} | {ok:false, error}`).
 - On valid input: encrypt the plaintext via `encryptApiKey(plaintext, user.id)`, then `update user_settings set api_keys = jsonb_set(api_keys, '{<provider>}', <blob>::jsonb, true) where user_id = ...` (or fetch-then-merge in JS — simpler if jsonb_set is awkward through supabase-js).
 - On invalid input or DB error: redirect to `/settings?error=<urlencoded message>`. Error message NEVER includes the api_key value.
@@ -287,6 +290,7 @@ A `/settings` Astro page rendering React cards for Anthropic and OpenAI API keys
 **Intent**: Server endpoint that updates `user_settings.default_model` to one of the configured `ai_models.id`. Auth-checked.
 
 **Contract**:
+
 - `POST` body: `model_id string` matching an enabled row in `ai_models`. Validation is "exists in registry" check via a `select id from ai_models where id = $1 and enabled = true` round-trip.
 - On valid input: `update user_settings set default_model = $1 where user_id = ...`. Redirect to `/settings?ok=1`.
 - On invalid input: redirect with `?error=invalid_model`.
@@ -355,6 +359,7 @@ The provider-facing AI client modules, the public `runAiAnalysis()` factory, and
 **Intent**: Per-provider streaming wrapper that yields a uniform `StreamEvent` shape regardless of upstream SDK quirks. Uses `messages.stream()` so we get both AsyncIterable deltas and `finalMessage()` for the post-stream summary.
 
 **Contract**:
+
 - Default export `streamAnthropic(opts: { apiKey: string, model: string, prompt: string, context?: string }): AsyncGenerator<StreamEvent>`.
 - Builds `Anthropic` client with `{apiKey}` only; never logs `opts`.
 - Constructs the messages array: when `context` is present, sends a single user message whose body is `<context>\n\n<prompt>` — F-02's pass-through contract is "we don't modify prompt bodies"; concatenation of two strings is the call-site composition rule.
@@ -369,6 +374,7 @@ The provider-facing AI client modules, the public `runAiAnalysis()` factory, and
 **Intent**: Per-provider streaming wrapper, parallel to the Anthropic module. Uses the Responses API.
 
 **Contract**:
+
 - Default export `streamOpenAI(opts: { apiKey: string, model: string, prompt: string, context?: string }): AsyncGenerator<StreamEvent>`.
 - Builds `OpenAI` client with `{apiKey}`; never logs `opts`.
 - Concatenates `context` and `prompt` the same way Anthropic does.
@@ -384,6 +390,7 @@ The provider-facing AI client modules, the public `runAiAnalysis()` factory, and
 **Intent**: The public `runAiAnalysis()` entrypoint. Dispatches by provider, uniformizes the StreamEvent shape, and is the only thing the route imports.
 
 **Contract**:
+
 - Named export type `StreamEvent = | { kind: 'text', delta: string } | { kind: 'done', output: string, sources: StoredSources, usage: { input_tokens: number | null, output_tokens: number | null, cost_usd: number | null }, model: string, provider: 'anthropic' | 'openai' }`.
 - Named export type `StoredSources = | { provider: 'anthropic', items: AnthropicCitation[] } | { provider: 'openai', items: OpenAIUrlCitation[] }`. Citation interfaces inlined per the discriminated-union shape from research.
 - Named export `runAiAnalysis(opts: RunAiAnalysisInput): AsyncGenerator<StreamEvent>` — an async generator that delegates to `streamAnthropic` or `streamOpenAI` based on `opts.provider`. Hands back exactly the per-provider stream's events without re-wrapping (the per-provider modules already produce the uniform shape).
@@ -405,6 +412,7 @@ The provider-facing AI client modules, the public `runAiAnalysis()` factory, and
 **Intent**: The route that S-01 (and curl-driven smoke) calls. Decrypts the user's API key, calls `runAiAnalysis`, pipes deltas to the browser as SSE, and on stream completion INSERTs a single immutable `analyses` row.
 
 **Contract**:
+
 - `POST` body (JSON): `{ provider: 'anthropic' | 'openai', model_id: string, prompt_id?: string, prompt_body: string, prompt_name: string, prompt_description?: string, input: string, extra_context?: string, analysis_type: 'other' | 'company', subject?: string, parent_analysis_id?: string, company_id?: string, title: string }`. Note: F-02 receives the prompt-snapshot fields from the caller (S-01 will read them from the chosen `prompts` row before invoking) — F-02 doesn't reach back into `prompts` itself, keeping the route stateless w.r.t. prompt versioning.
 - Auth: 401 if `context.locals.user` is null. RLS makes the persistence safe regardless, but a missing user means no `user_settings` to decrypt and no `user_id` to attribute the insert to.
 - Validates the body via `validateRunInput()` (Phase 3); on failure, returns a single SSE `event: error` frame with `{message: 'invalid_input', detail: <validation message>}` and closes.

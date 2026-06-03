@@ -16,21 +16,21 @@ A user can sign up, open `/settings`, paste their Anthropic and/or OpenAI keys, 
 
 ## Key Decisions Made
 
-| Decision                       | Choice                                                            | Why (1 sentence)                                                                                                              |
-| ------------------------------ | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Encryption-at-rest mechanism   | Worker SubtleCrypto AES-GCM + versioned envelope                  | Only candidate with a real rotation story; native to workerd; zero Supabase coupling — Vault forbids API roles, pgcrypto leaks the passphrase to logs. |
-| Per-user subkey                | HKDF-SHA256(masterKey, salt=userId, info='f02-api-keys-v1')        | ~10 LOC of defense-in-depth; converts a master-key leak into "leak with per-user derivation" — cheap option-value.            |
-| Settings UI re-disclosure rule | Status only ("configured" / "not configured")                      | Strict reading of FR-028 "API keys are never disclosed back to the user-facing product surface"; nothing to leak via DOM.    |
-| Model registry shape           | DB table `ai_models` with read-only RLS, seeded                    | FR-030 explicitly forbids redeploys for new models; `wrangler secret put` JSON is awful UX; checked-in TS file hides under deploy cadence. |
-| Slice scope                    | Ships a minimal `/settings` page end-to-end                        | Makes F-02 manually verifiable on its own (encrypt-on-save round-trip is observable); S-01 inherits a finished surface.       |
-| AI SDK choice                  | Official `@anthropic-ai/sdk@^0.100.1` + `openai@^6.39.1`           | Both list Cloudflare Workers; both expose `AsyncIterable` streams; ~70 kB combined — well under the 3 MB ceiling.            |
-| `runAiAnalysis()` return shape | `AsyncIterable<StreamEvent>`                                       | NFR requires "continuous visible progress > 2s"; SDKs natively expose AsyncIterable so it's a thin pass-through.             |
-| Wire format                    | Server-Sent Events (`text/event-stream`)                            | Workers `ReadableStream` pass-through is "already optimal" per Cloudflare docs; matches both SDKs' upstream protocol.        |
-| Persistence ordering           | Single `INSERT` after stream completes                             | FR-020 immutability — no partial-then-update path can exist; failed runs leave no rows.                                       |
-| Validation library             | Hand-rolled checks, no library                                     | CLAUDE.md asks me to propose; v1 input shapes are 2–3 fields; introducing zod sets a project-wide precedent without justification. |
-| Failure-mode UX                | Typed scrubbed error, no row                                       | FR-028 "never in logs/errors"; FR "failed analysis does not corrupt data"; SSE `error` frame carries `{status, code, safeMessage}` only. |
-| F-01 follow-up F3              | Trigger lands in F-02's migration                                  | The follow-up doc routes it here; a Postgres `AFTER INSERT ON auth.users` trigger eliminates a class of unique_violation errors. |
-| Verification                   | Manual smoke + a SQL probe + roundtrip script                      | CLAUDE.md forbids inventing a test framework as a side-effect; matches F-01's posture; each invariant observable in <1 min.  |
+| Decision                       | Choice                                                      | Why (1 sentence)                                                                                                                                       |
+| ------------------------------ | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Encryption-at-rest mechanism   | Worker SubtleCrypto AES-GCM + versioned envelope            | Only candidate with a real rotation story; native to workerd; zero Supabase coupling — Vault forbids API roles, pgcrypto leaks the passphrase to logs. |
+| Per-user subkey                | HKDF-SHA256(masterKey, salt=userId, info='f02-api-keys-v1') | ~10 LOC of defense-in-depth; converts a master-key leak into "leak with per-user derivation" — cheap option-value.                                     |
+| Settings UI re-disclosure rule | Status only ("configured" / "not configured")               | Strict reading of FR-028 "API keys are never disclosed back to the user-facing product surface"; nothing to leak via DOM.                              |
+| Model registry shape           | DB table `ai_models` with read-only RLS, seeded             | FR-030 explicitly forbids redeploys for new models; `wrangler secret put` JSON is awful UX; checked-in TS file hides under deploy cadence.             |
+| Slice scope                    | Ships a minimal `/settings` page end-to-end                 | Makes F-02 manually verifiable on its own (encrypt-on-save round-trip is observable); S-01 inherits a finished surface.                                |
+| AI SDK choice                  | Official `@anthropic-ai/sdk@^0.100.1` + `openai@^6.39.1`    | Both list Cloudflare Workers; both expose `AsyncIterable` streams; ~70 kB combined — well under the 3 MB ceiling.                                      |
+| `runAiAnalysis()` return shape | `AsyncIterable<StreamEvent>`                                | NFR requires "continuous visible progress > 2s"; SDKs natively expose AsyncIterable so it's a thin pass-through.                                       |
+| Wire format                    | Server-Sent Events (`text/event-stream`)                    | Workers `ReadableStream` pass-through is "already optimal" per Cloudflare docs; matches both SDKs' upstream protocol.                                  |
+| Persistence ordering           | Single `INSERT` after stream completes                      | FR-020 immutability — no partial-then-update path can exist; failed runs leave no rows.                                                                |
+| Validation library             | Hand-rolled checks, no library                              | CLAUDE.md asks me to propose; v1 input shapes are 2–3 fields; introducing zod sets a project-wide precedent without justification.                     |
+| Failure-mode UX                | Typed scrubbed error, no row                                | FR-028 "never in logs/errors"; FR "failed analysis does not corrupt data"; SSE `error` frame carries `{status, code, safeMessage}` only.               |
+| F-01 follow-up F3              | Trigger lands in F-02's migration                           | The follow-up doc routes it here; a Postgres `AFTER INSERT ON auth.users` trigger eliminates a class of unique_violation errors.                       |
+| Verification                   | Manual smoke + a SQL probe + roundtrip script               | CLAUDE.md forbids inventing a test framework as a side-effect; matches F-01's posture; each invariant observable in <1 min.                            |
 
 ## Scope
 
@@ -69,12 +69,12 @@ Encryption module is pure (no Supabase). AI client modules are pure (no Supabase
 
 ## Phases at a Glance
 
-| Phase                                              | What it delivers                                                                                                       | Key risk                                                                                       |
-| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| 1. Schema (`ai_models` + auto-create trigger)      | Migration with RLS-protected `ai_models` table seeded with v1 roster + signup trigger; types regenerated               | A `SECURITY DEFINER` trigger function — must hard-code `search_path = public` to be safe.       |
-| 2. Encryption module + `ENCRYPTION_KEY` plumbing   | `api-key-crypto.ts` with HKDF-per-user AES-GCM; env declaration; secret-check extension; roundtrip script              | IV reuse is catastrophic for AES-GCM — every encrypt MUST `crypto.getRandomValues` a fresh IV. |
-| 3. Settings UI + 3 endpoints                       | `/settings` page, save/remove API-key routes, default-model route; status-only re-disclosure                            | Plaintext on the wire only on save; route never returns it back. UI must never see ciphertext. |
-| 4. AI provider client + streaming run endpoint     | `runAiAnalysis()` + `POST /api/ai/run` SSE route; persists immutable `analyses` row on completion; scrubs every error  | Error scrubbing is non-negotiable — `console.error(err)` raw can carry the auth header.        |
+| Phase                                            | What it delivers                                                                                                      | Key risk                                                                                       |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| 1. Schema (`ai_models` + auto-create trigger)    | Migration with RLS-protected `ai_models` table seeded with v1 roster + signup trigger; types regenerated              | A `SECURITY DEFINER` trigger function — must hard-code `search_path = public` to be safe.      |
+| 2. Encryption module + `ENCRYPTION_KEY` plumbing | `api-key-crypto.ts` with HKDF-per-user AES-GCM; env declaration; secret-check extension; roundtrip script             | IV reuse is catastrophic for AES-GCM — every encrypt MUST `crypto.getRandomValues` a fresh IV. |
+| 3. Settings UI + 3 endpoints                     | `/settings` page, save/remove API-key routes, default-model route; status-only re-disclosure                          | Plaintext on the wire only on save; route never returns it back. UI must never see ciphertext. |
+| 4. AI provider client + streaming run endpoint   | `runAiAnalysis()` + `POST /api/ai/run` SSE route; persists immutable `analyses` row on completion; scrubs every error | Error scrubbing is non-negotiable — `console.error(err)` raw can carry the auth header.        |
 
 **Prerequisites:** F-01 shipped (✓ — per `roadmap.md` baseline). Local Supabase via `npx supabase start`. Anthropic and OpenAI API keys to test with.
 **Estimated effort:** ~3-4 sessions across the four phases (one session per phase, longest is Phase 4).

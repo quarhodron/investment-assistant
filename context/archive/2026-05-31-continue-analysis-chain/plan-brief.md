@@ -16,25 +16,27 @@ From any analysis detail page, the user sees a "Continue analysis" button. Click
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| Navigation to continue form | New page `/analyses/[id]/continue` | Matches the existing `/analyses/new.astro` pattern; clean URL with back-button support |
-| Form fields shown | Full form pre-filled from parent | User wants full control over all fields, not just prompt/model |
-| Context composition | Server fetches parent output at run time | Client cannot tamper with the context; always authoritative |
-| Chain display depth | Immediate parent link + direct children list | Simple, sufficient for v1 chains; recursive breadcrumbs deferred |
-| `analysis_type` in form | Pre-filled from parent, editable | Maximum flexibility; company picker (S-06) is out of scope here |
-| Title default | `"Continue: <parent title>"` (truncated 290 chars) | Communicates lineage in analyses list without ambiguity |
-| Parent-not-found behaviour | SSE error frame; form unfreezes | Consistent with existing API error patterns; no silent corruption |
+| Decision                    | Choice                                             | Why (1 sentence)                                                                       |
+| --------------------------- | -------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Navigation to continue form | New page `/analyses/[id]/continue`                 | Matches the existing `/analyses/new.astro` pattern; clean URL with back-button support |
+| Form fields shown           | Full form pre-filled from parent                   | User wants full control over all fields, not just prompt/model                         |
+| Context composition         | Server fetches parent output at run time           | Client cannot tamper with the context; always authoritative                            |
+| Chain display depth         | Immediate parent link + direct children list       | Simple, sufficient for v1 chains; recursive breadcrumbs deferred                       |
+| `analysis_type` in form     | Pre-filled from parent, editable                   | Maximum flexibility; company picker (S-06) is out of scope here                        |
+| Title default               | `"Continue: <parent title>"` (truncated 290 chars) | Communicates lineage in analyses list without ambiguity                                |
+| Parent-not-found behaviour  | SSE error frame; form unfreezes                    | Consistent with existing API error patterns; no silent corruption                      |
 
 ## Scope
 
 **In scope:**
+
 - Server-side parent fetch + context composition in `/api/ai/run.ts`
 - "Continue analysis" button on `/analyses/[id].astro`
 - `/analyses/[id]/continue.astro` page + `ContinueAnalysisForm.tsx` island
 - Parent link + children list on the analysis detail page (one hop each direction)
 
 **Out of scope:**
+
 - Company-type continuation with watchlist picker (S-06)
 - Recursive chain breadcrumbs / tree visualization
 - Auto-summarization of parent output (deferred to v2 per PRD Open Questions §4)
@@ -46,11 +48,11 @@ Three isolated server round-trips: (1) page load of `/analyses/[id]/continue` fe
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. API Context Composition | Parent output flows verbatim into AI context; parent-not-found returns clear SSE error | Context composition must not break the normal (non-continuation) flow |
-| 2. Continue Page & Form | End-to-end continuation flow is live; "Continue analysis" button on detail page | `ContinueAnalysisForm` pre-fill logic must handle edge cases (parent prompt deleted, etc.) |
-| 3. Chain Display | Detail pages show parent ↔ child links; chain is traversable | Two extra Supabase queries per detail page load — both use indexed columns |
+| Phase                      | What it delivers                                                                       | Key risk                                                                                   |
+| -------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 1. API Context Composition | Parent output flows verbatim into AI context; parent-not-found returns clear SSE error | Context composition must not break the normal (non-continuation) flow                      |
+| 2. Continue Page & Form    | End-to-end continuation flow is live; "Continue analysis" button on detail page        | `ContinueAnalysisForm` pre-fill logic must handle edge cases (parent prompt deleted, etc.) |
+| 3. Chain Display           | Detail pages show parent ↔ child links; chain is traversable                           | Two extra Supabase queries per detail page load — both use indexed columns                 |
 
 **Prerequisites:** S-01 fully complete (at least one saved analysis must exist for manual testing). No DB migrations needed.  
 **Estimated effort:** ~1 session across 3 phases

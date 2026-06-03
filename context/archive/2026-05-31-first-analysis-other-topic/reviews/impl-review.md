@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: S-01 First Analysis on a Free-Text "Other" Topic
 
 - **Plan**: context/changes/first-analysis-other-topic/plan.md
@@ -9,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | WARNING |
-| Scope Discipline | WARNING |
-| Safety & Quality | CRITICAL (fixed) |
-| Architecture | PASS |
-| Pattern Consistency | WARNING |
-| Success Criteria | PASS |
+| Dimension           | Verdict          |
+| ------------------- | ---------------- |
+| Plan Adherence      | WARNING          |
+| Scope Discipline    | WARNING          |
+| Safety & Quality    | CRITICAL (fixed) |
+| Architecture        | PASS             |
+| Pattern Consistency | WARNING          |
+| Success Criteria    | PASS             |
 
 ## Findings
 

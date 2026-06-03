@@ -1,4 +1,5 @@
 <!-- PLAN-REVIEW-REPORT -->
+
 # Plan Review: S-02: Continue-Analysis Chain
 
 - **Plan**: `context/changes/continue-analysis-chain/plan.md`
@@ -9,13 +10,13 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| End-State Alignment | PASS |
-| Lean Execution | PASS |
-| Architectural Fitness | FAIL |
-| Blind Spots | PASS |
-| Plan Completeness | WARNING |
+| Dimension             | Verdict |
+| --------------------- | ------- |
+| End-State Alignment   | PASS    |
+| Lean Execution        | PASS    |
+| Architectural Fitness | FAIL    |
+| Blind Spots           | PASS    |
+| Plan Completeness     | WARNING |
 
 ## Grounding
 
@@ -53,7 +54,7 @@
 - **Impact**: 🏃 LOW — quick decision; fix is obvious and narrowly scoped
 - **Dimension**: Plan Completeness
 - **Location**: Phase 2 — ContinueAnalysisForm contract
-- **Detail**: The `parentAnalysis` prop includes `prompt_name_snapshot: string`. The payload construction sends `prompt_name` from the *selected* prompt (validated at `validation.ts:58`), not from the snapshot. `prompt_name_snapshot` is unused in the payload and will confuse the implementer about which field to use.
+- **Detail**: The `parentAnalysis` prop includes `prompt_name_snapshot: string`. The payload construction sends `prompt_name` from the _selected_ prompt (validated at `validation.ts:58`), not from the snapshot. `prompt_name_snapshot` is unused in the payload and will confuse the implementer about which field to use.
 - **Fix**: Remove `prompt_name_snapshot` from the `parentAnalysis` prop spec in the Phase 2 contract.
 - **Decision**: FIXED — prompt_name_snapshot removed from parentAnalysis prop spec.
 
