@@ -84,7 +84,7 @@ Add a pure function that takes the flat list of analyses fetched from Supabase a
   ```ts
   export type AnalysisTreeNode = AnalysisRow & {
     children: AnalysisTreeNode[];
-    subtreeSize: number;          // total nodes including self
+    subtreeSize: number; // total nodes including self
     subtreeLatestCreatedAt: string; // ISO string; max(created_at) across subtree including self
   };
   ```
@@ -126,7 +126,7 @@ Rewrite the analyses index page to fetch the minimal projection, call `buildAnal
 **Contract**:
 
 - Props: `{ node: AnalysisTreeNode; depth: number }`.
-- Indentation: apply a left padding proportional to `depth` (e.g. `style={`padding-left: ${depth * 1.25}rem`}` or a small lookup). Cap visual indentation at depth 5 to avoid runaway nesting on narrow screens, but continue to render deeper levels at the depth-5 indentation.
+- Indentation: apply a left padding proportional to `depth` (e.g. `style={`padding-left: ${depth \* 1.25}rem`}` or a small lookup). Cap visual indentation at depth 5 to avoid runaway nesting on narrow screens, but continue to render deeper levels at the depth-5 indentation.
 - Disclosure markup uses native `<details><summary>…</summary>…</details>`. The `<summary>` row layout: chevron icon (rotated 0° / 90° via Tailwind's `group-open:` variant against a `group` class on the `<details>`), then title + meta + badge. The chevron must use `list-none` and `[&::-webkit-details-marker]:hidden` (or the equivalent Tailwind utility) to suppress the browser's default marker, since we render our own chevron.
 - Singletons (`node.children.length === 0`): render a plain `<div>` row, no `<details>`, no chevron, no badge.
 - Chain-depth badge text: `· ${node.subtreeSize} steps` only when `subtreeSize > 1`. The badge uses the same `rounded-full bg-slate-500/20 px-2.5 py-0.5 text-xs text-slate-300` styling as the existing provider/model pill on the detail page for visual consistency.
@@ -219,15 +219,15 @@ None. Schema unchanged, no data backfill, no API contract change. The detail pag
 
 #### Automated
 
-- [x] 1.1 Lint and type check pass: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
+- [x] 1.1 Lint and type check pass: `npm run lint` — 0039684
+- [x] 1.2 Build passes: `npm run build` — 0039684
 
 ### Phase 2: Recursive tree component + index page rewrite
 
 #### Automated
 
-- [ ] 2.1 Lint and type check pass: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint and type check pass: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 #### Manual
 
