@@ -45,7 +45,7 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 
 ### Secondary
 
-- A user can edit prompts; the new version applies on the next run, and prior analyses keep the prompt text they were originally run with (analyses are immutable — see guardrails).
+- A user can edit prompts; the new version applies on the next run, and prior analyses keep the prompt text they were originally run with (snapshot-on-save — see Business Logic).
 
 ### Guardrails
 
@@ -54,7 +54,6 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 - A failed analysis (provider error, rate limit, network timeout) does not corrupt or destroy the user's prompt, watchlist, or any prior analysis.
 - The product never frames an AI result as an investment recommendation — every analysis view makes clear the result is research material, not advice.
 - API cost or token usage of an analysis is visible to the user when the provider returns it, so the user knows roughly what an analysis cost.
-- Analyses are immutable once saved. Editing or appending notes to a saved analysis is not possible; the only way to extend it is "continue analysis", which creates a new linked analysis.
 - Source links returned by the model are preserved verbatim and shown to the user as the model returned them — not silently rewritten, filtered, or de-duplicated.
 
 ## User Stories
@@ -99,9 +98,9 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 - FR-007: User can list all of their prompts on the Prompts page. Priority: must-have
   > Socrates: Standard list surface; no counter-argument. Stands as written.
 - FR-008: User can edit any of their saved prompts (name, description, body). Priority: must-have
-  > Socrates: Edits apply on the next run only; prior analyses preserve the prompt text used at run time (FR-020 immutability). No counter-argument. Stands as written.
+  > Socrates: Edits apply on the next run only; prior analyses preserve the prompt text used at run time (snapshot-on-save). No counter-argument. Stands as written.
 - FR-009: User can delete any of their saved prompts. Priority: must-have
-  > Socrates: Deleting a prompt does not retroactively affect analyses run with it (immutability of analyses, FR-020). No counter-argument. Stands as written.
+  > Socrates: Deleting a prompt does not retroactively affect analyses run with it (snapshot-on-save). No counter-argument. Stands as written.
 
 ### Running analyses
 
@@ -114,22 +113,22 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 - FR-013: User can run the analysis and see the AI-generated result rendered on screen. Priority: must-have
   > Socrates: Core path of the product; no counter-argument. Stands as written.
 - FR-014: User can save the result as a stored analysis (with title, watched-company link if any, prompt used, Topic, additional context, AI output, sources, model, timestamp). The watched-company link (`company_id`) is null when the user did not pick a watched company at run time. The user can later associate the analysis with a watched company via FR-019 (promote a new company from the analysis) or FR-019b (link to an existing watched company). Priority: must-have
-  > Socrates: Save-as-snapshot preserves the prompt text, Topic, additional context, model, and sources at the moment of the run — required by FR-020 immutability. The watched-company link is the one mutable field — adding a link after the fact does not alter what the AI saw, only how the analysis is filed. Stands as written.
+  > Socrates: Save-as-snapshot preserves the prompt text, Topic, additional context, model, and sources at the moment of the run. The watched-company link can be added or changed after the fact — it does not alter what the AI saw, only how the analysis is filed. Stands as written.
 
 ### Analyses (history & detail)
 
 - FR-015: User can list all of their saved analyses on the Analyses page. Priority: must-have
   > Socrates: Standard list surface for the work-history workspace; no counter-argument. Stands as written.
 - FR-016: User can open a saved analysis and view it in read-only mode (full result + prompt used + Topic + additional context + sources + model + watched-company link if any). Priority: must-have
-  > Socrates: Read-only view follows directly from FR-020 immutability. Stands as written.
+  > Socrates: Standard detail view. Stands as written.
 - FR-018: From an analysis detail view, user can run "Continue analysis" — which starts a new analysis with the current analysis's result as context, lets the user pick a different prompt and/or a different model, and saves the resulting analysis as a child of the parent. Priority: must-have
   > Socrates: Counter-argument considered: "continue-analysis is exotic; user could just start a new analysis and paste the prior result manually." Resolution: kept. Continue-analysis is the core differentiator vs ChatGPT/Claude Projects — without it the product is just a CRUD list of one-shot prompts. The chain (parent linkage, prompt/model swap mid-chain) is what makes it a research workspace.
 - FR-019: From an analysis detail view, user can manually add any company surfaced in the result to their watchlist. The act of promoting a company from an analysis links that originating analysis to the new watchlist row (sets `company_id` on the analysis). Available on every analysis regardless of how it was originally run. Priority: must-have
   > Socrates: Counter-argument considered: "users can add companies manually from the watchlist page; FR-019 is convenience scope." Resolution: kept. The conversion path "I found a company in this analysis → I want to track it" is the natural flow at the moment of insight; forcing the user back to the Watchlist page to retype the company adds friction at exactly the wrong moment. With the type axis removed, FR-019 is no longer gated on type=`company` — every analysis can be promoted, even those that were originally a free-text topic where a company surfaced in the AI output.
 - FR-019b: From an analysis detail view, user can link the analysis to an existing watched company (sets `company_id` to a row already in the user's watchlist). The link can be set on any analysis whose `company_id` is currently null, and can be cleared back to null. Available regardless of how the analysis was originally run. Priority: must-have
-  > Socrates: Counter-argument considered: "FR-019 already handles the company-from-analysis path; this is duplicate scope." Resolution: kept. FR-019 covers the "company doesn't exist yet → create it and back-link" path; FR-019b covers the dual "company already exists → file this analysis under it" path. Without FR-019b, only the originating analysis ever gets back-linked to a watchlist row, and any historical research the user did before adding the company stays orphaned. The link is a filing affordance — it does not alter the AI output, the prompt, or any other immutable field; FR-020 immutability is unaffected.
-- FR-020: Saved analyses are immutable in their content — user cannot edit the title, prompt, Topic, additional context, output, sources, or notes of a saved analysis. The watched-company link (`company_id`) is the one exception: it can be set, changed to a different watched company, or cleared via FR-019 / FR-019b, because it is filing metadata rather than analytical content (the AI did not see the watchlist row at run time — Business Logic #3). Priority: must-have
-  > Socrates: Counter-argument considered: "user might want to fix a typo in the title or annotate the result." Resolution: kept content-immutability. The escape hatch for content is FR-018 continue-analysis. The carve-out for `company_id` reflects that filing is structurally separate from analytical content — re-filing an analysis does not change what the AI said, just where it appears in the user's workspace.
+  > Socrates: Counter-argument considered: "FR-019 already handles the company-from-analysis path; this is duplicate scope." Resolution: kept. FR-019 covers the "company doesn't exist yet → create it and back-link" path; FR-019b covers the dual "company already exists → file this analysis under it" path. Without FR-019b, only the originating analysis ever gets back-linked to a watchlist row, and any historical research the user did before adding the company stays orphaned. The link is a filing affordance — it does not alter the AI output, the prompt, or any analytical content.
+- FR-020: The watched-company link (`company_id`) on a saved analysis can be set, changed to a different watched company, or cleared via FR-019 / FR-019b, because it is filing metadata rather than analytical content (the AI did not see the watchlist row at run time — Business Logic #3). Priority: must-have
+  > Socrates: Filing metadata (`company_id`) is structurally separate from analytical content — re-filing an analysis does not change what the AI said, just where it appears in the user's workspace.
 
 ### Watchlist (companies)
 
@@ -177,11 +176,11 @@ The insight: the friction is not "I need a chat with an AI"; it is "I need a res
 
 ## Business Logic
 
-The application turns a user's saved prompts and watched-company data into AI-driven analyses, preserving each analysis as an immutable snapshot and chaining continued analyses across different prompts and models so that the user's research history is reproducible and traversable in two dimensions: by company and by chain-of-reasoning.
+The application turns a user's saved prompts and watched-company data into AI-driven analyses, preserving each analysis as a snapshot and chaining continued analyses across different prompts and models so that the user's research history is reproducible and traversable in two dimensions: by company and by chain-of-reasoning.
 
 Three load-bearing decisions the application makes for the user:
 
-1. **Snapshot-on-save.** When an analysis is saved, the prompt text used at run time, the Topic, the additional context (if any), the model used, the AI output, and any sources returned are captured together as an immutable record. Subsequent edits to the prompt do not propagate to the saved analysis. This is the basis of "the user's research history is reproducible".
+1. **Snapshot-on-save.** When an analysis is saved, the prompt text used at run time, the Topic, the additional context (if any), the model used, the AI output, and any sources returned are captured together as a snapshot record. Subsequent edits to the prompt do not propagate to the saved analysis. This is the basis of "the user's research history is reproducible".
 
 2. **Continue-analysis context composition.** When the user continues an analysis, the next AI request receives the **parent analysis's full AI output verbatim** as context, followed by the user's new prompt, the new Topic, and any new additional context. The parent prompt, parent Topic, and parent additional context are not re-sent (the user can read them in the parent analysis if needed; the model receives only what it needs to keep reasoning forward). Token cost grows with chain depth — there is no auto-summarization in v1.
 

@@ -12,8 +12,7 @@
 
 ## Local dev: RLS smoke test
 
-After `npx supabase db reset`, run the RLS verification harness to confirm per-user isolation and
-analysis immutability hold:
+After `npx supabase db reset`, run the RLS verification harness to confirm per-user isolation:
 
 ```bash
 psql "$SUPABASE_DB_URL" -f supabase/tests/rls_smoke.sql

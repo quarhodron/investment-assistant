@@ -71,7 +71,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 
 - **Outcome:** (foundation) Postgres schema for prompts, analyses (with `parent_analysis_id` self-reference and a `company_id` nullable FK for dual-linking per FR-026), watched_companies, and user_settings is live with RLS policies enforcing per-user isolation across every table.
 - **Change ID:** data-schema-and-rls
-- **PRD refs:** Access Control §Isolation, NFRs §isolation guardrail, FR-020 (analysis immutability — enforced as schema-level constraints / triggers, not at the application layer)
+- **PRD refs:** Access Control §Isolation, NFRs §isolation guardrail, FR-020 (watched-company link mutability carve-out)
 - **Unlocks:** S-01 (analyses + prompts + user_settings), S-02 (parent_analysis_id traversal), S-04 (prompts edit/delete), S-05 (watched_companies), S-06 (analyses.company_id), S-07 (analysis ↔ company back-link), S-08 (recent-by-user reads). Verification path: every downstream slice can rely on RLS for isolation rather than re-implementing per-route auth checks.
 - **Prerequisites:** —
 - **Parallel with:** S-09
@@ -136,7 +136,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Blockers:** —
 - **Unknowns:**
   - —
-- **Risk:** The retain-the-snapshot invariant is the load-bearing rule. F-01's schema constraint on analyses immutability is the structural mitigation; this slice's only job is to not break that.
+- **Risk:** The retain-the-snapshot invariant is the load-bearing rule — prior analyses must keep the prompt text they were run with. This slice's only job is to not break that.
 - **Status:** proposed
 
 ### S-05: Watchlist CRUD

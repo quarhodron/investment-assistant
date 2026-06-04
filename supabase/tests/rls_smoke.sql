@@ -295,33 +295,7 @@ END;
 $$;
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- 4. Immutability check: user A cannot UPDATE analyses (FR-020)
--- ─────────────────────────────────────────────────────────────────────────────
-
-SET LOCAL "request.jwt.claims" TO '{"sub":"00000000-0000-0000-0000-000000000001","role":"authenticated"}';
-
-DO $$
-DECLARE
-  raised boolean := false;
-BEGIN
-  BEGIN
-    UPDATE analyses SET title = 'mutated' WHERE id = '30000000-0000-0000-0000-000000000001';
-  EXCEPTION
-    WHEN OTHERS THEN
-      IF SQLERRM LIKE '%cannot_modify_immutable_analysis%' THEN
-        raised := true;
-      ELSE
-        RAISE EXCEPTION 'FAIL: UPDATE analyses raised unexpected error: %', SQLERRM;
-      END IF;
-  END;
-  IF NOT raised THEN
-    RAISE EXCEPTION 'FAIL: UPDATE analyses did not raise immutability error';
-  END IF;
-END;
-$$;
-
--- ─────────────────────────────────────────────────────────────────────────────
--- 5. Tear down: roll back everything (test users, inserted rows)
+-- 4. Tear down: roll back everything (test users, inserted rows)
 -- ─────────────────────────────────────────────────────────────────────────────
 
 ROLLBACK;

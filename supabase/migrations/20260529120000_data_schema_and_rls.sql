@@ -117,7 +117,7 @@ CREATE TRIGGER user_settings_set_updated_at
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
 -- ─────────────────────────────────────────────────────────────────────────────
--- analyses (immutable after insert — FR-020)
+-- analyses
 -- ─────────────────────────────────────────────────────────────────────────────
 CREATE TABLE analyses (
   id                        uuid        PRIMARY KEY DEFAULT gen_random_uuid(),

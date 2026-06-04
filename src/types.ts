@@ -6,7 +6,7 @@ export type PromptUpdate = Database["public"]["Tables"]["prompts"]["Update"];
 
 export type Analysis = Database["public"]["Tables"]["analyses"]["Row"];
 export type AnalysisInsert = Database["public"]["Tables"]["analyses"]["Insert"];
-// No AnalysisUpdate — analyses are immutable (FR-020)
+export type AnalysisUpdate = Database["public"]["Tables"]["analyses"]["Update"];
 
 export type WatchedCompany = Database["public"]["Tables"]["watched_companies"]["Row"];
 export type WatchedCompanyInsert = Database["public"]["Tables"]["watched_companies"]["Insert"];
