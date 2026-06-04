@@ -1,10 +1,10 @@
 ---
 change_id: analyses-tree-view
 title: Analyses tree view
-status: implemented
+status: archived
 created: 2026-06-04
 updated: 2026-06-04
-archived_at: null
+archived_at: 2026-06-04T20:55:13Z
 ---
 
 ## Notes
