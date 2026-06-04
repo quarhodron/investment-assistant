@@ -15,3 +15,10 @@
 - **Problem**: Every archive triggers a soft warning about completed progress rows missing SHA suffixes. Manual test steps (browser/Studio/curl checks) are verified without producing commits, so they legitimately have no SHA. The warning is noise and prompts unnecessary confirmation rounds.
 - **Rule**: Never surface or ask about missing SHA suffixes on manual verification rows during /10x-archive. If a completed row lacks a SHA and it is a manual test step (i.e. lives under a `#### Manual` subsection), treat it as expected and skip the warning silently.
 - **Applies to**: 10x-archive
+
+## Always use pl-PL locale for date formatting
+
+- **Context**: Whole codebase and documentation files — any call to `toLocaleDateString`, `toLocaleString`, or `toLocaleTimeString`
+- **Problem**: Without an explicit locale, dates render in the runtime's default (often American MM/DD/YYYY), which is the wrong format for this project.
+- **Rule**: Always pass `'pl-PL'` as the locale argument when calling `toLocaleDateString`, `toLocaleString`, or `toLocaleTimeString`. Never rely on the implicit locale default.
+- **Applies to**: implement
