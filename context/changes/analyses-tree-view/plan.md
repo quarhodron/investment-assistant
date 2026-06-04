@@ -226,8 +226,8 @@ None. Schema unchanged, no data backfill, no API contract change. The detail pag
 
 #### Automated
 
-- [x] 2.1 Lint and type check pass: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint and type check pass: `npm run lint` — 8dc4706
+- [x] 2.2 Build passes: `npm run build` — 8dc4706
 
 #### Manual
 
