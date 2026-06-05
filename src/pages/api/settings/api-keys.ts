@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 import { encryptApiKey } from "@/lib/services/api-key-crypto";
 import { validateApiKeyInput } from "@/lib/validation";
+import type { Json } from "@/db/database.types";
 
 export const POST: APIRoute = async (context) => {
   const origin = context.request.headers.get("Origin");
@@ -49,7 +50,7 @@ export const POST: APIRoute = async (context) => {
 
     const { error: updateError } = await supabase
       .from("user_settings")
-      .update({ api_keys: updatedKeys })
+      .update({ api_keys: updatedKeys as Json })
       .eq("user_id", user.id);
 
     if (updateError) {
@@ -91,7 +92,7 @@ export const POST: APIRoute = async (context) => {
 
   const { error: updateError } = await supabase
     .from("user_settings")
-    .update({ api_keys: updatedKeys })
+    .update({ api_keys: updatedKeys as unknown as Json })
     .eq("user_id", user.id);
 
   if (updateError) {

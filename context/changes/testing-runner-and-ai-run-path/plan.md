@@ -481,14 +481,14 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 
 #### Automated
 
-- [x] 1.1 Vitest installs cleanly: `npm install` exits 0
-- [x] 1.2 `npm test` exits 0 with one passing test
-- [x] 1.3 `npm run lint` exits 0 (or, if a rules override was needed, the override is scoped to test paths only)
-- [x] 1.4 `npx astro sync && npx tsc --noEmit` succeeds
+- [x] 1.1 Vitest installs cleanly: `npm install` exits 0 — 95a676d
+- [x] 1.2 `npm test` exits 0 with one passing test — 95a676d
+- [x] 1.3 `npm run lint` exits 0 (or, if a rules override was needed, the override is scoped to test paths only) — 95a676d
+- [x] 1.4 `npx astro sync && npx tsc --noEmit` succeeds — 95a676d
 
 #### Manual
 
-- [x] 1.5 Running `npm run test:watch` starts the watcher and re-runs on file save
+- [x] 1.5 Running `npm run test:watch` starts the watcher and re-runs on file save — 95a676d
 
 ### Phase 2: Test Harness Helpers
 

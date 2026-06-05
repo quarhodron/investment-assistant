@@ -28,6 +28,7 @@ pnpm-debug.log*
 .idea/
 
 .claude/
+.codex/
 
 dist-dryrun/
 

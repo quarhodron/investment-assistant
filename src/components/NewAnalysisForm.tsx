@@ -198,7 +198,7 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
                 setAnalysisId(data.analysis_id as string);
                 setStatus("saved");
               } else if (eventType === "error") {
-                setErrorFrame(data as ErrorFrame);
+                setErrorFrame(data as unknown as ErrorFrame);
                 setStatus("error");
               }
             }

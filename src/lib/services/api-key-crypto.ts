@@ -15,7 +15,7 @@ export function isEncryptionConfigured(): boolean {
   return typeof ENCRYPTION_KEY === "string" && ENCRYPTION_KEY.length > 0;
 }
 
-function base64ToBytes(b64: string): Uint8Array {
+function base64ToBytes(b64: string): Uint8Array<ArrayBuffer> {
   const binary = atob(b64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -28,7 +28,7 @@ function bytesToBase64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-function userIdToSalt(userId: string): Uint8Array {
+function userIdToSalt(userId: string): Uint8Array<ArrayBuffer> {
   return new TextEncoder().encode(userId);
 }
 
