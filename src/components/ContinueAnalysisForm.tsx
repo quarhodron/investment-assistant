@@ -237,12 +237,12 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
   if (prompts.length === 0) {
     return (
       <div className="border-border/70 bg-card flex flex-col items-start gap-3 border p-8">
-        <p className="text-muted-foreground text-[0.6875rem] font-medium tracking-[0.16em] uppercase">Setup required</p>
+        <p className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">Setup required</p>
         <p className="font-display text-2xl tracking-tight">No prompts yet.</p>
         <p className="text-muted-foreground text-sm">You need at least one prompt before running an analysis.</p>
         <a
           href="/prompts"
-          className="bg-primary text-primary-foreground mt-2 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-[0.08em] transition-colors hover:bg-primary/80"
+          className="bg-primary text-primary-foreground hover:bg-primary/80 mt-2 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-[0.08em] transition-colors"
         >
           Create your first prompt →
         </a>
@@ -250,8 +250,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
     );
   }
 
-  const fieldLabel =
-    "text-muted-foreground mb-1.5 flex items-center text-[0.6875rem] font-medium tracking-[0.16em] uppercase";
+  const fieldLabel = "text-muted-foreground mb-1.5 flex items-center text-xs font-medium tracking-[0.16em] uppercase";
   const fieldControl =
     "border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60";
 
@@ -311,7 +310,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
           {/* No API key alert */}
           {!hasApiKey && selectedProvider && (
             <div className="flex items-start gap-3 border-l-2 border-amber-600/70 bg-[color-mix(in_oklch,oklch(0.62_0.14_70)_8%,transparent)] px-3 py-2.5 text-sm text-amber-900 dark:text-amber-200">
-              <span className="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Setup</span>
+              <span className="text-xs font-medium tracking-[0.14em] uppercase">Setup</span>
               <span>
                 No API key configured for {PROVIDER_LABELS[selectedProvider] ?? selectedProvider}.{" "}
                 <a href="/settings" className="text-foreground font-medium underline underline-offset-2">
@@ -395,7 +394,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
               type="button"
               onClick={handleRun}
               disabled={frozen || !hasApiKey || !input.trim() || !promptId || !title.trim()}
-              className="bg-primary text-primary-foreground inline-flex items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors hover:bg-primary/80 active:bg-primary/70 disabled:cursor-not-allowed disabled:opacity-40"
+              className="bg-primary text-primary-foreground hover:bg-primary/80 active:bg-primary/70 inline-flex items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               {status === "streaming" ? "Running…" : "Run analysis"}
             </button>
@@ -407,8 +406,8 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
       {(status === "streaming" || status === "saved" || status === "error") && (
         <div className="border-border/70 bg-card border p-6 sm:p-8">
           <div className="border-border/70 mb-5 flex items-baseline justify-between border-b pb-3">
-            <p className="text-muted-foreground text-[0.6875rem] font-medium tracking-[0.16em] uppercase">Output</p>
-            <p className="text-muted-foreground font-mono text-[0.6875rem]">
+            <p className="text-muted-foreground text-xs font-medium tracking-[0.16em] uppercase">Output</p>
+            <p className="text-muted-foreground font-mono text-xs">
               {status === "streaming" && <span className="text-foreground">● live</span>}
               {status === "saved" && <span className="text-positive">● saved</span>}
               {status === "error" && <span className="text-destructive">● error</span>}
@@ -430,7 +429,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
 
           {status === "saved" && analysisId && (
             <div className="text-positive border-positive/40 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--positive)_8%,transparent)] px-3 py-2.5 text-sm">
-              <span className="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Saved</span>
+              <span className="text-xs font-medium tracking-[0.14em] uppercase">Saved</span>
               <a href={`/analyses/${analysisId}`} className="text-foreground font-medium underline underline-offset-2">
                 View analysis →
               </a>
@@ -439,7 +438,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
 
           {status === "error" && errorFrame && (
             <div className="text-destructive border-destructive/40 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--destructive)_8%,transparent)] px-3 py-2.5 text-sm">
-              <span className="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Error</span>
+              <span className="text-xs font-medium tracking-[0.14em] uppercase">Error</span>
               <span>{friendlyError(errorFrame)}</span>
             </div>
           )}

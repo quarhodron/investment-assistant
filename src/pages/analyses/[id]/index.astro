@@ -101,7 +101,7 @@ const children = childrenData ?? [];
                       class="group flex items-baseline justify-between gap-3 py-2.5 text-sm transition-colors hover:bg-[color-mix(in_oklch,var(--foreground)_3%,transparent)]"
                     >
                       <span class="group-hover:text-foreground line-clamp-2 font-medium">{child.title}</span>
-                      <span class="num text-muted-foreground shrink-0 text-[0.6875rem]">
+                      <span class="num text-muted-foreground shrink-0 text-xs">
                         {new Date(child.created_at).toLocaleDateString("en-GB", {
                           day: "2-digit",
                           month: "short",

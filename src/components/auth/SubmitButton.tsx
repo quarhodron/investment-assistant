@@ -25,7 +25,7 @@ export function SubmitButton({ pendingText, icon, children }: SubmitButtonProps)
         <span className="flex items-center gap-2">
           {icon}
           {children}
-          <span className="bg-primary text-primary-foreground -mr-2 ml-auto inline-flex h-5 w-5 items-center justify-center text-[0.625rem]">
+          <span className="bg-primary text-primary-foreground -mr-2 ml-auto inline-flex h-5 w-5 items-center justify-center text-xs">
             →
           </span>
         </span>

@@ -36,7 +36,7 @@ export function FormField({
     <div>
       <label
         htmlFor={id}
-        className="text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium tracking-[0.16em] uppercase"
+        className="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
       >
         {label}
       </label>

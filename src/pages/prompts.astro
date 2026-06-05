@@ -39,7 +39,7 @@ if (supabase && user) {
   {
     error && (
       <div class="text-destructive border-destructive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--destructive)_8%,transparent)] px-3 py-2.5 text-sm">
-        <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Error</span>
+        <span class="text-xs font-medium tracking-[0.14em] uppercase">Error</span>
         <span>{error}</span>
       </div>
     )
@@ -48,7 +48,7 @@ if (supabase && user) {
   {
     ok === "1" && (
       <div class="text-positive border-positive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--positive)_8%,transparent)] px-3 py-2.5 text-sm">
-        <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Saved</span>
+        <span class="text-xs font-medium tracking-[0.14em] uppercase">Saved</span>
         <span>Prompt created successfully.</span>
       </div>
     )
@@ -57,7 +57,7 @@ if (supabase && user) {
   {
     ok === "deleted" && (
       <div class="text-muted-foreground border-foreground/30 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--foreground)_4%,transparent)] px-3 py-2.5 text-sm">
-        <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Removed</span>
+        <span class="text-xs font-medium tracking-[0.14em] uppercase">Removed</span>
         <span>Prompt deleted.</span>
       </div>
     )
@@ -72,7 +72,7 @@ if (supabase && user) {
           <div>
             <label
               for="name"
-              class="text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium tracking-[0.16em] uppercase"
+              class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
             >
               Name <span class="text-destructive ml-1 tracking-normal normal-case">*</span>
             </label>
@@ -90,7 +90,7 @@ if (supabase && user) {
           <div>
             <label
               for="description"
-              class="text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium tracking-[0.16em] uppercase"
+              class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
             >
               Description <span class="text-muted-foreground/60 ml-1 tracking-normal normal-case">(optional)</span>
             </label>
@@ -107,7 +107,7 @@ if (supabase && user) {
           <div>
             <label
               for="body"
-              class="text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium tracking-[0.16em] uppercase"
+              class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
             >
               Prompt body <span class="text-destructive ml-1 tracking-normal normal-case">*</span>
             </label>
@@ -149,7 +149,7 @@ if (supabase && user) {
                 <div class="min-w-0 flex-1">
                   <p class="text-foreground text-base font-medium">{prompt.name}</p>
                   {prompt.description && <p class="text-muted-foreground mt-1 text-sm">{prompt.description}</p>}
-                  <p class="num text-muted-foreground/80 mt-1.5 text-[0.6875rem]">
+                  <p class="num text-muted-foreground/80 mt-1.5 text-xs">
                     Created{" "}
                     {new Date(prompt.created_at).toLocaleDateString("en-GB", {
                       day: "2-digit",

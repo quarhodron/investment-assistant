@@ -49,7 +49,7 @@ const ok = Astro.url.searchParams.get("ok");
     {
       error && (
         <div class="text-destructive border-destructive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--destructive)_8%,transparent)] px-3 py-2.5 text-sm">
-          <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Error</span>
+          <span class="text-xs font-medium tracking-[0.14em] uppercase">Error</span>
           <span>{error}</span>
         </div>
       )
@@ -58,7 +58,7 @@ const ok = Astro.url.searchParams.get("ok");
     {
       ok && (
         <div class="text-positive border-positive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--positive)_8%,transparent)] px-3 py-2.5 text-sm">
-          <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Saved</span>
+          <span class="text-xs font-medium tracking-[0.14em] uppercase">Saved</span>
           <span>Prompt saved.</span>
         </div>
       )
@@ -67,10 +67,7 @@ const ok = Astro.url.searchParams.get("ok");
     <div class="border-border/70 bg-card border p-6 sm:p-8">
       <form method="POST" action={`/api/prompts/${id}`} class="space-y-5">
         <div>
-          <label
-            for="name"
-            class="text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium tracking-[0.16em] uppercase"
-          >
+          <label for="name" class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase">
             Name <span class="text-destructive ml-1 tracking-normal normal-case">*</span>
           </label>
           <input
@@ -87,7 +84,7 @@ const ok = Astro.url.searchParams.get("ok");
         <div>
           <label
             for="description"
-            class="text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium tracking-[0.16em] uppercase"
+            class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
           >
             Description <span class="text-muted-foreground/60 ml-1 tracking-normal normal-case">(optional)</span>
           </label>
@@ -102,10 +99,7 @@ const ok = Astro.url.searchParams.get("ok");
         </div>
 
         <div>
-          <label
-            for="body"
-            class="text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium tracking-[0.16em] uppercase"
-          >
+          <label for="body" class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase">
             Prompt body <span class="text-destructive ml-1 tracking-normal normal-case">*</span>
           </label>
           <textarea
@@ -122,7 +116,7 @@ const ok = Astro.url.searchParams.get("ok");
         <div class="border-border/60 flex items-center gap-4 border-t pt-5">
           <button
             type="submit"
-            class="bg-primary text-primary-foreground hover:bg-prhmary/80 active:bg-primary/70 iover:bg-primary/80 active:bg-primary/70 inline-flex items-center gap-3 px-5 py-2.5 text-sm font-m"
+            class="bg-primary text-primary-foreground hover:bg-prhmary/80 active:bg-primary/70 iover:bg-primary/80 active:bg-primary/70 font-m inline-flex items-center gap-3 px-5 py-2.5 text-sm"
           >
             Save changes
           </button>

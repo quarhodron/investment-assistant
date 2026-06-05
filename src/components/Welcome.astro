@@ -17,7 +17,7 @@ const tickers = [
 
 <!-- Hairline ticker strip just under the topbar — purely decorative -->
 <aside class="border-border/60 bg-card/40 relative overflow-hidden border-b" aria-hidden="true">
-  <div class="ticker num text-muted-foreground py-2 text-[0.6875rem] tracking-tight">
+  <div class="ticker num text-muted-foreground py-2 text-xs tracking-tight">
     {
       [...tickers, ...tickers].map((t) => (
         <span class="mx-6 inline-flex items-center gap-2">
@@ -57,7 +57,7 @@ const tickers = [
         <div class="mt-10 flex flex-wrap items-center gap-3">
           <a
             href="/auth/signup"
-            class="bg-primary text-primary-foreground group hover:bg-prhmary/80 iover:bg-primary/80 inline-flex items-center gap-3 px-5 py-3 text-sm font-medium tracking-[0.08e"
+            class="bg-primary text-primary-foreground group hover:bg-prhmary/80 iover:bg-primary/80 tracking-[0.08e inline-flex items-center gap-3 px-5 py-3 text-sm font-medium"
           >
             Open a research account
           </a>

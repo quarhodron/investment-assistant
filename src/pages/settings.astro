@@ -55,7 +55,7 @@ if (supabase && user) {
     {
       error && (
         <div class="text-destructive border-destructive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--destructive)_8%,transparent)] px-3 py-2.5 text-sm">
-          <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Error</span>
+          <span class="text-xs font-medium tracking-[0.14em] uppercase">Error</span>
           <span>{decodeURIComponent(error)}</span>
         </div>
       )
@@ -64,7 +64,7 @@ if (supabase && user) {
     {
       ok && (
         <div class="text-positive border-positive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--positive)_8%,transparent)] px-3 py-2.5 text-sm">
-          <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Saved</span>
+          <span class="text-xs font-medium tracking-[0.14em] uppercase">Saved</span>
           <span>Settings saved successfully.</span>
         </div>
       )

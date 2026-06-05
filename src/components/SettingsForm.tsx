@@ -11,7 +11,7 @@ interface Props {
   defaultModelId: string | null;
 }
 
-const LABEL = "text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium tracking-[0.16em] uppercase";
+const LABEL = "text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase";
 const INPUT =
   "border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:ring-2 focus:outline-none";
 const PRIMARY_BTN =
@@ -35,7 +35,7 @@ function Section({
   return (
     <section className="border-border/70 grid gap-8 border-t pt-10 lg:grid-cols-12 lg:gap-12">
       <header className="lg:col-span-4">
-        <p className="num text-muted-foreground/80 text-[0.6875rem]">{number} ──</p>
+        <p className="num text-muted-foreground/80 text-xs">{number} ──</p>
         <h2 className="font-display mt-3 text-2xl tracking-tight">{title}</h2>
         <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{description}</p>
       </header>
@@ -61,7 +61,7 @@ function ApiKeyRow({
     <div className="border-border/70 flex flex-wrap items-end justify-between gap-4 border-b py-5 first:border-t">
       <div>
         <p className="text-foreground text-base font-medium">{label}</p>
-        <p className="num text-muted-foreground mt-1 inline-flex items-center gap-2 text-[0.6875rem]">
+        <p className="num text-muted-foreground mt-1 inline-flex items-center gap-2 text-xs">
           <span
             className={`inline-block h-1.5 w-1.5 rounded-full ${configured ? "bg-positive" : "bg-muted-foreground/40"}`}
             aria-hidden="true"
