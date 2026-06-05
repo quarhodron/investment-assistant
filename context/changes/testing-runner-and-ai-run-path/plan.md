@@ -495,12 +495,14 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 #### Automated
 
 - [ ] 2.1 Each helper compiles under `npx astro sync && npx tsc --noEmit`
-- [ ] 2.2 `npm run lint` exits 0 across `tests/integration/_harness/**`
-- [ ] 2.3 `npm test` still passes (Phase 1 smoke test unaffected)
+- [x] 2.1 Each helper compiles under `npx astro sync && npx tsc --noEmit`
+- [x] 2.2 `npm run lint` exits 0 across `tests/integration/_harness/**`
+- [x] 2.3 `npm test` still passes (Phase 1 smoke test unaffected)
 
 #### Manual
 
 - [ ] 2.4 A throwaway scratch test using all four helpers can be authored and run successfully — confirmed by writing one ad-hoc spec, running it, then deleting it
+- [x] 2.4 A throwaway scratch test using all four helpers can be authored and run successfully — confirmed by writing one ad-hoc spec, running it, then deleting it
 
 ### Phase 3: Split Shared `service_unavailable` Error Codes
 
