@@ -547,13 +547,13 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 
 #### Automated
 
-- [x] 6.1 `npm test` exits 0 (no regression from Phase 5)
-- [x] 6.2 `npm run lint` exits 0
-- [x] 6.3 `npm run format` produces no diff
-- [x] 6.4 `grep -c "TBD — see §3 Phase 1" context/foundation/test-plan.md` returns 0
-- [x] 6.5 `grep -c "TBD — see §3 Phase 2" context/foundation/test-plan.md` returns ≥ 1
+- [x] 6.1 `npm test` exits 0 (no regression from Phase 5) — d5c33c0
+- [x] 6.2 `npm run lint` exits 0 — d5c33c0
+- [x] 6.3 `npm run format` produces no diff — d5c33c0
+- [x] 6.4 `grep -c "TBD — see §3 Phase 1" context/foundation/test-plan.md` returns 0 — d5c33c0
+- [x] 6.5 `grep -c "TBD — see §3 Phase 2" context/foundation/test-plan.md` returns ≥ 1 — d5c33c0
 
 #### Manual
 
-- [x] 6.6 Read `context/foundation/test-plan.md` §6 end-to-end; confirm a contributor could add a new integration test from §6.2 without first reading any code
-- [x] 6.7 Confirm §3 table renders correctly in Markdown preview with the updated status
+- [x] 6.6 Read `context/foundation/test-plan.md` §6 end-to-end; confirm a contributor could add a new integration test from §6.2 without first reading any code — d5c33c0
+- [x] 6.7 Confirm §3 table renders correctly in Markdown preview with the updated status — d5c33c0
