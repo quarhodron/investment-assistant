@@ -80,11 +80,9 @@ const children = childrenData ?? [];
         <div class="mt-8">
           <a
             href={`/analyses/${analysis.id}/continue`}
-            class="bg-foreground text-background group inline-flex items-center gap-3 px-5 py-3 text-sm font-medium tracking-tight transition-opacity hover:opacity-90"
+            class="bg-primary text-primary-foreground group hover:bg-primary/80 active:bg-primary/70 inline-flex items-center gap-3 px-5 py-3 text-sm font-medium tracking-[0.08em] transition-colors"
           >
-            <span class="bg-primary inline-block h-1.5 w-1.5"></span>
-            Continue analysis
-            <span class="ml-1 text-base">→</span>
+            Continue analysis →
           </a>
         </div>
       </div>

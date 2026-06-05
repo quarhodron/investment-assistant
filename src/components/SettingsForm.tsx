@@ -15,7 +15,7 @@ const LABEL = "text-muted-foreground mb-1.5 block text-[0.6875rem] font-medium t
 const INPUT =
   "border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:ring-2 focus:outline-none";
 const PRIMARY_BTN =
-  "bg-foreground text-background inline-flex items-center gap-3 px-4 py-2.5 text-sm font-medium tracking-tight transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50";
+  "bg-primary text-primary-foreground inline-flex items-center gap-3 px-4 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors hover:bg-primary/80 active:bg-primary/70 disabled:cursor-not-allowed disabled:opacity-50";
 const GHOST_BTN =
   "border-foreground/30 hover:border-foreground text-foreground inline-flex items-center border-x px-4 py-2.5 text-sm font-medium tracking-tight transition-colors";
 const DESTRUCTIVE_BTN =
@@ -112,7 +112,6 @@ function ApiKeyRow({
           </div>
           <div className="flex gap-2">
             <button type="submit" className={PRIMARY_BTN}>
-              <span className="bg-primary inline-block h-1.5 w-1.5" />
               Save
             </button>
             {configured && (
@@ -190,7 +189,6 @@ export default function SettingsForm({ status, models, defaultModelId }: Props) 
             </select>
           </div>
           <button type="submit" className={PRIMARY_BTN}>
-            <span className="bg-primary inline-block h-1.5 w-1.5" />
             Save
           </button>
         </form>

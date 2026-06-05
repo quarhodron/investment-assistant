@@ -242,9 +242,8 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
         <p className="text-muted-foreground text-sm">You need at least one prompt before running an analysis.</p>
         <a
           href="/prompts"
-          className="bg-foreground text-background mt-2 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-tight"
+          className="bg-primary text-primary-foreground mt-2 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-[0.08em] transition-colors hover:bg-primary/80"
         >
-          <span className="bg-primary inline-block h-1.5 w-1.5" />
           Create your first prompt →
         </a>
       </div>
@@ -396,9 +395,8 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
               type="button"
               onClick={handleRun}
               disabled={frozen || !hasApiKey || !input.trim() || !promptId || !title.trim()}
-              className="bg-foreground text-background inline-flex items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-tight transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+              className="bg-primary text-primary-foreground inline-flex items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors hover:bg-primary/80 active:bg-primary/70 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <span className="bg-primary inline-block h-1.5 w-1.5" />
               {status === "streaming" ? "Running…" : "Run analysis"}
             </button>
           </div>

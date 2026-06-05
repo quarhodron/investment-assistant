@@ -57,10 +57,9 @@ const nav = [
           <>
             <a
               href="/analyses/new"
-              class="bg-foreground text-background hidden items-center gap-2 px-3 py-1.5 text-xs font-medium tracking-tight transition-opacity hover:opacity-90 sm:inline-flex"
+              class="bg-primary text-primary-foreground hover:bg-primary/80 active:bg-primary/70 hidden items-center gap-2 px-3 py-1.5 text-xs font-medium tracking-[0.08em] transition-colors sm:inline-flex"
             >
-              <span class="text-primary-foreground bg-primary inline-block h-1.5 w-1.5" />
-              New analysis
+              + New analysis
             </a>
             <div class="text-muted-foreground hidden items-center gap-2 text-xs sm:flex">
               <span class="bg-positive inline-block h-1.5 w-1.5 rounded-full" aria-hidden="true" />
@@ -82,7 +81,7 @@ const nav = [
             </a>
             <a
               href="/auth/signup"
-              class="bg-foreground text-background inline-flex items-center px-3 py-1.5 text-xs font-medium tracking-tight transition-opacity hover:opacity-90"
+              class="bg-primary text-primary-foreground hover:bg-prhmary/80 iover:bg-primary/80 inline-flex items-center px-3 py-1.5 text-xs font-medium tracking-[0.08e"
             >
               Open account
             </a>
@@ -104,7 +103,11 @@ const nav = [
             href={item.href}
             class:list={[
               "shrink-0 rounded-sm px-2.5 py-1 transition-colors",
-              isActive(item.href) ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+              isActive(item.href)
+               
+               
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground",
             ]}
             aria-current={isActive(item.href) ? "page" : undefined}
           >
