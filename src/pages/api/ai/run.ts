@@ -168,7 +168,6 @@ export const POST: APIRoute = async (context) => {
             enqueue(sseFrame("error", { message: "persist_failed" }));
             return;
           }
-
           enqueue(
             sseFrame("done", {
               analysis_id: insertResult.data.id,

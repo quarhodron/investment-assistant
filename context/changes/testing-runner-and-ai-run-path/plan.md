@@ -508,29 +508,29 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 
 #### Automated
 
-- [x] 3.1 `npx astro sync && npx tsc --noEmit` succeeds
-- [x] 3.2 `npm run lint` exits 0
-- [x] 3.3 `npm test` still passes (no test depends on the old strings yet)
-- [x] 3.4 `npm run build` succeeds
-- [x] 3.5 `grep -n "service_unavailable" src/pages/api/ai/run.ts` returns no matches
+- [x] 3.1 `npx astro sync && npx tsc --noEmit` succeeds — b0d8508
+- [x] 3.2 `npm run lint` exits 0 — b0d8508
+- [x] 3.3 `npm test` still passes (no test depends on the old strings yet) — b0d8508
+- [x] 3.4 `npm run build` succeeds — b0d8508
+- [x] 3.5 `grep -n "service_unavailable" src/pages/api/ai/run.ts` returns no matches — b0d8508
 
 #### Manual
 
-- [x] 3.6 Trigger `supabase_unavailable`, `settings_unavailable`, `invalid_model` (sanity) via in-browser `fetch` and observe the new error codes in the SSE error frame
+- [x] 3.6 Trigger `supabase_unavailable`, `settings_unavailable`, `invalid_model` (sanity) via in-browser `fetch` and observe the new error codes in the SSE error frame — b0d8508
 
 ### Phase 4: Risk #1 + Risk #6 Tests — Error-Class Table
 
 #### Automated
 
-- [ ] 4.1 `npm test` exits 0 with 14 + 3 new tests passing (table cases + errors-module unit)
-- [ ] 4.2 Every distinct error code in the route is asserted by exactly one row (manual code-grep at review)
-- [ ] 4.3 `npm run lint` exits 0
-- [ ] 4.4 `npx astro sync && npx tsc --noEmit` succeeds
+- [x] 4.1 `npm test` exits 0 with 14 + 3 new tests passing (table cases + errors-module unit)
+- [x] 4.2 Every distinct error code in the route is asserted by exactly one row (manual code-grep at review)
+- [x] 4.3 `npm run lint` exits 0
+- [x] 4.4 `npx astro sync && npx tsc --noEmit` succeeds
 
 #### Manual
 
-- [ ] 4.5 Read the test report; confirm each Risk #1 scenario name matches a row in research.md §C
-- [ ] 4.6 Intentionally regress the persist_failed branch; confirm the test catches it; revert
+- [x] 4.5 Read the test report; confirm each Risk #1 scenario name matches a row in research.md §C
+- [x] 4.6 Intentionally regress the persist_failed branch; confirm the test catches it; revert
 
 ### Phase 5: Risk #2 Tests — Continue-Analysis Context Composition
 
