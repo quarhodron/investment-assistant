@@ -494,14 +494,12 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 
 #### Automated
 
-- [ ] 2.1 Each helper compiles under `npx astro sync && npx tsc --noEmit`
 - [x] 2.1 Each helper compiles under `npx astro sync && npx tsc --noEmit` — 1b82700
 - [x] 2.2 `npm run lint` exits 0 across `tests/integration/_harness/**` — 1b82700
 - [x] 2.3 `npm test` still passes (Phase 1 smoke test unaffected) — 1b82700
 
 #### Manual
 
-- [ ] 2.4 A throwaway scratch test using all four helpers can be authored and run successfully — confirmed by writing one ad-hoc spec, running it, then deleting it
 - [x] 2.4 A throwaway scratch test using all four helpers can be authored and run successfully — confirmed by writing one ad-hoc spec, running it, then deleting it — 1b82700
 
 ### Phase 3: Split Shared `service_unavailable` Error Codes
@@ -536,26 +534,26 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 
 #### Automated
 
-- [x] 5.1 `npm test` exits 0 with 4 context tests + 1 happy-path test passing (5 new tests on top of Phase 4's 17)
-- [x] 5.2 `npm run lint` exits 0
-- [x] 5.3 `npx astro sync && npx tsc --noEmit` succeeds
+- [x] 5.1 `npm test` exits 0 with 4 context tests + 1 happy-path test passing (5 new tests on top of Phase 4's 17) — 4acce23
+- [x] 5.2 `npm run lint` exits 0 — 4acce23
+- [x] 5.3 `npx astro sync && npx tsc --noEmit` succeeds — 4acce23
 
 #### Manual
 
-- [x] 5.4 Read the test report; confirm the depth-2 test specifically asserts `CHILD_OUT` and not the hypothetical grandparent's output
-- [x] 5.5 Sanity-check the happy-path test's captured snapshot fields against `AnalysisInsert` in `src/types.ts`
+- [x] 5.4 Read the test report; confirm the depth-2 test specifically asserts `CHILD_OUT` and not the hypothetical grandparent's output — 4acce23
+- [x] 5.5 Sanity-check the happy-path test's captured snapshot fields against `AnalysisInsert` in `src/types.ts` — 4acce23
 
 ### Phase 6: Cookbook + Plan Close-out
 
 #### Automated
 
-- [ ] 6.1 `npm test` exits 0 (no regression from Phase 5)
-- [ ] 6.2 `npm run lint` exits 0
-- [ ] 6.3 `npm run format` produces no diff
-- [ ] 6.4 `grep -c "TBD — see §3 Phase 1" context/foundation/test-plan.md` returns 0
-- [ ] 6.5 `grep -c "TBD — see §3 Phase 2" context/foundation/test-plan.md` returns ≥ 1
+- [x] 6.1 `npm test` exits 0 (no regression from Phase 5)
+- [x] 6.2 `npm run lint` exits 0
+- [x] 6.3 `npm run format` produces no diff
+- [x] 6.4 `grep -c "TBD — see §3 Phase 1" context/foundation/test-plan.md` returns 0
+- [x] 6.5 `grep -c "TBD — see §3 Phase 2" context/foundation/test-plan.md` returns ≥ 1
 
 #### Manual
 
-- [ ] 6.6 Read `context/foundation/test-plan.md` §6 end-to-end; confirm a contributor could add a new integration test from §6.2 without first reading any code
-- [ ] 6.7 Confirm §3 table renders correctly in Markdown preview with the updated status
+- [x] 6.6 Read `context/foundation/test-plan.md` §6 end-to-end; confirm a contributor could add a new integration test from §6.2 without first reading any code
+- [x] 6.7 Confirm §3 table renders correctly in Markdown preview with the updated status

@@ -63,12 +63,12 @@ research's job, see §1 principle #3).
 
 Each row is a discrete rollout phase that will open its own change folder via `/10x-new`. Status moves left-to-right through the values below; the orchestrator updates Status as artifacts appear on disk.
 
-| #   | Phase name                                | Goal (one line)                                                                                                                                                                                                                                                                                     | Risks covered | Test types                  | Status        | Change folder                                     |
-| --- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------- | ------------- | ------------------------------------------------- |
-| 1   | Test runner + critical AI run path        | Bootstrap Vitest + an integration harness for Astro/workerd route handlers; defend the wedge — SSE persistence semantics (no row on error), continue-analysis context composition at depth 1 and depth 2, and error-class disambiguation                                                            | #1, #2, #6    | unit + integration          | change opened | `context/changes/testing-runner-and-ai-run-path/` |
-| 2   | Multi-tenant isolation + abuse surfaces   | Cover cross-tenant read/write rejection across `/api/ai/run`, `/api/settings/api-keys`, and the existing CRUD routes; verify decrypted-key non-leakage under every error class; verify IDOR-style cross-tenant FK acceptance is rejected; extend `supabase/tests/rls_smoke.sql` for the four tables | #3, #4, #5    | integration + SQL RLS smoke | not started   | —                                                 |
-| 3   | Snapshot-on-save under prompt edit/delete | Guard PRD Business Logic #1 across the S-04 surface — prompt edit and delete must not retroactively change how old analyses render or how continue composes the AI request                                                                                                                          | #7            | integration                 | not started   | —                                                 |
-| 4   | Quality gates wiring                      | Wire `npm test` into CI; add a fast pre-commit subset; decide pre-prod smoke; do NOT add visual-diff or multimodal review (excluded per cost × signal and §7)                                                                                                                                       | cross-cutting | gates                       | not started   | —                                                 |
+| #   | Phase name                                | Goal (one line)                                                                                                                                                                                                                                                                                     | Risks covered | Test types                  | Status      | Change folder                                     |
+| --- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------- | ----------- | ------------------------------------------------- |
+| 1   | Test runner + critical AI run path        | Bootstrap Vitest + an integration harness for Astro/workerd route handlers; defend the wedge — SSE persistence semantics (no row on error), continue-analysis context composition at depth 1 and depth 2, and error-class disambiguation                                                            | #1, #2, #6    | unit + integration          | complete    | `context/changes/testing-runner-and-ai-run-path/` |
+| 2   | Multi-tenant isolation + abuse surfaces   | Cover cross-tenant read/write rejection across `/api/ai/run`, `/api/settings/api-keys`, and the existing CRUD routes; verify decrypted-key non-leakage under every error class; verify IDOR-style cross-tenant FK acceptance is rejected; extend `supabase/tests/rls_smoke.sql` for the four tables | #3, #4, #5    | integration + SQL RLS smoke | not started | —                                                 |
+| 3   | Snapshot-on-save under prompt edit/delete | Guard PRD Business Logic #1 across the S-04 surface — prompt edit and delete must not retroactively change how old analyses render or how continue composes the AI request                                                                                                                          | #7            | integration                 | not started | —                                                 |
+| 4   | Quality gates wiring                      | Wire `npm test` into CI; add a fast pre-commit subset; decide pre-prod smoke; do NOT add visual-diff or multimodal review (excluded per cost × signal and §7)                                                                                                                                       | cross-cutting | gates                       | not started | —                                                 |
 
 **Status vocabulary** (fixed — parser literals): `not started` → `change opened` → `researched` → `planned` → `implementing` → `complete`.
 
@@ -116,11 +116,16 @@ How to add new tests in this project. Each sub-section is filled in once the rel
 
 ### 6.1 Bootstrapping the test runner (one-time)
 
-- TBD — see §3 Phase 1. Goal: defend Risk #1 (SSE persistence semantics) and Risk #2 (continue-context composition) with the chosen runner + route-handler harness. The phase's final sub-phase updates this section with the actual setup commands and reference test paths.
+- Use bare Vitest in Node with direct `POST` invocation of the Astro route handler. Core commands: `npm test` for CI-mode runs and `npm run test:watch` for local watch mode. Runner config lives in `vitest.config.ts`.
+- Integration helpers live under `tests/integration/_harness/` and provide the route-call surface (`api-context.ts`), SSE parsing (`sse.ts`), Supabase stubbing (`supabase-stub.ts`), and AI/decryption mocks (`ai-stub.ts`).
+- Known divergence: this harness does not exercise workerd-specific runtime or crypto behavior directly. That is acceptable for Phase 1 because `decryptApiKey` is stubbed at the decryption boundary; revisit the harness only if a future test genuinely depends on workerd-only semantics.
 
 ### 6.2 Adding an integration test for an API route
 
-- TBD — see §3 Phase 1. Reference pattern will be the SSE-streaming `POST /api/ai/run` test (Risk #1, #2, #6) — the most surface-rich route in the codebase.
+- Put new route integration specs under `tests/integration/api/`. Use `tests/integration/api/ai/run.errors.test.ts` as the canonical pattern for file structure and setup.
+- Declare the three module mocks at file top: `vi.mock("@/lib/supabase", ...)`, `vi.mock("@/lib/services/ai", ...)`, and `vi.mock("@/lib/services/api-key-crypto", ...)`. Then build the request with `buildApiContext(...)`, invoke the exported route handler directly, and decode frames with `parseSseFrames(response)`.
+- Prefer harness helpers over test-local setup: `createSupabaseStub(...)` for table/query behavior, `mockRunAiAnalysis()` for async-generator control and captured provider opts, and `mockDecryptApiKey()` for deterministic key/decryption branches.
+- When covering multiple error classes or validation branches, prefer table-driven `it.each(...)` cases so the report names map cleanly to the risk matrix and route error surface.
 
 ### 6.3 Adding a cross-tenant (multi-tenant isolation) test
 
@@ -136,7 +141,7 @@ How to add new tests in this project. Each sub-section is filled in once the rel
 
 ### 6.6 Per-rollout-phase notes
 
-(After each phase lands, `/10x-implement`'s final sub-phase appends 2–3 lines here capturing anything surprising the phase taught — e.g., "Phase 1 needed `@cloudflare/vitest-pool-workers` because workerd's `crypto.subtle.deriveKey` HKDF semantics differ from Node — reuse the harness via `<reference test path>`.")
+Phase 1 chose bare Vitest plus direct `POST` invocation over a workers pool because the only runtime-sensitive crypto path is stubbed at `decryptApiKey`, so workerd parity was unnecessary for the first wedge. Reuse `tests/integration/api/ai/run.errors.test.ts` as the reference integration-test pattern. Phase 1's only production-code change was the `service_unavailable` split into `supabase_unavailable`, `settings_unavailable`, and `models_unavailable`.
 
 ## 7. What We Deliberately Don't Test
 
