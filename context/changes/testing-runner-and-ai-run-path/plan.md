@@ -463,6 +463,10 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 
 - The three error-code renames in Phase 3 are technically a public-API change for the SSE error message field. No existing frontend code pattern-matches on `"service_unavailable"` (verified: the front-end surfaces these as generic error text via `MarkdownOutput.tsx` and `NewAnalysisForm.tsx` — no string-equality branches). If a downstream consumer reads the error code, it will see the new code; this is acceptable per the test plan's Risk #6 wording.
 
+## Addenda
+
+- Commit `0ae90eb` landed between Phase 1 and Phase 2 with type-assertion cleanup outside the original Changes Required list: `.gitignore`, `src/components/ContinueAnalysisForm.tsx`, `src/components/NewAnalysisForm.tsx`, `src/lib/services/api-key-crypto.ts`, `src/lib/utils.ts`, and `src/pages/api/settings/api-keys.ts`. These edits were not part of the test-runner or AI-run-path behavior, but were kept because they preserved passing lint/typecheck after the test bootstrap work exposed stricter project-wide checks. Future reviews should treat this as documented scope expansion, not as additional AI-run-path implementation.
+
 ## References
 
 - Research: `context/changes/testing-runner-and-ai-run-path/research.md`

@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { POST } from "@/pages/api/ai/run";
 import { mockDecryptApiKey, mockRunAiAnalysis } from "../../_harness/ai-stub";
@@ -70,6 +71,10 @@ function getDecryptController(): ReturnType<typeof mockDecryptApiKey> {
 
 function createAnthropicApiError(): InstanceType<typeof Anthropic.APIError> {
   return new Anthropic.APIError(429, { type: "rate_limit_error" }, "upstream failed", makeHeaders(), undefined);
+}
+
+function createOpenAiApiError(): InstanceType<typeof OpenAI.APIError> {
+  return new OpenAI.APIError(503, { code: "server_error" }, "upstream failed", makeHeaders());
 }
 
 function buildDefaultSupabaseStub(): SupabaseStub {
@@ -324,6 +329,26 @@ describe("POST /api/ai/run error handling", () => {
       },
       expectedStatus: 200,
       expectedMessage: "anthropic_api_error",
+      expectInsertCalls: 0,
+    },
+    {
+      name: "reports openai_api_error when the provider stream throws an OpenAI API error",
+      setup() {
+        getRunController().setError(createOpenAiApiError());
+        return buildApiContext({ body: validBody });
+      },
+      expectedStatus: 200,
+      expectedMessage: "openai_api_error",
+      expectInsertCalls: 0,
+    },
+    {
+      name: "reports unexpected_error when the provider stream throws an unknown error",
+      setup() {
+        getRunController().setError(new Error("provider_network_timeout"));
+        return buildApiContext({ body: validBody });
+      },
+      expectedStatus: 200,
+      expectedMessage: "unexpected_error",
       expectInsertCalls: 0,
     },
     {

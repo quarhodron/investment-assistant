@@ -1,7 +1,7 @@
 ---
 change_id: testing-runner-and-ai-run-path
 title: Testing runner and ai run path
-status: implemented
+status: impl_reviewed
 created: 2026-06-05
 updated: 2026-06-05
 archived_at: null

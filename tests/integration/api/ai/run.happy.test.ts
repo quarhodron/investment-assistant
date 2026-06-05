@@ -47,7 +47,6 @@ const validBody = {
   prompt_id: "prompt-1",
   extra_context: "Recent performance context",
   subject: "AAPL",
-  parent_analysis_id: "parent-1",
   company_id: "company-1",
 };
 
