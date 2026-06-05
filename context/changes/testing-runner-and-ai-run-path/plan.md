@@ -495,28 +495,28 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 #### Automated
 
 - [ ] 2.1 Each helper compiles under `npx astro sync && npx tsc --noEmit`
-- [x] 2.1 Each helper compiles under `npx astro sync && npx tsc --noEmit`
-- [x] 2.2 `npm run lint` exits 0 across `tests/integration/_harness/**`
-- [x] 2.3 `npm test` still passes (Phase 1 smoke test unaffected)
+- [x] 2.1 Each helper compiles under `npx astro sync && npx tsc --noEmit` — 1b82700
+- [x] 2.2 `npm run lint` exits 0 across `tests/integration/_harness/**` — 1b82700
+- [x] 2.3 `npm test` still passes (Phase 1 smoke test unaffected) — 1b82700
 
 #### Manual
 
 - [ ] 2.4 A throwaway scratch test using all four helpers can be authored and run successfully — confirmed by writing one ad-hoc spec, running it, then deleting it
-- [x] 2.4 A throwaway scratch test using all four helpers can be authored and run successfully — confirmed by writing one ad-hoc spec, running it, then deleting it
+- [x] 2.4 A throwaway scratch test using all four helpers can be authored and run successfully — confirmed by writing one ad-hoc spec, running it, then deleting it — 1b82700
 
 ### Phase 3: Split Shared `service_unavailable` Error Codes
 
 #### Automated
 
-- [ ] 3.1 `npx astro sync && npx tsc --noEmit` succeeds
-- [ ] 3.2 `npm run lint` exits 0
-- [ ] 3.3 `npm test` still passes (no test depends on the old strings yet)
-- [ ] 3.4 `npm run build` succeeds
-- [ ] 3.5 `grep -n "service_unavailable" src/pages/api/ai/run.ts` returns no matches
+- [x] 3.1 `npx astro sync && npx tsc --noEmit` succeeds
+- [x] 3.2 `npm run lint` exits 0
+- [x] 3.3 `npm test` still passes (no test depends on the old strings yet)
+- [x] 3.4 `npm run build` succeeds
+- [x] 3.5 `grep -n "service_unavailable" src/pages/api/ai/run.ts` returns no matches
 
 #### Manual
 
-- [ ] 3.6 Trigger `supabase_unavailable`, `settings_unavailable`, `invalid_model` (sanity) via in-browser `fetch` and observe the new error codes in the SSE error frame
+- [x] 3.6 Trigger `supabase_unavailable`, `settings_unavailable`, `invalid_model` (sanity) via in-browser `fetch` and observe the new error codes in the SSE error frame
 
 ### Phase 4: Risk #1 + Risk #6 Tests — Error-Class Table
 

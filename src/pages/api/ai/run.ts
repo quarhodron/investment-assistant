@@ -28,7 +28,7 @@ export const POST: APIRoute = async (context) => {
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return new Response(sseFrame("error", { message: "service_unavailable" }), {
+    return new Response(sseFrame("error", { message: "supabase_unavailable" }), {
       status: 503,
       headers: { "Content-Type": "text/event-stream" },
     });
@@ -73,7 +73,7 @@ export const POST: APIRoute = async (context) => {
         ]);
 
         if (settingsResult.error) {
-          enqueue(sseFrame("error", { message: "service_unavailable" }));
+          enqueue(sseFrame("error", { message: "settings_unavailable" }));
           return;
         }
 
@@ -86,7 +86,7 @@ export const POST: APIRoute = async (context) => {
         }
 
         if (modelResult.error) {
-          enqueue(sseFrame("error", { message: "service_unavailable" }));
+          enqueue(sseFrame("error", { message: "models_unavailable" }));
           return;
         }
         if (!modelResult.data) {
