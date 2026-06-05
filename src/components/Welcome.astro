@@ -1,33 +1,6 @@
 ---
-const tickers = [
-  { sym: "SPX", chg: "+0.42%" },
-  { sym: "NDX", chg: "+0.61%" },
-  { sym: "DJI", chg: "-0.08%" },
-  { sym: "RUT", chg: "+1.12%" },
-  { sym: "VIX", chg: "-2.41%" },
-  { sym: "GLD", chg: "+0.18%" },
-  { sym: "USO", chg: "-0.74%" },
-  { sym: "BTC", chg: "+3.05%" },
-  { sym: "TSLA", chg: "+1.84%" },
-  { sym: "NVDA", chg: "+2.21%" },
-  { sym: "AAPL", chg: "-0.34%" },
-  { sym: "MSFT", chg: "+0.55%" },
-];
----
 
-<!-- Hairline ticker strip just under the topbar — purely decorative -->
-<aside class="border-border/60 bg-card/40 relative overflow-hidden border-b" aria-hidden="true">
-  <div class="ticker num text-muted-foreground py-2 text-xs tracking-tight">
-    {
-      [...tickers, ...tickers].map((t) => (
-        <span class="mx-6 inline-flex items-center gap-2">
-          <span class="text-foreground font-medium">{t.sym}</span>
-          <span class:list={[t.chg.startsWith("-") ? "text-destructive" : "text-positive"]}>{t.chg}</span>
-        </span>
-      ))
-    }
-  </div>
-</aside>
+---
 
 <main class="relative">
   <!-- HERO -->
