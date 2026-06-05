@@ -522,28 +522,28 @@ Fill in `context/foundation/test-plan.md` §6.1, §6.2, §6.6 with concrete comm
 
 #### Automated
 
-- [x] 4.1 `npm test` exits 0 with 14 + 3 new tests passing (table cases + errors-module unit)
-- [x] 4.2 Every distinct error code in the route is asserted by exactly one row (manual code-grep at review)
-- [x] 4.3 `npm run lint` exits 0
-- [x] 4.4 `npx astro sync && npx tsc --noEmit` succeeds
+- [x] 4.1 `npm test` exits 0 with 14 + 3 new tests passing (table cases + errors-module unit) — 06f035f
+- [x] 4.2 Every distinct error code in the route is asserted by exactly one row (manual code-grep at review) — 06f035f
+- [x] 4.3 `npm run lint` exits 0 — 06f035f
+- [x] 4.4 `npx astro sync && npx tsc --noEmit` succeeds — 06f035f
 
 #### Manual
 
-- [x] 4.5 Read the test report; confirm each Risk #1 scenario name matches a row in research.md §C
-- [x] 4.6 Intentionally regress the persist_failed branch; confirm the test catches it; revert
+- [x] 4.5 Read the test report; confirm each Risk #1 scenario name matches a row in research.md §C — 06f035f
+- [x] 4.6 Intentionally regress the persist_failed branch; confirm the test catches it; revert — 06f035f
 
 ### Phase 5: Risk #2 Tests — Continue-Analysis Context Composition
 
 #### Automated
 
-- [ ] 5.1 `npm test` exits 0 with 4 context tests + 1 happy-path test passing (5 new tests on top of Phase 4's 17)
-- [ ] 5.2 `npm run lint` exits 0
-- [ ] 5.3 `npx astro sync && npx tsc --noEmit` succeeds
+- [x] 5.1 `npm test` exits 0 with 4 context tests + 1 happy-path test passing (5 new tests on top of Phase 4's 17)
+- [x] 5.2 `npm run lint` exits 0
+- [x] 5.3 `npx astro sync && npx tsc --noEmit` succeeds
 
 #### Manual
 
-- [ ] 5.4 Read the test report; confirm the depth-2 test specifically asserts `CHILD_OUT` and not the hypothetical grandparent's output
-- [ ] 5.5 Sanity-check the happy-path test's captured snapshot fields against `AnalysisInsert` in `src/types.ts`
+- [x] 5.4 Read the test report; confirm the depth-2 test specifically asserts `CHILD_OUT` and not the hypothetical grandparent's output
+- [x] 5.5 Sanity-check the happy-path test's captured snapshot fields against `AnalysisInsert` in `src/types.ts`
 
 ### Phase 6: Cookbook + Plan Close-out
 
