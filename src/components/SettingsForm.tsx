@@ -135,8 +135,12 @@ function ApiKeyRow({
 function groupByProvider(models: AiModel[]): Partial<Record<string, AiModel[]>> {
   const groups: Partial<Record<string, AiModel[]>> = {};
   for (const model of models) {
-    groups[model.provider] ??= [];
-    groups[model.provider].push(model);
+    const providerModels = groups[model.provider];
+    if (providerModels) {
+      providerModels.push(model);
+    } else {
+      groups[model.provider] = [model];
+    }
   }
   return groups;
 }

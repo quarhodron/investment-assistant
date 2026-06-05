@@ -1,0 +1,162 @@
+# Test Plan
+
+> Phased test rollout for this project. Strategy is frozen at the top
+> (§1–§5); cookbook patterns at the bottom (§6) fill in as phases ship.
+> Read before writing any new test.
+>
+> Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
+>
+> Last updated: 2026-06-05
+
+## 1. Strategy
+
+Tests follow three non-negotiable principles for this project:
+
+1. **Cost × signal.** The cheapest test that gives a real signal for the
+   risk wins. Do not promote to e2e because e2e "feels safer." Do not put a
+   vision model on top of a deterministic visual diff that already catches
+   the regression.
+2. **User concerns are first-class evidence.** Risks anchored in "the team
+   is worried about X, and the failure would surface somewhere in <area>"
+   carry the same weight as PRD lines or hot-spot data.
+3. **Risks are scenarios, not code locations.** This plan documents _what
+   could fail_ and _why we believe it's likely_ — drawn from documents,
+   interview, and codebase _signal_ (churn, structure, test base). It does
+   NOT claim to know which line owns the failure. That knowledge is
+   produced by `/10x-research` during each rollout phase. If the plan and
+   research disagree about where the failure lives, research is the
+   ground truth.
+
+Hot-spot scope used for likelihood weighting: `src/` (excludes `node_modules`, `dist*`, `build`, `coverage`, generated `src/db/database.types.ts`).
+
+## 2. Risk Map
+
+The top failure scenarios this project must protect against, ordered by
+risk = impact × likelihood. Risks are failure scenarios in user / business
+terms, not test names. The Source column cites the _evidence that surfaced
+this risk_ — never a specific file as "where the failure lives" (that is
+research's job, see §1 principle #3).
+
+| #   | Risk (failure scenario)                                                                                                                                                                                                                                    | Impact | Likelihood | Source (evidence — not anchor)                                                                                                                                                                                             |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | SSE stream drops mid-analysis (network blip, abort, provider hiccup) → user sees no clear failure signal on the in-flight tab AND/OR a half-saved analysis row leaks into the DB instead of the documented "no row, clear error" semantics                 | High   | High       | PRD Guardrails ("failed analysis does not corrupt"); PRD NFR ("failure surface bounded to in-flight run"); interview Q1A, Q2C, Q3A; hot-spot dir `src/pages/api/` (21 commits/30d)                                         |
+| 2   | Continue-analysis sends the wrong context to the AI — parent's full output not forwarded verbatim, or parent prompt/input re-sent, or grandchild continue silently composes against the wrong parent — violates PRD Business Logic #2 and breaks the wedge | High   | High       | PRD Business Logic #2; PRD FR-018, FR-026; interview Q1B, Q2A, Q3B; archive `2026-05-31-continue-analysis-chain/`; hot-spot dir `src/pages/api/` (21 commits/30d)                                                          |
+| 3   | User-A reads or writes User-B's analyses / prompts / watched_companies / user_settings via a CRUD surface that forgets the user filter or bypasses RLS                                                                                                     | High   | Medium     | PRD Access Control §Isolation; PRD NFR §isolation guardrail; roadmap S-04, S-05, S-06, S-07 each add new read/write paths; hot-spot dir `src/pages/api/` (21 commits/30d)                                                  |
+| 4   | Decrypted API key (or a raw provider error containing the key) escapes into a log line, error response body, or telemetry event after Settings save                                                                                                        | High   | Medium     | PRD FR-028; PRD NFR ("API keys never appear in logs, error messages, or analytics"); hot-spot dir `src/lib/services/` (15 commits/30d — crypto + AI client + error mapping all live there); abuse-lens (auth + user input) |
+| 5   | IDOR on `parent_analysis_id` / `prompt_id` / `company_id` accepted from the POST body — User-A persists or reads a row referencing User-B's resource, or User-B's parent-output text reaches User-A's AI request as context                                | High   | Medium     | PRD Access Control §Isolation; abuse-lens (auth + user-supplied IDs); roadmap S-06, S-07 expand `company_id` and cross-link surfaces; hot-spot dir `src/pages/api/` (21 commits/30d)                                       |
+| 6   | Streamed analysis errors collapse into a single opaque message — user cannot tell whether the failure was missing/invalid key, network drop, provider 5xx, or rate limit; user retries blindly and double-spends or gives up                               | Medium | High       | interview Q2B (already burned); hot-spot dir `src/lib/services/` (15 commits/30d — error mapping); hot-spot dir `src/pages/api/` (21 commits/30d)                                                                          |
+| 7   | Snapshot-on-save invariant breaks under prompt edit or delete (S-04 upcoming) — old analyses start rendering edited or "deleted" prompt text, violating PRD Business Logic #1 and FR-008 / FR-009                                                          | Medium | Medium     | PRD Business Logic #1; PRD FR-008, FR-009; roadmap S-04 next in stream B; hot-spot files `src/pages/prompts.astro` (7 commits/30d), `src/pages/prompts/[id]/edit.astro` (5 commits/30d)                                    |
+
+### Risk Response Guidance
+
+| Risk | What would prove protection                                                                                                                                                                                                                                                                                                                                                                                                                                  | Must challenge                                                                                                                                                                                                                    | Context `/10x-research` must ground                                                                                                                                                                                                                                        | Likely cheapest layer                                                                                                                                                                                                                                         | Anti-pattern to avoid                                                                                                                                                                                                             |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #1   | Given a simulated mid-stream disconnect / abort / provider drop: (i) **no `analyses` row is persisted** — the `done`-branch insert is the only persist path, never an `INSERT` on the error path; (ii) when the consumer is still attached, an SSE `error` frame is emitted so the UI can show a distinguishable failure (not a silent blank); (iii) no prior `analyses` / `prompts` / `watched_companies` / `user_settings` row is mutated as a side-effect | "Test client received an `error` frame, so it's fine" — verify the persistence outcome by querying the DB, not by reading the stream; "stream closed cleanly, must be saved" — verify the row exists or does not exist explicitly | The exact persist path in the AI run route (only the `done` branch writes); how `ReadableStream.controller.close()` interacts with in-flight provider errors and aborts on workerd; what the frontend SSE consumer shows on `error` event vs early close                   | integration (call the route handler with a mocked provider stream that throws or aborts mid-way; assert: zero new `analyses` rows for the user, an `error` SSE frame was emitted)                                                                             | snapshotting the raw SSE byte stream; mocking the Supabase client so the persist branch cannot fire (test passes for the wrong reason); testing only the happy path; assuming "no `done` frame" implies "no row" without querying |
+| #2   | Given parent A (prompt P1, input I1, output O1) and a child continue with prompt P2 and input I2, the AI provider receives exactly: P2 as the prompt, O1 verbatim as context, I2 as user input — and nothing of P1 or I1. Same invariant at depth 2 (grandchild over child): receives the _child's_ output, not the original parent's                                                                                                                        | "Verbatim" — assert byte-for-byte equality on the captured provider payload, not "contains substring"; "no leakage" — assert P1 and I1 are absent from the captured payload                                                       | What the `parent_analysis_id` branch in the AI run route reads (`output` only, vs more); how the AI service composes the provider request given `context`; whether chain depth ≥ 2 re-reads the _immediate parent_ and not the _grandparent_                               | integration (call the route with `parent_analysis_id`, capture the args `runAiAnalysis` was invoked with via a stub provider; assert exact composition at depth 1 and depth 2)                                                                                | testing only depth-1 continue; asserting "prompt was used" instead of "prompt equals X and parent prompt does NOT appear"; copying the composition logic into the test as expected (oracle problem)                               |
+| #3   | Given user-A's session, a request to read or mutate user-B's analysis / prompt / watched_company / user_settings returns 404 or 403 — never 200 with user-B's row, never a silent insert that succeeds                                                                                                                                                                                                                                                       | "RLS will catch it" — verify by attempting the cross-tenant request with a real second user fixture, not by trusting the policy DDL                                                                                               | Which routes apply an explicit `.eq("user_id", user.id)` filter on top of RLS, and which rely on RLS alone; which routes touch which tables; the canonical "second user" test fixture pattern                                                                              | integration with two seeded users (against a real local Supabase via `supabase start`); extend `supabase/tests/rls_smoke.sql` for pure-DB coverage of the four tables                                                                                         | trusting the RLS DDL without an integration probe; testing only the authorized read; using the service-role key in tests (would bypass RLS)                                                                                       |
+| #4   | Across the full error/log path of `POST /api/settings/api-keys` and `POST /api/ai/run`, no captured stderr / response body / structured log line contains the decrypted plaintext key — including under each forced provider error class                                                                                                                                                                                                                     | "We sanitize errors" — verify the safe-error helper actually strips by feeding it a synthetic provider error that quotes the key                                                                                                  | What `toSafeAiError` redacts; what `console.error("ai_run_failed", safe)` actually emits to stdout / wrangler logs; whether a decrypted key ever surfaces in a thrown `Error.message` from the AI service                                                                  | integration (force each provider error class — auth, rate-limit, 5xx, network — with an API key containing a recognizable sentinel; assert the sentinel is absent from the response body AND from captured logs)                                              | testing only the happy path; trusting the error class name instead of grepping the actual emitted text; redacting only in one error path                                                                                          |
+| #5   | Given user-A submits `parent_analysis_id` / `prompt_id` / `company_id` belonging to user-B: the request is rejected (404 / 400), no row is persisted referencing user-B's resource, AND no parent-output text from user-B reaches the captured provider payload                                                                                                                                                                                              | "The `.eq('user_id', user.id)` on the parent lookup is enough" — also probe `prompt_id` and `company_id`, which are stored without an explicit application-layer ownership check on insert                                        | Whether `prompt_id` and `company_id` are validated as belonging to the requesting user at the application layer, or only at the FK layer (FK existence does not enforce ownership); what happens when the FK exists but belongs to another user                            | integration with two seeded users + stub provider; assert both the persistence outcome and the provider payload                                                                                                                                               | testing only `parent_analysis_id`; assuming FK existence equals ownership; testing only with non-existent IDs (passes via FK violation, for the wrong reason)                                                                     |
+| #6   | Each distinct failure class (missing key, invalid key, provider auth-rejected, provider rate-limit, provider 5xx, network timeout, decrypt failure, parent-not-found, persist failure) maps to a stable, user-distinguishable error code or message — and the AI run does not silently succeed-with-empty-output on any of them                                                                                                                              | "It surfaces some error" — verify the _class_ is preserved, not just the existence; "the SSE frame is enough" — verify the frontend SSE consumer renders distinguishable copy per class                                           | The set of error codes already emitted by the AI run route (`api_key_not_configured`, `api_key_corrupted`, `decryption_unavailable`, `invalid_model`, `parent_not_found`, `persist_failed`, the `toSafeAiError` shape); whether any class collapses into a generic "error" | integration covering each class with a stub provider raising the matching error; assert the emitted SSE `error` frame's `message` (or `detail`) is unique per class                                                                                           | snapshotting the full error JSON; asserting only `status === 500`; testing only one failure class                                                                                                                                 |
+| #7   | After a prompt is edited, opening an analysis previously run against that prompt still renders the original `prompt_name_snapshot` / `prompt_body_snapshot` — never the edited body. After a prompt is deleted, the analysis still renders the snapshot — never an empty/"Prompt deleted" placeholder, and re-running continue from that analysis does not re-fetch the (now-missing) prompt                                                                 | "The snapshot columns exist, so it is safe" — verify the read path actually reads `*_snapshot` and not a join back to the live `prompts` row                                                                                      | Where the analysis detail view fetches prompt fields from (`analyses.*_snapshot` only, or a join back to `prompts`); what continue-from-deleted-prompt does at composition time                                                                                            | integration (seed an analysis, edit its prompt, re-open the analysis, assert the snapshot text wins; delete the prompt, re-open, assert the snapshot still wins; continue from the deleted-prompt analysis, assert the snapshot is what composes the request) | testing only "edit"; mocking the DB layer (loses the join semantics); reading from the `prompts` table in the test for the expected value (oracle problem)                                                                        |
+
+## 3. Phased Rollout
+
+Each row is a discrete rollout phase that will open its own change folder via `/10x-new`. Status moves left-to-right through the values below; the orchestrator updates Status as artifacts appear on disk.
+
+| #   | Phase name                                | Goal (one line)                                                                                                                                                                                                                                                                                     | Risks covered | Test types                  | Status        | Change folder                                     |
+| --- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------- | ------------- | ------------------------------------------------- |
+| 1   | Test runner + critical AI run path        | Bootstrap Vitest + an integration harness for Astro/workerd route handlers; defend the wedge — SSE persistence semantics (no row on error), continue-analysis context composition at depth 1 and depth 2, and error-class disambiguation                                                            | #1, #2, #6    | unit + integration          | change opened | `context/changes/testing-runner-and-ai-run-path/` |
+| 2   | Multi-tenant isolation + abuse surfaces   | Cover cross-tenant read/write rejection across `/api/ai/run`, `/api/settings/api-keys`, and the existing CRUD routes; verify decrypted-key non-leakage under every error class; verify IDOR-style cross-tenant FK acceptance is rejected; extend `supabase/tests/rls_smoke.sql` for the four tables | #3, #4, #5    | integration + SQL RLS smoke | not started   | —                                                 |
+| 3   | Snapshot-on-save under prompt edit/delete | Guard PRD Business Logic #1 across the S-04 surface — prompt edit and delete must not retroactively change how old analyses render or how continue composes the AI request                                                                                                                          | #7            | integration                 | not started   | —                                                 |
+| 4   | Quality gates wiring                      | Wire `npm test` into CI; add a fast pre-commit subset; decide pre-prod smoke; do NOT add visual-diff or multimodal review (excluded per cost × signal and §7)                                                                                                                                       | cross-cutting | gates                       | not started   | —                                                 |
+
+**Status vocabulary** (fixed — parser literals): `not started` → `change opened` → `researched` → `planned` → `implementing` → `complete`.
+
+## 4. Stack
+
+The classic test base for this project. AI-native tools (if any) carry a `checked:` date so future readers can see which lines need re-verification. Recommendations are grounded in local manifests/configs plus the MCP/tools actually exposed in the current session.
+
+| Layer                  | Tool                                    | Version                   | Notes                                                                                                                                                                                                                            |
+| ---------------------- | --------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| unit + integration     | none yet — see §3 Phase 1               | n/a                       | Phase 1 picks the runner; Vitest is the working hypothesis (Vite is already a transitive dep — see `overrides`), but Phase 1 research must confirm the harness for Astro 6 + `@astrojs/cloudflare` route handlers under workerd. |
+| route-handler harness  | none yet — see §3 Phase 1               | n/a                       | Candidates to evaluate: `@cloudflare/vitest-pool-workers` (`SELF` binding for workerd-correct runs), or direct invocation of exported `POST` handlers with a constructed `APIContext`. Picked in Phase 1 via Context7 lookup.    |
+| API/provider stubbing  | none yet — see §3 Phase 1               | n/a                       | Phase 1 picks: stub `runAiAnalysis` at the module boundary, or stub the Anthropic/OpenAI SDKs. Goal: capture exact provider payload for Risk #2 verbatim assertions.                                                             |
+| DB integration         | local Supabase via `npx supabase start` | (Supabase CLI in devDeps) | Two-user fixture pattern for Risks #3 and #5. Use anon-key client per user, never service-role in tests. Extend `supabase/tests/rls_smoke.sql` in §3 Phase 2.                                                                    |
+| SQL RLS smoke          | `supabase/tests/rls_smoke.sql`          | n/a                       | Already present; §3 Phase 2 extends it to cover all four tables (prompts, watched_companies, user_settings, analyses).                                                                                                           |
+| e2e                    | none — out of scope for now             | n/a                       | Excluded per §7 (pixel-diff e2e on auth pages) and cost × signal: the wedge is route-shaped, not page-shaped. Revisit only if a future risk genuinely needs browser-context coverage.                                            |
+| AI-native / multimodal | none — out of scope for v1              | n/a                       | `main_goal: market-feedback` + `top_blocker: time` does not justify visual diff / multimodal review when deterministic tests cover the wedge.                                                                                    |
+
+**Stack grounding tools (current session):**
+
+- Docs: **Context7 — available** (`mcp_context7_resolve-library-id`, `mcp_context7_query-docs`). To be used in §3 Phase 1's research to ground: Vitest current setup for Astro 6 + Cloudflare adapter, `@cloudflare/vitest-pool-workers` configuration, and Supabase JS client patterns for two-user RLS tests. Checked: 2026-06-05.
+- Search: none (no Exa.ai / web-search MCP exposed) — not used; checked: 2026-06-05.
+- Runtime/browser: Playwright/browser tools available as deferred MCP (e.g. `navigate_page`, `screenshot_page`) — not used for v1 per §7 and cost × signal; checked: 2026-06-05.
+- Provider/platform: GitKraken/GitHub MCP (PRs, issues, log) — useful for CI gate wiring in §3 Phase 4. Supabase CLI in devDeps — useful for migration verification and local two-user fixtures in §3 Phase 2. Checked: 2026-06-05.
+
+Use Context7 for current framework/library APIs and setup details during each phase's research. Do not use it to infer code failure anchors; those belong in per-phase `/10x-research`.
+
+## 5. Quality Gates
+
+The full set of gates that must pass before a change reaches production. "Required for §3 Phase <N>" means the gate is enforced once that rollout phase lands; before that, the gate is `planned`.
+
+| Gate                             | Where                            | Required?                        | Catches                                                                           |
+| -------------------------------- | -------------------------------- | -------------------------------- | --------------------------------------------------------------------------------- |
+| lint + typecheck                 | local + CI                       | required (already wired)         | syntactic / type drift                                                            |
+| unit + integration               | local + CI                       | required after §3 Phase 1        | logic regressions in the AI run path, the wedge composition, error classification |
+| multi-tenant + abuse integration | local + CI                       | required after §3 Phase 2        | cross-tenant leaks, IDOR, decrypted-key leakage                                   |
+| RLS SQL smoke                    | local + CI (via `supabase test`) | required after §3 Phase 2        | direct DB-layer policy regressions                                                |
+| snapshot-on-save guard           | local + CI                       | required after §3 Phase 3        | prompt edit/delete breaking old analyses                                          |
+| pre-commit fast subset           | local (husky)                    | optional after §3 Phase 4        | obvious regressions caught before push (subset of Phase 1's suite)                |
+| pre-prod smoke                   | between merge + prod             | optional (decided in §3 Phase 4) | environment-specific failures on Cloudflare                                       |
+| visual diff / multimodal review  | n/a                              | excluded for v1                  | (out of scope per §7 + cost × signal)                                             |
+
+## 6. Cookbook Patterns
+
+How to add new tests in this project. Each sub-section is filled in once the relevant rollout phase ships; before that, the sub-section reads "TBD — see §3 Phase <N>."
+
+### 6.1 Bootstrapping the test runner (one-time)
+
+- TBD — see §3 Phase 1. Goal: defend Risk #1 (SSE persistence semantics) and Risk #2 (continue-context composition) with the chosen runner + route-handler harness. The phase's final sub-phase updates this section with the actual setup commands and reference test paths.
+
+### 6.2 Adding an integration test for an API route
+
+- TBD — see §3 Phase 1. Reference pattern will be the SSE-streaming `POST /api/ai/run` test (Risk #1, #2, #6) — the most surface-rich route in the codebase.
+
+### 6.3 Adding a cross-tenant (multi-tenant isolation) test
+
+- TBD — see §3 Phase 2. Reference pattern will be the two-seeded-users + anon-key fixture against local Supabase, covering Risk #3 and Risk #5.
+
+### 6.4 Adding a key-leakage assertion to a new error path
+
+- TBD — see §3 Phase 2. Reference pattern: forced provider error containing a sentinel-shaped key, asserting the sentinel is absent from response body and captured logs (Risk #4).
+
+### 6.5 Adding a snapshot-on-save test for a new prompt-affecting flow
+
+- TBD — see §3 Phase 3. Reference pattern: seed analysis → mutate parent resource → re-read → assert snapshot wins (Risk #7).
+
+### 6.6 Per-rollout-phase notes
+
+(After each phase lands, `/10x-implement`'s final sub-phase appends 2–3 lines here capturing anything surprising the phase taught — e.g., "Phase 1 needed `@cloudflare/vitest-pool-workers` because workerd's `crypto.subtle.deriveKey` HKDF semantics differ from Node — reuse the harness via `<reference test path>`.")
+
+## 7. What We Deliberately Don't Test
+
+Exclusions agreed during the rollout (Phase 2 interview, Q5). Future contributors should respect these unless the underlying assumption changes.
+
+- **Tailwind / shadcn UI snapshots.** Break on every styling tweak, catch nothing. Re-evaluate if a visual regression causes a real user-visible bug we cannot diagnose otherwise. (Source: Phase 2 interview Q5.)
+- **Astro page-rendering tests for static layouts** (`Banner`, `Welcome`, the `Layout` shell). Framework already renders them; tests would re-implement the renderer. Re-evaluate if a static layout starts carrying load-bearing logic. (Source: Phase 2 interview Q5.)
+- **Tests for `src/db/database.types.ts`.** Supabase generates this file; the generator is the test. Re-evaluate if we start hand-editing it. (Source: Phase 2 interview Q5.)
+- **Tests targeting Cloudflare / Astro internals.** Framework boundary, not our code. Re-evaluate if we start patching the adapter. (Source: Phase 2 interview Q5.)
+- **Pixel-diff e2e on auth pages.** Supabase Auth handles the flow; the auth pages are thin shells. Re-evaluate if `/auth/*` starts carrying custom logic beyond form-post + redirect. (Source: Phase 2 interview Q5.)
+
+## 8. Freshness Ledger
+
+- Strategy (§1–§5) last reviewed: 2026-06-05
+- Stack versions last verified: 2026-06-05
+- AI-native tool references last verified: 2026-06-05 (none in scope for v1; Context7 newly available as docs MCP for per-phase research)
+
+Refresh (`/10x-test-plan --refresh`) when:
+
+- a new top-3 risk surfaces from the roadmap or archive,
+- a recommended tool's `checked:` date is older than three months,
+- the project's tech stack changes (new framework, new test runner),
+- §7 negative-space no longer matches what the team believes.
