@@ -42,29 +42,34 @@ if (supabase && user) {
 ---
 
 <Layout title="Settings">
-  <div class="bg-cosmic min-h-screen p-6">
-    <div class="mx-auto max-w-2xl">
-      <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
-        Settings
-      </h1>
+  <div class="mx-auto max-w-4xl">
+    <header class="border-border/70 mb-10 border-b pb-6">
+      <p class="eyebrow mb-2">Workspace · configuration</p>
+      <h1 class="font-display text-5xl tracking-tight">Settings</h1>
+      <p class="text-muted-foreground mt-3 max-w-xl text-sm">
+        Bring your own model keys and pick a default. Keys are encrypted at rest; you can replace or remove them any
+        time.
+      </p>
+    </header>
 
-      {
-        error && (
-          <div class="mb-4 rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">
-            {decodeURIComponent(error)}
-          </div>
-        )
-      }
+    {
+      error && (
+        <div class="text-destructive border-destructive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--destructive)_8%,transparent)] px-3 py-2.5 text-sm">
+          <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Error</span>
+          <span>{decodeURIComponent(error)}</span>
+        </div>
+      )
+    }
 
-      {
-        ok && (
-          <div class="mb-4 rounded-lg border border-green-400/30 bg-green-500/10 p-3 text-sm text-green-200">
-            Settings saved successfully.
-          </div>
-        )
-      }
+    {
+      ok && (
+        <div class="text-positive border-positive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--positive)_8%,transparent)] px-3 py-2.5 text-sm">
+          <span class="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Saved</span>
+          <span>Settings saved successfully.</span>
+        </div>
+      )
+    }
 
-      <SettingsForm status={apiKeyStatus} models={models} defaultModelId={defaultModelId} client:load />
-    </div>
+    <SettingsForm status={apiKeyStatus} models={models} defaultModelId={defaultModelId} client:load />
   </div>
 </Layout>

@@ -46,128 +46,166 @@ const children = childrenData ?? [];
 ---
 
 <Layout title={analysis.title}>
-  <Banner variant="info">
-    This analysis is for informational purposes only and does not constitute investment advice.
-  </Banner>
+  <Banner variant="info"> For informational use only — not investment advice. Verify before acting. </Banner>
 
-  <div class="bg-cosmic min-h-screen p-6">
-    <div class="mx-auto max-w-3xl">
-      {
-        parentAnalysis && (
-          <div class="mb-4">
-            <a href={`/analyses/${parentAnalysis.id}`} class="text-sm text-purple-300 hover:text-purple-200">
-              ← Continued from: {parentAnalysis.title}
-            </a>
-          </div>
-        )
-      }
+  <article class="mx-auto max-w-5xl">
+    <!-- Lineage breadcrumb -->
+    {
+      parentAnalysis && (
+        <p class="mb-6">
+          <a
+            href={`/analyses/${parentAnalysis.id}`}
+            class="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-xs transition-colors"
+          >
+            <span aria-hidden="true">←</span>
+            <span class="eyebrow !text-current">Continued from</span>
+            <span class="text-foreground font-medium">{parentAnalysis.title}</span>
+          </a>
+        </p>
+      )
+    }
 
-      <div class="mb-6">
-        <div class="mb-2 flex flex-wrap items-center gap-2">
-          <span class="rounded-full bg-slate-500/20 px-2.5 py-0.5 text-xs text-slate-300">
-            {analysis.provider} / {analysis.model}
-          </span>
-          <span class="text-xs text-slate-400">{createdAt}</span>
-        </div>
-        <div class="flex items-center justify-between gap-4">
-          <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
-            {analysis.title}
-          </h1>
+    <!-- Masthead -->
+    <header class="border-border/70 grid gap-8 border-b pb-10 lg:grid-cols-12 lg:gap-12">
+      <div class="lg:col-span-8">
+        <p class="eyebrow mb-4">
+          <span class="num">{analysis.provider}</span> · <span class="num">{analysis.model}</span> · <time
+            class="num"
+            datetime={analysis.created_at}>{createdAt}</time
+          >
+        </p>
+        <h1 class="font-display text-4xl leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-[3.25rem]">
+          {analysis.title}
+        </h1>
+        <div class="mt-8">
           <a
             href={`/analyses/${analysis.id}/continue`}
-            class="shrink-0 rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500"
+            class="bg-foreground text-background group inline-flex items-center gap-3 px-5 py-3 text-sm font-medium tracking-tight transition-opacity hover:opacity-90"
           >
+            <span class="bg-primary inline-block h-1.5 w-1.5"></span>
             Continue analysis
+            <span class="ml-1 text-base">→</span>
           </a>
         </div>
+      </div>
+
+      <!-- Sidebar: continuations + meta -->
+      <aside class="border-border/70 lg:col-span-4 lg:border-l lg:pl-8">
         {
-          children.length > 0 && (
-            <div class="mt-3">
-              <span class="text-xs font-semibold tracking-wide text-slate-400 uppercase">Continued as:</span>
-              <ul class="mt-1 space-y-1">
+          children.length > 0 ? (
+            <>
+              <p class="eyebrow mb-3">Continued as</p>
+              <ul class="border-border/60 divide-border/60 divide-y border-y">
                 {children.map((child) => (
                   <li>
-                    <a href={`/analyses/${child.id}`} class="text-sm text-blue-300 underline hover:text-blue-200">
-                      {child.title}
+                    <a
+                      href={`/analyses/${child.id}`}
+                      class="group flex items-baseline justify-between gap-3 py-2.5 text-sm transition-colors hover:bg-[color-mix(in_oklch,var(--foreground)_3%,transparent)]"
+                    >
+                      <span class="group-hover:text-foreground line-clamp-2 font-medium">{child.title}</span>
+                      <span class="num text-muted-foreground shrink-0 text-[0.6875rem]">
+                        {new Date(child.created_at).toLocaleDateString("en-GB", {
+                          day: "2-digit",
+                          month: "short",
+                        })}
+                      </span>
                     </a>
-                    <span class="ml-2 text-xs text-slate-400">
-                      {new Date(child.created_at).toLocaleDateString("pl-PL")}
-
-                      {new Date(child.created_at).toLocaleDateString("pl-PL")}
-                    </span>
                   </li>
                 ))}
               </ul>
-            </div>
+            </>
+          ) : (
+            <>
+              <p class="eyebrow mb-3">Thread</p>
+              <p class="text-muted-foreground text-sm">
+                This is a leaf analysis.{" "}
+                <a href={`/analyses/${analysis.id}/continue`} class="text-foreground underline underline-offset-2">
+                  Branch a continuation
+                </a>{" "}
+                to extend the thread.
+              </p>
+            </>
           )
         }
-      </div>
+      </aside>
+    </header>
 
-      <section class="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
-        <h2 class="mb-2 text-xs font-semibold tracking-wide text-slate-400 uppercase">Topic</h2>
-        <p class="text-sm whitespace-pre-wrap text-slate-200">{analysis.input}</p>
-        {
-          analysis.extra_context && (
-            <div class="mt-3">
-              <h3 class="mb-1 text-xs font-semibold tracking-wide text-slate-400 uppercase">Extra context</h3>
-              <p class="text-sm whitespace-pre-wrap text-slate-200">{analysis.extra_context}</p>
-            </div>
-          )
-        }
-      </section>
-
-      <details class="mb-6 rounded-lg border border-white/10 bg-white/5">
-        <summary
-          class="cursor-pointer p-4 text-xs font-semibold tracking-wide text-slate-400 uppercase hover:text-slate-200"
-        >
-          Prompt Used
-        </summary>
-        <div class="border-t border-white/10 p-4">
-          <p class="mb-1 text-sm font-medium text-white">{analysis.prompt_name_snapshot}</p>
+    <!-- Two-column body: topic + prompt rail on the left, output on the right -->
+    <section class="mt-10 grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <!-- Left rail: topic, prompt, sources -->
+      <aside class="space-y-8 lg:col-span-4">
+        <div>
+          <p class="eyebrow mb-2">Topic</p>
+          <p class="text-foreground/90 text-sm whitespace-pre-wrap">{analysis.input}</p>
           {
-            analysis.prompt_description_snapshot && (
-              <p class="mb-2 text-xs text-slate-400">{analysis.prompt_description_snapshot}</p>
-            )
-          }
-          <pre
-            class="overflow-x-auto rounded bg-black/20 p-3 text-xs whitespace-pre-wrap text-slate-300">{analysis.prompt_body_snapshot}</pre>
-        </div>
-      </details>
-
-      <section class="mb-6 rounded-lg border border-white/10 bg-white/5 p-4">
-        <h2 class="mb-3 text-xs font-semibold tracking-wide text-slate-400 uppercase">AI Output</h2>
-        <MarkdownOutput content={analysis.output} client:load />
-      </section>
-
-      <details class="mb-6 rounded-lg border border-white/10 bg-white/5">
-        <summary
-          class="cursor-pointer p-4 text-xs font-semibold tracking-wide text-slate-400 uppercase hover:text-slate-200"
-        >
-          Sources
-        </summary>
-        <div class="border-t border-white/10 p-4">
-          {
-            sources.length === 0 ? (
-              <p class="text-sm text-slate-400">No sources returned.</p>
-            ) : (
-              <ol class="list-decimal space-y-1.5 pl-5">
-                {sources.map((s) => (
-                  <li class="text-sm">
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="text-blue-300 underline hover:text-blue-200"
-                    >
-                      {s.title ?? s.url}
-                    </a>
-                  </li>
-                ))}
-              </ol>
+            analysis.extra_context && (
+              <div class="mt-4">
+                <p class="eyebrow mb-2">Extra context</p>
+                <p class="text-foreground/90 text-sm whitespace-pre-wrap">{analysis.extra_context}</p>
+              </div>
             )
           }
         </div>
-      </details>
-    </div>
-  </div>
+
+        <details class="border-border/70 group border-t pt-4">
+          <summary
+            class="eyebrow hover:text-foreground flex cursor-pointer list-none items-center justify-between [&::-webkit-details-marker]:hidden"
+          >
+            <span>Prompt used</span>
+            <span class="text-foreground/60 ml-2 text-base transition-transform group-open:rotate-45">+</span>
+          </summary>
+          <div class="mt-4">
+            <p class="text-sm font-medium">{analysis.prompt_name_snapshot}</p>
+            {
+              analysis.prompt_description_snapshot && (
+                <p class="text-muted-foreground mt-1 text-xs">{analysis.prompt_description_snapshot}</p>
+              )
+            }
+            <pre
+              class="num text-foreground/80 bg-muted/60 mt-3 overflow-x-auto p-3 text-[0.75rem] leading-relaxed whitespace-pre-wrap">{analysis.prompt_body_snapshot}</pre>
+          </div>
+        </details>
+
+        <details class="border-border/70 group border-t pt-4">
+          <summary
+            class="eyebrow hover:text-foreground flex cursor-pointer list-none items-center justify-between [&::-webkit-details-marker]:hidden"
+          >
+            <span>Sources · <span class="num">{sources.length}</span></span>
+            <span class="text-foreground/60 ml-2 text-base transition-transform group-open:rotate-45">+</span>
+          </summary>
+          <div class="mt-4">
+            {
+              sources.length === 0 ? (
+                <p class="text-muted-foreground text-sm">No sources returned.</p>
+              ) : (
+                <ol class="space-y-2 text-sm">
+                  {sources.map((s, i) => (
+                    <li class="flex gap-2">
+                      <span class="num text-muted-foreground shrink-0 text-xs">{String(i + 1).padStart(2, "0")}</span>
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-foreground line-clamp-2 underline-offset-2 hover:underline"
+                      >
+                        {s.title ?? s.url}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              )
+            }
+          </div>
+        </details>
+      </aside>
+
+      <!-- Output -->
+      <section class="lg:col-span-8">
+        <p class="eyebrow mb-3">Analysis</p>
+        <div class="border-border/70 border-t pt-6">
+          <MarkdownOutput content={analysis.output} client:load />
+        </div>
+      </section>
+    </section>
+  </article>
 </Layout>

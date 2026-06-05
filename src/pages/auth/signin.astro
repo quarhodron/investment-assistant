@@ -5,18 +5,42 @@ import SignInForm from "@/components/auth/SignInForm";
 const error = Astro.url.searchParams.get("error");
 ---
 
-<Layout title="Sign in">
-  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
-      <h1
-        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
-      >
-        Sign in
-      </h1>
-      <SignInForm serverError={error} client:load />
-      <p class="mt-4 text-center text-sm text-blue-100/60">
-        Don't have an account? <a href="/auth/signup" class="text-purple-300 hover:underline">Sign up</a>
-      </p>
+<Layout title="Sign in" bare>
+  <div class="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
+    <!-- Editorial left rail -->
+    <aside class="border-border/60 relative hidden flex-col justify-between overflow-hidden border-r p-12 lg:flex">
+      <div class="bg-grid pointer-events-none absolute inset-0 opacity-50" aria-hidden="true"></div>
+      <div class="relative">
+        <p class="eyebrow">Quant · Vol. 01 · Subscribers</p>
+        <h2 class="font-display mt-6 max-w-md text-[2.75rem] leading-[0.98] tracking-tight">
+          Welcome back to the<br />
+          <span class="font-light italic">research desk.</span>
+        </h2>
+      </div>
+      <div class="relative">
+        <p class="text-muted-foreground max-w-sm text-sm leading-relaxed">
+          “The best edge is a methodical one — a question asked the same way, every time, against an honest source.”
+        </p>
+        <p class="num text-muted-foreground/80 mt-3 text-xs">— Editor's note</p>
+      </div>
+    </aside>
+
+    <!-- Form column -->
+    <div class="flex items-center justify-center p-6 sm:p-12">
+      <div class="reveal w-full max-w-sm">
+        <p class="eyebrow mb-3">Account</p>
+        <h1 class="font-display text-4xl tracking-tight">Sign in</h1>
+        <p class="text-muted-foreground mt-2 text-sm">Continue where you left off in your research workspace.</p>
+
+        <div class="mt-8">
+          <SignInForm serverError={error} client:load />
+        </div>
+
+        <p class="text-muted-foreground mt-8 text-sm">
+          New here?{" "}
+          <a href="/auth/signup" class="text-foreground font-medium underline underline-offset-2"> Open an account </a>
+        </p>
+      </div>
     </div>
   </div>
 </Layout>

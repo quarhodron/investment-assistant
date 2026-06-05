@@ -3,84 +3,121 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Light theme — amber CRT / paper-terminal vibe */
+/*
+ * QUANT — editorial finance minimalism.
+ * Warm paper light theme (dominant), ink-black dark theme.
+ * Single accent: deep forest green. No gradients. Hairline borders.
+ */
+
 :root {
-  --radius: 0.25rem;
-  --background: oklch(0.96 0.018 85);
-  --foreground: oklch(0.24 0.05 35);
-  --card: oklch(0.98 0.012 85);
-  --card-foreground: oklch(0.24 0.05 35);
-  --popover: oklch(0.98 0.012 85);
-  --popover-foreground: oklch(0.24 0.05 35);
-  --primary: oklch(0.58 0.18 50);
-  --primary-foreground: oklch(0.98 0.012 85);
-  --secondary: oklch(0.92 0.028 85);
-  --secondary-foreground: oklch(0.3 0.06 40);
-  --muted: oklch(0.93 0.022 85);
-  --muted-foreground: oklch(0.5 0.06 50);
-  --accent: oklch(0.6 0.13 200);
-  --accent-foreground: oklch(0.98 0.012 85);
-  --destructive: oklch(0.55 0.25 25);
-  --border: oklch(0.55 0.08 50 / 30%);
-  --input: oklch(0.55 0.08 50 / 25%);
-  --ring: oklch(0.58 0.18 50);
-  --chart-1: oklch(0.58 0.18 50);
-  --chart-2: oklch(0.6 0.13 200);
-  --chart-3: oklch(0.55 0.2 330);
-  --chart-4: oklch(0.62 0.18 145);
-  --chart-5: oklch(0.65 0.2 290);
-  --sidebar: oklch(0.94 0.025 85);
-  --sidebar-foreground: oklch(0.24 0.05 35);
-  --sidebar-primary: oklch(0.58 0.18 50);
-  --sidebar-primary-foreground: oklch(0.98 0.012 85);
-  --sidebar-accent: oklch(0.9 0.035 85);
-  --sidebar-accent-foreground: oklch(0.3 0.06 40);
-  --sidebar-border: oklch(0.55 0.08 50 / 30%);
-  --sidebar-ring: oklch(0.58 0.18 50);
+  --radius: 0.125rem; /* squared corners, faint chamfer */
+
+  /* Surfaces */
+  --background: oklch(0.972 0.012 95); /* warm paper */
+  --foreground: oklch(0.18 0.012 60); /* deep ink */
+  --card: oklch(0.985 0.008 95); /* slightly lighter paper for surfaces */
+  --card-foreground: oklch(0.18 0.012 60);
+  --popover: oklch(0.985 0.008 95);
+  --popover-foreground: oklch(0.18 0.012 60);
+
+  /* Brand — deep forest green (money, growth, restraint) */
+  --primary: oklch(0.42 0.1 160);
+  --primary-foreground: oklch(0.985 0.008 95);
+
+  /* Secondary — quiet warm clay */
+  --secondary: oklch(0.93 0.018 85);
+  --secondary-foreground: oklch(0.3 0.018 60);
+
+  /* Muted */
+  --muted: oklch(0.945 0.012 90);
+  --muted-foreground: oklch(0.48 0.012 70);
+
+  /* Accent — a near-ink contrast block used for inverted chips/buttons */
+  --accent: oklch(0.22 0.012 60);
+  --accent-foreground: oklch(0.972 0.012 95);
+
+  /* Semantic — market */
+  --destructive: oklch(0.55 0.2 27); /* down-day red */
+  --positive: oklch(0.55 0.14 155); /* up-day green (lighter than primary) */
+
+  /* Hairlines */
+  --border: oklch(0.18 0.012 60 / 14%);
+  --input: oklch(0.18 0.012 60 / 18%);
+  --ring: oklch(0.42 0.1 160 / 55%);
+
+  /* Charts */
+  --chart-1: oklch(0.42 0.1 160);
+  --chart-2: oklch(0.55 0.2 27);
+  --chart-3: oklch(0.45 0.04 250);
+  --chart-4: oklch(0.62 0.12 80);
+  --chart-5: oklch(0.36 0.05 280);
+
+  /* Sidebar (reserved) */
+  --sidebar: oklch(0.96 0.012 90);
+  --sidebar-foreground: oklch(0.18 0.012 60);
+  --sidebar-primary: oklch(0.42 0.1 160);
+  --sidebar-primary-foreground: oklch(0.985 0.008 95);
+  --sidebar-accent: oklch(0.92 0.018 85);
+  --sidebar-accent-foreground: oklch(0.3 0.018 60);
+  --sidebar-border: oklch(0.18 0.012 60 / 14%);
+  --sidebar-ring: oklch(0.42 0.1 160 / 55%);
+
+  /* Type stacks */
+  --font-display: "Fraunces", "Source Serif 4", "Iowan Old Style", "Apple Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
   --font-mono:
-    "JetBrains Mono", "Fira Code", "SF Mono", "Cascadia Code", ui-monospace, Menlo, Monaco, Consolas, monospace;
+    "JetBrains Mono", "Geist Mono", "SF Mono", "Cascadia Code", ui-monospace, Menlo, Monaco, Consolas, monospace;
 }
 
-/* Dark theme — phosphor / matrix terminal */
+/* Dark — ink black, with the same accent green, slightly desaturated paper text */
 .dark {
-  --background: oklch(0.13 0.018 150);
-  --foreground: oklch(0.9 0.22 145);
-  --card: oklch(0.18 0.025 150);
-  --card-foreground: oklch(0.9 0.22 145);
-  --popover: oklch(0.16 0.025 150);
-  --popover-foreground: oklch(0.9 0.22 145);
-  --primary: oklch(0.88 0.25 145);
-  --primary-foreground: oklch(0.12 0.02 150);
-  --secondary: oklch(0.24 0.04 150);
-  --secondary-foreground: oklch(0.9 0.22 145);
-  --muted: oklch(0.22 0.03 150);
-  --muted-foreground: oklch(0.65 0.12 145);
-  --accent: oklch(0.78 0.18 195);
-  --accent-foreground: oklch(0.12 0.02 150);
-  --destructive: oklch(0.72 0.27 25);
-  --border: oklch(0.55 0.18 145 / 30%);
-  --input: oklch(0.55 0.18 145 / 20%);
-  --ring: oklch(0.88 0.25 145);
-  --chart-1: oklch(0.88 0.25 145);
-  --chart-2: oklch(0.78 0.18 195);
-  --chart-3: oklch(0.72 0.22 330);
-  --chart-4: oklch(0.85 0.2 90);
-  --chart-5: oklch(0.7 0.24 290);
-  --sidebar: oklch(0.15 0.022 150);
-  --sidebar-foreground: oklch(0.9 0.22 145);
-  --sidebar-primary: oklch(0.88 0.25 145);
-  --sidebar-primary-foreground: oklch(0.12 0.02 150);
-  --sidebar-accent: oklch(0.22 0.03 150);
-  --sidebar-accent-foreground: oklch(0.9 0.22 145);
-  --sidebar-border: oklch(0.55 0.18 145 / 25%);
-  --sidebar-ring: oklch(0.88 0.25 145);
+  --background: oklch(0.135 0.008 80);
+  --foreground: oklch(0.93 0.012 90);
+  --card: oklch(0.165 0.008 80);
+  --card-foreground: oklch(0.93 0.012 90);
+  --popover: oklch(0.165 0.008 80);
+  --popover-foreground: oklch(0.93 0.012 90);
+
+  --primary: oklch(0.74 0.14 160);
+  --primary-foreground: oklch(0.135 0.008 80);
+
+  --secondary: oklch(0.22 0.008 80);
+  --secondary-foreground: oklch(0.93 0.012 90);
+
+  --muted: oklch(0.2 0.008 80);
+  --muted-foreground: oklch(0.66 0.012 90);
+
+  --accent: oklch(0.93 0.012 90);
+  --accent-foreground: oklch(0.135 0.008 80);
+
+  --destructive: oklch(0.68 0.2 27);
+  --positive: oklch(0.74 0.14 160);
+
+  --border: oklch(0.93 0.012 90 / 10%);
+  --input: oklch(0.93 0.012 90 / 14%);
+  --ring: oklch(0.74 0.14 160 / 60%);
+
+  --chart-1: oklch(0.74 0.14 160);
+  --chart-2: oklch(0.68 0.2 27);
+  --chart-3: oklch(0.7 0.06 250);
+  --chart-4: oklch(0.78 0.12 80);
+  --chart-5: oklch(0.62 0.08 280);
+
+  --sidebar: oklch(0.155 0.008 80);
+  --sidebar-foreground: oklch(0.93 0.012 90);
+  --sidebar-primary: oklch(0.74 0.14 160);
+  --sidebar-primary-foreground: oklch(0.135 0.008 80);
+  --sidebar-accent: oklch(0.22 0.008 80);
+  --sidebar-accent-foreground: oklch(0.93 0.012 90);
+  --sidebar-border: oklch(0.93 0.012 90 / 10%);
+  --sidebar-ring: oklch(0.74 0.14 160 / 60%);
 }
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 2px);
-  --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-sm: calc(var(--radius));
+  --radius-md: calc(var(--radius) + 2px);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -96,6 +133,7 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-positive: var(--positive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -112,63 +150,94 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
 
-/* Matrix-style background: deep terminal black with subtle green vignette + grid */
-@utility bg-cosmic {
-  background-color: #050807;
-  background-image:
-    radial-gradient(ellipse at top, oklch(0.25 0.1 145 / 0.35), transparent 60%),
-    radial-gradient(ellipse at bottom, oklch(0.2 0.08 195 / 0.25), transparent 65%),
-    linear-gradient(to bottom, #050807, #07100c, #050807);
-}
+/* ─── Quant utilities ────────────────────────────────────────────────────── */
 
-/* Faint terminal grid overlay — apply to a wrapper for the CRT-grid feel */
+/* Faint grid — laid behind hero sections for the trading-grid feel */
 @utility bg-grid {
   background-image:
-    linear-gradient(oklch(0.7 0.2 145 / 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.7 0.2 145 / 0.06) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--foreground) 6%, transparent) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: -1px -1px;
 }
 
-/* CRT scanlines — purely decorative, layer over hero/landing sections */
-@utility bg-scanlines {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 2px,
-    oklch(0 0 0 / 0.18) 2px,
-    oklch(0 0 0 / 0.18) 3px
-  );
+/* Paper grain — almost imperceptible; gives surfaces a printed feel */
+@utility bg-paper {
+  background-color: var(--background);
+  background-image: radial-gradient(color-mix(in oklch, var(--foreground) 5%, transparent) 0.5px, transparent 0.5px);
+  background-size: 3px 3px;
 }
 
-/* Phosphor glow — apply to headings for the "old monitor" effect */
-@utility text-glow {
-  text-shadow:
-    0 0 6px oklch(0.88 0.25 145 / 0.55),
-    0 0 14px oklch(0.88 0.25 145 / 0.35);
+/* Hairline rule — for editorial separators */
+@utility hairline {
+  border-color: color-mix(in oklch, var(--foreground) 18%, transparent);
 }
 
-@utility text-glow-cyan {
-  text-shadow:
-    0 0 6px oklch(0.78 0.18 195 / 0.6),
-    0 0 14px oklch(0.78 0.18 195 / 0.35);
+/* Small caps eyebrow label */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
 }
 
-/* Blinking terminal cursor */
-@utility cursor-blink {
-  &::after {
-    content: "▌";
-    margin-left: 0.15em;
-    color: var(--primary);
-    animation: terminal-blink 1.05s steps(2, start) infinite;
+/* Tabular numerals — for prices, percentages, dates, IDs */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings:
+    "tnum" 1,
+    "zero" 1;
+}
+
+/* Editorial display headings */
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-feature-settings:
+    "ss01" 1,
+    "ss02" 1,
+    "liga" 1;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+/* Subtle reveal on page load (staggered via animation-delay) */
+@utility reveal {
+  animation: q-reveal 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes q-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes terminal-blink {
+/* Ticker marquee — for landing-page strip */
+@utility ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: q-ticker 60s linear infinite;
+}
+
+@keyframes q-ticker {
+  from {
+    transform: translateX(0);
+  }
   to {
-    visibility: hidden;
+    transform: translateX(-50%);
   }
 }
 
@@ -176,12 +245,23 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
   body {
-    @apply bg-background text-foreground font-mono antialiased;
+    @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings:
       "ss01",
-      "cv01",
+      "cv11",
       "calt" 1;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.018em;
   }
   code,
   kbd,
@@ -189,12 +269,24 @@
   samp {
     font-family: var(--font-mono);
   }
+  /* All numerals get tabular by default — the application is finance-first */
+  .num,
+  time,
+  [data-num] {
+    font-variant-numeric: tabular-nums slashed-zero;
+  }
   ::selection {
-    background-color: oklch(0.88 0.25 145 / 0.35);
-    color: oklch(0.12 0.02 150);
+    background-color: color-mix(in oklch, var(--primary) 28%, transparent);
+    color: var(--foreground);
   }
   .dark ::selection {
-    background-color: oklch(0.88 0.25 145 / 0.5);
-    color: oklch(0.08 0.015 150);
+    background-color: color-mix(in oklch, var(--primary) 42%, transparent);
+    color: var(--background);
+  }
+  /* Focus ring discipline — a single accented hairline */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 1px;
   }
 }

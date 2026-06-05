@@ -5,18 +5,54 @@ import SignUpForm from "@/components/auth/SignUpForm";
 const error = Astro.url.searchParams.get("error");
 ---
 
-<Layout title="Sign up">
-  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
-      <h1
-        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
-      >
-        Sign up
-      </h1>
-      <SignUpForm serverError={error} client:load />
-      <p class="mt-4 text-center text-sm text-blue-100/60">
-        Already have an account? <a href="/auth/signin" class="text-purple-300 hover:underline">Sign in</a>
-      </p>
+<Layout title="Open account" bare>
+  <div class="grid min-h-[calc(100vh-4rem)] lg:grid-cols-2">
+    <!-- Editorial left rail -->
+    <aside class="border-border/60 relative hidden flex-col justify-between overflow-hidden border-r p-12 lg:flex">
+      <div class="bg-grid pointer-events-none absolute inset-0 opacity-50" aria-hidden="true"></div>
+      <div class="relative">
+        <p class="eyebrow">Quant · New subscriber</p>
+        <h2 class="font-display mt-6 max-w-md text-[2.75rem] leading-[0.98] tracking-tight">
+          A research desk<br />
+          <span class="font-light italic">of one.</span>
+        </h2>
+        <p class="text-muted-foreground mt-6 max-w-sm text-sm leading-relaxed">
+          Bring your own model keys. We supply the workflow: reusable prompts, streaming output, continuable threads,
+          and a saved paper trail for every run.
+        </p>
+      </div>
+      <ul class="num text-muted-foreground relative space-y-2 text-xs">
+        <li class="flex items-center gap-2">
+          <span class="bg-foreground inline-block h-px w-6"></span>
+          <span>01 · Open account — no card required</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="bg-foreground inline-block h-px w-6"></span>
+          <span>02 · Paste an OpenAI or Anthropic key</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="bg-foreground inline-block h-px w-6"></span>
+          <span>03 · Run your first analysis in seconds</span>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Form column -->
+    <div class="flex items-center justify-center p-6 sm:p-12">
+      <div class="reveal w-full max-w-sm">
+        <p class="eyebrow mb-3">Account</p>
+        <h1 class="font-display text-4xl tracking-tight">Open account</h1>
+        <p class="text-muted-foreground mt-2 text-sm">A workspace, your keys, and a clean slate of research.</p>
+
+        <div class="mt-8">
+          <SignUpForm serverError={error} client:load />
+        </div>
+
+        <p class="text-muted-foreground mt-8 text-sm">
+          Already a subscriber?{" "}
+          <a href="/auth/signin" class="text-foreground font-medium underline underline-offset-2"> Sign in </a>
+        </p>
+      </div>
     </div>
   </div>
 </Layout>

@@ -66,13 +66,13 @@ function FieldHint({ text }: { text: string }) {
         onClick={() => {
           setOpen((v) => !v);
         }}
-        className="ml-1 text-white/30 hover:text-white/60 focus:outline-none"
+        className="text-muted-foreground/60 hover:text-foreground ml-1.5 focus:outline-none"
         aria-label="More info"
       >
         <Info size={13} />
       </button>
       {open && (
-        <span className="absolute top-0 left-5 z-10 w-64 rounded-md border border-white/15 bg-slate-800 px-3 py-2 text-xs leading-relaxed text-white/70 shadow-lg">
+        <span className="border-border bg-card text-muted-foreground absolute top-5 left-0 z-10 w-64 border px-3 py-2 text-xs leading-relaxed shadow-md">
           {text}
         </span>
       )}
@@ -222,28 +222,35 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
 
   if (prompts.length === 0) {
     return (
-      <div className="rounded-lg border border-white/10 bg-white/5 p-8 text-center">
-        <p className="mb-2 text-base font-medium text-white/80">No prompts yet</p>
-        <p className="mb-4 text-sm text-white/60">You need at least one prompt before running an analysis.</p>
+      <div className="border-border/70 bg-card flex flex-col items-start gap-3 border p-8">
+        <p className="text-muted-foreground text-[0.6875rem] font-medium tracking-[0.16em] uppercase">Setup required</p>
+        <p className="font-display text-2xl tracking-tight">No prompts yet.</p>
+        <p className="text-muted-foreground text-sm">You need at least one prompt before running an analysis.</p>
         <a
           href="/prompts"
-          className="inline-block rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500"
+          className="bg-foreground text-background mt-2 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-tight"
         >
-          Create your first prompt
+          <span className="bg-primary inline-block h-1.5 w-1.5" />
+          Create your first prompt →
         </a>
       </div>
     );
   }
 
+  const fieldLabel =
+    "text-muted-foreground mb-1.5 flex items-center text-[0.6875rem] font-medium tracking-[0.16em] uppercase";
+  const fieldControl =
+    "border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-60";
+
   return (
-    <div className="space-y-6">
-      {/* Form */}
-      <div className="rounded-lg border border-white/10 bg-white/5 p-6">
-        <div className="space-y-4">
+    <div className="space-y-8">
+      {/* Form — flat card, hairline border */}
+      <div className="border-border/70 bg-card border p-6 sm:p-8">
+        <div className="space-y-5">
           {/* Prompt selector */}
           <div>
-            <label htmlFor="prompt_id" className="mb-1 block text-sm font-medium text-white/70">
-              Prompt <span className="text-red-400">*</span>
+            <label htmlFor="prompt_id" className={fieldLabel}>
+              Prompt <span className="text-destructive ml-1 tracking-normal normal-case">*</span>
             </label>
             <select
               id="prompt_id"
@@ -252,10 +259,10 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
                 setPromptId(e.target.value);
               }}
               disabled={frozen}
-              className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:border-purple-400 focus:outline-none disabled:opacity-50"
+              className={fieldControl}
             >
               {prompts.map((p) => (
-                <option key={p.id} value={p.id} className="bg-slate-800">
+                <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
               ))}
@@ -264,8 +271,8 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
 
           {/* Model selector */}
           <div>
-            <label htmlFor="model_id" className="mb-1 block text-sm font-medium text-white/70">
-              Model <span className="text-red-400">*</span>
+            <label htmlFor="model_id" className={fieldLabel}>
+              Model <span className="text-destructive ml-1 tracking-normal normal-case">*</span>
             </label>
             <select
               id="model_id"
@@ -274,12 +281,12 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
                 setModelId(e.target.value);
               }}
               disabled={frozen}
-              className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white focus:border-purple-400 focus:outline-none disabled:opacity-50"
+              className={`${fieldControl} font-mono`}
             >
               {Object.entries(grouped).map(([prov, provModels]) => (
                 <optgroup key={prov} label={PROVIDER_LABELS[prov] ?? prov}>
                   {provModels.map((m) => (
-                    <option key={m.id} value={m.id} className="bg-slate-800">
+                    <option key={m.id} value={m.id}>
                       {m.display_name}
                     </option>
                   ))}
@@ -290,18 +297,21 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
 
           {/* No API key alert */}
           {!hasApiKey && selectedProvider && (
-            <div className="rounded-md border border-yellow-400/30 bg-yellow-500/10 p-3 text-sm text-yellow-200">
-              No API key configured for {PROVIDER_LABELS[selectedProvider] ?? selectedProvider}.{" "}
-              <a href="/settings" className="underline hover:text-yellow-100">
-                Configure it in Settings.
-              </a>
+            <div className="flex items-start gap-3 border-l-2 border-amber-600/70 bg-[color-mix(in_oklch,oklch(0.62_0.14_70)_8%,transparent)] px-3 py-2.5 text-sm text-amber-900 dark:text-amber-200">
+              <span className="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Setup</span>
+              <span>
+                No API key configured for {PROVIDER_LABELS[selectedProvider] ?? selectedProvider}.{" "}
+                <a href="/settings" className="text-foreground font-medium underline underline-offset-2">
+                  Configure it in Settings →
+                </a>
+              </span>
             </div>
           )}
 
           {/* Topic */}
           <div>
-            <label htmlFor="input" className="mb-1 flex items-center text-sm font-medium text-white/70">
-              Topic <span className="ml-0.5 text-red-400">*</span>
+            <label htmlFor="input" className={fieldLabel}>
+              Topic <span className="text-destructive mx-1 tracking-normal normal-case">*</span>
               <FieldHint text="What you want the AI to analyze — a sector, macro theme, news event, or any free-text subject. This is sent directly to the model." />
             </label>
             <input
@@ -312,15 +322,16 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
                 setInput(e.target.value);
               }}
               disabled={frozen}
-              placeholder="e.g. renewable energy sector, S&P 500 index, Tesla"
-              className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-purple-400 focus:outline-none disabled:opacity-50"
+              placeholder="e.g. renewable energy sector · S&P 500 · Tesla"
+              className={fieldControl}
             />
           </div>
 
           {/* Extra context */}
           <div>
-            <label htmlFor="extra_context" className="mb-1 block text-sm font-medium text-white/70">
-              Extra context <span className="text-white/40">(optional)</span>
+            <label htmlFor="extra_context" className={fieldLabel}>
+              Extra context{" "}
+              <span className="text-muted-foreground/60 ml-1 tracking-normal normal-case">(optional)</span>
             </label>
             <textarea
               id="extra_context"
@@ -331,14 +342,14 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
               disabled={frozen}
               rows={2}
               placeholder="Any additional context for the analysis"
-              className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-purple-400 focus:outline-none disabled:opacity-50"
+              className={fieldControl}
             />
           </div>
 
           {/* Title */}
           <div>
-            <label htmlFor="title" className="mb-1 flex items-center text-sm font-medium text-white/70">
-              Title <span className="ml-0.5 text-red-400">*</span>
+            <label htmlFor="title" className={fieldLabel}>
+              Title <span className="text-destructive mx-1 tracking-normal normal-case">*</span>
               <FieldHint text="The name for the saved record in your analyses history." />
             </label>
             <input
@@ -350,46 +361,74 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
               }}
               disabled={frozen}
               maxLength={300}
-              placeholder="e.g. Renewable energy sector overview"
-              className="w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-purple-400 focus:outline-none disabled:opacity-50"
+              placeholder="e.g. Renewable energy sector — H2 2026 outlook"
+              className={fieldControl}
             />
           </div>
 
           {/* Run button */}
-          <button
-            type="button"
-            onClick={handleRun}
-            disabled={frozen || !hasApiKey || !input.trim() || !promptId || !title.trim()}
-            className="rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {status === "streaming" ? "Running…" : "Run analysis"}
-          </button>
+          <div className="border-border/60 flex items-center justify-between gap-4 border-t pt-5">
+            <p className="text-muted-foreground text-xs">
+              {status === "streaming" ? (
+                <span className="text-foreground inline-flex items-center gap-2">
+                  <span className="bg-primary inline-block h-1.5 w-1.5 animate-pulse" />
+                  Streaming response…
+                </span>
+              ) : (
+                <>Output streams here once dispatched.</>
+              )}
+            </p>
+            <button
+              type="button"
+              onClick={handleRun}
+              disabled={frozen || !hasApiKey || !input.trim() || !promptId || !title.trim()}
+              className="bg-foreground text-background inline-flex items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-tight transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <span className="bg-primary inline-block h-1.5 w-1.5" />
+              {status === "streaming" ? "Running…" : "Run analysis"}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Output panel */}
+      {/* Output panel — opens as an editorial sheet */}
       {(status === "streaming" || status === "saved" || status === "error") && (
-        <div className="rounded-lg border border-white/10 bg-white/5 p-6">
+        <div className="border-border/70 bg-card border p-6 sm:p-8">
+          <div className="border-border/70 mb-5 flex items-baseline justify-between border-b pb-3">
+            <p className="text-muted-foreground text-[0.6875rem] font-medium tracking-[0.16em] uppercase">Output</p>
+            <p className="text-muted-foreground font-mono text-[0.6875rem]">
+              {status === "streaming" && <span className="text-foreground">● live</span>}
+              {status === "saved" && <span className="text-positive">● saved</span>}
+              {status === "error" && <span className="text-destructive">● error</span>}
+            </p>
+          </div>
+
           {output && (
-            <div className="mb-4 text-sm leading-relaxed text-white/85 [&_h1]:mt-4 [&_h1]:mb-2 [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-white [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:text-white [&_h3]:mt-3 [&_h3]:mb-1 [&_h3]:font-semibold [&_h3]:text-white/90 [&_li]:ml-4 [&_ol]:my-2 [&_ol]:list-decimal [&_p]:mb-2 [&_strong]:font-semibold [&_strong]:text-white [&_ul]:my-2 [&_ul]:list-disc">
+            <div className="prose-output text-foreground/90 [&_h1]:font-display [&_h2]:font-display [&_strong]:text-foreground mb-4 max-w-none text-[0.95rem] leading-[1.65] [&_a]:underline [&_a]:underline-offset-2 [&_em]:italic [&_h1]:mt-6 [&_h1]:mb-2.5 [&_h1]:text-xl [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:text-lg [&_h3]:mt-4 [&_h3]:mb-1.5 [&_h3]:text-base [&_h3]:font-semibold [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-3 [&_strong]:font-semibold [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-5">
               <ReactMarkdown>{output}</ReactMarkdown>
             </div>
           )}
 
-          {status === "streaming" && <p className="animate-pulse text-sm text-purple-300">Receiving response…</p>}
+          {status === "streaming" && (
+            <p className="text-muted-foreground inline-flex items-center gap-2 text-xs">
+              <span className="bg-foreground inline-block h-1.5 w-1.5 animate-pulse" />
+              Receiving response…
+            </p>
+          )}
 
           {status === "saved" && analysisId && (
-            <div className="rounded-md border border-green-400/30 bg-green-500/10 p-3 text-sm text-green-200">
-              Saved —{" "}
-              <a href={`/analyses/${analysisId}`} className="underline hover:text-green-100">
-                view analysis
+            <div className="text-positive border-positive/40 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--positive)_8%,transparent)] px-3 py-2.5 text-sm">
+              <span className="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Saved</span>
+              <a href={`/analyses/${analysisId}`} className="text-foreground font-medium underline underline-offset-2">
+                View analysis →
               </a>
             </div>
           )}
 
           {status === "error" && errorFrame && (
-            <div className="rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-200">
-              {friendlyError(errorFrame)}
+            <div className="text-destructive border-destructive/40 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--destructive)_8%,transparent)] px-3 py-2.5 text-sm">
+              <span className="text-[0.625rem] font-medium tracking-[0.14em] uppercase">Error</span>
+              <span>{friendlyError(errorFrame)}</span>
             </div>
           )}
         </div>

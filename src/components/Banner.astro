@@ -1,42 +1,106 @@
 ---
-type Variant = "info" | "warning" | "error";
+type Variant = "info" | "warning" | "error" | "success";
 
 interface Props {
   variant?: Variant;
 }
 
 const { variant = "info" } = Astro.props;
+
+const labels: Record<Variant, string> = {
+  info: "Note",
+  warning: "Heads up",
+  error: "Alert",
+  success: "Saved",
+};
 ---
 
 <div class:list={["banner", `banner--${variant}`]} role={variant === "error" ? "alert" : "status"}>
-  <slot />
+  <div class="banner__inner">
+    <span class="banner__tag">{labels[variant]}</span>
+    <span class="banner__body"><slot /></span>
+  </div>
 </div>
 
 <style>
   .banner {
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
-    text-align: center;
-    border-bottom: 1px solid;
+    width: 100%;
+    border-bottom: 1px solid var(--color-border, currentColor);
+    font-family: var(--font-sans);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+  .banner__inner {
+    margin: 0 auto;
+    max-width: 72rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.875rem;
+    padding: 0.625rem 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .banner__inner {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+  }
+  .banner__tag {
+    flex-shrink: 0;
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid currentColor;
+  }
+  .banner__body {
+    flex: 1;
+    min-width: 0;
   }
   .banner :global(a) {
     color: inherit;
     text-decoration: underline;
-    font-weight: 600;
+    text-underline-offset: 2px;
+    font-weight: 500;
   }
+
+  /* Info — neutral ink on paper */
   .banner--info {
-    background: #dbeafe;
-    color: #1e3a8a;
-    border-color: #3b82f6;
+    background: oklch(0.96 0.012 95);
+    color: oklch(0.22 0.012 60);
+    border-color: oklch(0.22 0.012 60 / 0.15);
   }
+  .banner--info .banner__tag {
+    color: oklch(0.22 0.012 60 / 0.6);
+  }
+
+  /* Warning — soft amber/clay */
   .banner--warning {
-    background: #fef3c7;
-    color: #78350f;
-    border-color: #f59e0b;
+    background: oklch(0.94 0.04 85);
+    color: oklch(0.32 0.06 60);
+    border-color: oklch(0.55 0.1 70 / 0.4);
   }
+  .banner--warning .banner__tag {
+    color: oklch(0.45 0.12 60);
+  }
+
+  /* Error — market-red on warm wash */
   .banner--error {
-    background: #fee2e2;
-    color: #7f1d1d;
-    border-color: #dc2626;
+    background: oklch(0.96 0.03 27);
+    color: oklch(0.35 0.16 27);
+    border-color: oklch(0.55 0.2 27 / 0.4);
+  }
+  .banner--error .banner__tag {
+    color: oklch(0.45 0.18 27);
+  }
+
+  /* Success — forest tint */
+  .banner--success {
+    background: oklch(0.95 0.03 155);
+    color: oklch(0.3 0.08 155);
+    border-color: oklch(0.42 0.1 160 / 0.4);
+  }
+  .banner--success .banner__tag {
+    color: oklch(0.42 0.1 160);
   }
 </style>

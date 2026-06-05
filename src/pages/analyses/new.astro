@@ -44,20 +44,24 @@ if (supabase && user) {
 }
 ---
 
-<Layout title="New Analysis">
-  <div class="bg-cosmic min-h-screen p-6">
-    <div class="mx-auto max-w-2xl">
-      <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
-        New Analysis
+<Layout title="New analysis">
+  <div class="mx-auto max-w-3xl">
+    <header class="border-border/70 mb-10 border-b pb-6">
+      <p class="eyebrow mb-3">Dispatch · new run</p>
+      <h1 class="font-display text-5xl leading-[1.05] tracking-tight sm:text-6xl">
+        New <span class="font-light italic">analysis</span>
       </h1>
+      <p class="text-muted-foreground mt-3 text-sm">
+        Pick a prompt and a model, supply the subject, and dispatch the research run.
+      </p>
+    </header>
 
-      <NewAnalysisForm
-        prompts={prompts}
-        models={models}
-        apiKeyStatus={apiKeyStatus}
-        defaultModelId={defaultModelId}
-        client:load
-      />
-    </div>
+    <NewAnalysisForm
+      prompts={prompts}
+      models={models}
+      apiKeyStatus={apiKeyStatus}
+      defaultModelId={defaultModelId}
+      client:load
+    />
   </div>
 </Layout>

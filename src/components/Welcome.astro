@@ -1,124 +1,206 @@
 ---
-
+const tickers = [
+  { sym: "SPX", chg: "+0.42%" },
+  { sym: "NDX", chg: "+0.61%" },
+  { sym: "DJI", chg: "-0.08%" },
+  { sym: "RUT", chg: "+1.12%" },
+  { sym: "VIX", chg: "-2.41%" },
+  { sym: "GLD", chg: "+0.18%" },
+  { sym: "USO", chg: "-0.74%" },
+  { sym: "BTC", chg: "+3.05%" },
+  { sym: "TSLA", chg: "+1.84%" },
+  { sym: "NVDA", chg: "+2.21%" },
+  { sym: "AAPL", chg: "-0.34%" },
+  { sym: "MSFT", chg: "+0.55%" },
+];
 ---
 
-<div class="bg-cosmic relative min-h-screen w-full overflow-hidden">
-  <!-- Cosmic orbs -->
-  <div
-    class="pointer-events-none absolute top-1/4 -left-24 h-[350px] w-[350px] rounded-full bg-purple-500/20 blur-[120px]"
-  >
+<!-- Hairline ticker strip just under the topbar — purely decorative -->
+<aside class="border-border/60 bg-card/40 relative overflow-hidden border-b" aria-hidden="true">
+  <div class="ticker num text-muted-foreground py-2 text-[0.6875rem] tracking-tight">
+    {
+      [...tickers, ...tickers].map((t) => (
+        <span class="mx-6 inline-flex items-center gap-2">
+          <span class="text-foreground font-medium">{t.sym}</span>
+          <span class:list={[t.chg.startsWith("-") ? "text-destructive" : "text-positive"]}>{t.chg}</span>
+        </span>
+      ))
+    }
   </div>
-  <div
-    class="pointer-events-none absolute top-2/3 -right-16 h-[250px] w-[250px] rounded-full bg-blue-500/15 blur-[100px]"
-  >
-  </div>
-  <div
-    class="pointer-events-none absolute top-0 left-1/2 h-[300px] w-[300px] -translate-x-1/2 rounded-full bg-indigo-400/10 blur-[140px]"
-  >
-  </div>
+</aside>
 
-  <!-- Star field -->
-  <div
-    class="pointer-events-none absolute inset-0"
-    style="background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px), radial-gradient(circle, rgba(255,255,255,0.07) 1px, transparent 1px); background-size: 200px 200px, 150px 150px, 100px 100px; background-position: 0 0, 40px 60px, 80px 30px;"
-  >
-  </div>
+<main class="relative">
+  <!-- HERO -->
+  <section class="relative isolate overflow-hidden">
+    <div class="bg-grid pointer-events-none absolute inset-0 opacity-60" aria-hidden="true"></div>
 
-  <div class="relative z-10 p-4 sm:p-8">
-    <!-- Hero section -->
-    <div class="mx-auto flex max-w-4xl flex-col items-center justify-center px-4 py-24 text-center sm:py-32 lg:py-40">
-      <h1
-        class="mb-6 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 bg-clip-text text-5xl leading-tight font-bold text-transparent sm:text-6xl lg:text-7xl"
+    <div
+      class="relative mx-auto grid w-full max-w-6xl gap-12 px-6 pt-20 pb-24 sm:px-10 sm:pt-28 sm:pb-32 lg:grid-cols-12 lg:gap-8"
+    >
+      <!-- Left column: editorial copy block -->
+      <div class="reveal lg:col-span-8" style="animation-delay: 80ms">
+        <p class="eyebrow mb-6 flex items-center gap-3">
+          <span class="bg-foreground inline-block h-px w-8" aria-hidden="true"></span>
+          Issue №01 · Research, on demand
+        </p>
+
+        <h1 class="display text-foreground text-[clamp(2.75rem,7.5vw,5.75rem)]">
+          Quiet conviction,<br />
+          <span class="font-light italic">measured</span> in markets.
+        </h1>
+
+        <p class="text-muted-foreground mt-8 max-w-xl text-lg leading-relaxed sm:text-xl">
+          Quant is an AI research desk for individual investors. Compose a thesis, pick a model, and receive long-form,
+          citation-backed analysis on any sector, ticker, or macro event — written, saved, and continuable.
+        </p>
+
+        <div class="mt-10 flex flex-wrap items-center gap-3">
+          <a
+            href="/auth/signup"
+            class="bg-foreground text-background group inline-flex items-center gap-3 px-5 py-3 text-sm font-medium tracking-tight transition-opacity hover:opacity-90"
+          >
+            <span
+              class="bg-primary text-primary-foreground -ml-2 inline-flex h-5 w-5 items-center justify-center text-[0.625rem]"
+              >→</span
+            >
+            Open a research account
+          </a>
+          <a
+            href="/auth/signin"
+            class="text-foreground border-foreground/30 hover:border-foreground inline-flex items-center px-5 py-3 text-sm font-medium tracking-tight transition-colors"
+            style="border-top: 1px solid; border-bottom: 1px solid;"
+          >
+            Sign in
+          </a>
+        </div>
+      </div>
+
+      <!-- Right column: vertical metadata strip -->
+      <aside class="reveal lg:col-span-4 lg:pt-6 lg:pl-8" style="animation-delay: 180ms">
+        <dl class="border-border/70 grid grid-cols-2 gap-y-6 border-l pl-6 text-sm lg:grid-cols-1">
+          <div>
+            <dt class="eyebrow mb-1.5">Coverage</dt>
+            <dd class="font-display text-2xl leading-none">Sectors · Indices · Tickers</dd>
+          </div>
+          <div>
+            <dt class="eyebrow mb-1.5">Models</dt>
+            <dd class="num text-base">GPT-4o · Claude 3.5 · GPT-4o-mini</dd>
+          </div>
+          <div>
+            <dt class="eyebrow mb-1.5">Citations</dt>
+            <dd class="text-base">Web-search grounded, source-listed.</dd>
+          </div>
+          <div>
+            <dt class="eyebrow mb-1.5">Posture</dt>
+            <dd class="text-base italic">Informational only. Not advice.</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <!-- THREE-CARD MANIFESTO -->
+  <section class="border-border/60 bg-card/40 border-y">
+    <div class="mx-auto grid w-full max-w-6xl grid-cols-1 divide-y px-0 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+      {
+        [
+          {
+            n: "01",
+            head: "Compose a thesis",
+            body: "Stash reusable prompts — sector overview, valuation check, news catalyst — and dispatch them against any subject without retyping the scaffolding.",
+          },
+          {
+            n: "02",
+            head: "Stream the answer",
+            body: "Output renders token-by-token as the model thinks. Continue, branch, or quote any prior run — your work tree is saved as you go.",
+          },
+          {
+            n: "03",
+            head: "Own the chain",
+            body: "Bring your own keys (OpenAI, Anthropic). No model lock-in, no opaque pricing. The research desk is yours; we just laid out the desk.",
+          },
+        ].map((item, i) => (
+          <div class="reveal divide-border/60 group px-8 py-10 sm:py-14" style={`animation-delay: ${260 + i * 90}ms`}>
+            <span class="num text-muted-foreground text-xs">{item.n} ──</span>
+            <h3 class="font-display mt-4 text-2xl leading-tight tracking-tight">{item.head}</h3>
+            <p class="text-muted-foreground mt-3 text-sm leading-relaxed">{item.body}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- "ANATOMY OF A RUN" — annotated sample -->
+  <section class="mx-auto w-full max-w-6xl px-6 py-20 sm:px-10 sm:py-28">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-12">
+      <header class="lg:col-span-4">
+        <p class="eyebrow mb-4">Anatomy of a run</p>
+        <h2 class="font-display text-4xl leading-[1.05] tracking-tight sm:text-5xl">
+          One prompt.<br />
+          <span class="font-light italic">One thesis.</span><br />
+          A paper trail.
+        </h2>
+        <p class="text-muted-foreground mt-6 max-w-sm text-sm leading-relaxed">
+          Every analysis is saved with its prompt snapshot, model, citations, and lineage — so you can revisit it
+          tomorrow and know exactly what you asked, who answered, and what they read.
+        </p>
+      </header>
+
+      <article
+        class="border-border/70 bg-card relative border lg:col-span-8"
+        style="box-shadow: 4px 4px 0 0 color-mix(in oklch, var(--foreground) 8%, transparent);"
       >
-        10x Astro Starter
-      </h1>
-      <p class="mb-10 max-w-2xl text-lg text-blue-100/70 sm:text-xl">
-        A production-ready starter with authentication, modern tooling, and a cosmic developer experience.
+        <header class="border-border/70 flex items-center justify-between border-b px-6 py-3 text-xs">
+          <span class="num text-muted-foreground">RUN-00482 · openai/gpt-4o · 2026-06-05 09:14</span>
+          <span class="text-positive flex items-center gap-1.5">
+            <span class="bg-positive inline-block h-1.5 w-1.5 rounded-full"></span>
+            saved
+          </span>
+        </header>
+        <div class="space-y-5 px-6 py-6">
+          <div>
+            <p class="eyebrow mb-1.5">Topic</p>
+            <p class="text-base font-medium">Renewable energy sector — H2 2026 outlook</p>
+          </div>
+          <div>
+            <p class="eyebrow mb-1.5">Prompt</p>
+            <p class="text-muted-foreground border-foreground/30 border-l-2 pl-3 text-sm italic">
+              Survey the sector. Macro tailwinds. Three names to watch. Material risks. Cite primary sources.
+            </p>
+          </div>
+          <div>
+            <p class="eyebrow mb-2">Output (excerpt)</p>
+            <div class="text-foreground/85 space-y-2 text-sm leading-relaxed">
+              <p>
+                <strong class="text-foreground">Macro.</strong> IRA tailwinds remain intact through 2026; pace of interconnect
+                queue clearance is the swing variable. Storage attachment rates continue to compress LCOE...
+              </p>
+              <p>
+                <strong class="text-foreground">Names.</strong>
+                <span class="num"> NEE</span>, <span class="num">FSLR</span>, <span class="num">ENPH</span> — each on a distinct
+                thesis (utility-scale, modules, residential). Detail in §3...
+              </p>
+            </div>
+          </div>
+          <div class="border-border/70 flex items-center justify-between border-t pt-4 text-xs">
+            <span class="num text-muted-foreground">7 sources · 1,842 tokens</span>
+            <span class="text-foreground inline-flex items-center gap-2 font-medium"> Continue analysis → </span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- DISCLAIMER STRIP -->
+  <section class="border-border/60 border-t">
+    <div
+      class="mx-auto flex w-full max-w-6xl flex-col gap-4 px-6 py-10 text-xs sm:flex-row sm:items-baseline sm:justify-between sm:px-10"
+    >
+      <p class="eyebrow">Important · Read</p>
+      <p class="text-muted-foreground max-w-3xl leading-relaxed">
+        Quant generates AI-assisted research. Output may be incomplete or wrong; verify everything against primary
+        sources before making any investment decision. Past performance ≠ future returns. You are the analyst of record.
       </p>
-      <div class="flex flex-col gap-4 sm:flex-row">
-        <a
-          href="/auth/signin"
-          class="inline-flex items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-purple-500"
-        >
-          Sign In
-        </a>
-        <a
-          href="/auth/signup"
-          class="inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-white/10"
-        >
-          Sign Up
-        </a>
-      </div>
     </div>
-
-    <!-- Feature cards -->
-    <div class="mx-auto grid max-w-4xl grid-cols-1 gap-6 px-4 pb-24 sm:grid-cols-3">
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="mb-4 text-purple-300"
-        >
-          <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Authentication Ready</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
-          Built-in Supabase auth with sign in, sign up, and protected routes out of the box.
-        </p>
-      </div>
-
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="mb-4 text-purple-300"
-        >
-          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-          <polyline points="2 17 12 22 22 17"></polyline>
-          <polyline points="2 12 12 17 22 12"></polyline>
-        </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Modern Stack</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
-          Astro 5, React 19, Tailwind 4, and TypeScript — the latest tools, ready to go.
-        </p>
-      </div>
-
-      <div class="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="mb-4 text-purple-300"
-        >
-          <polyline points="16 18 22 12 16 6"></polyline>
-          <polyline points="8 6 2 12 8 18"></polyline>
-        </svg>
-        <h3 class="mb-2 text-lg font-semibold text-white">Developer Experience</h3>
-        <p class="text-sm leading-relaxed text-blue-100/60">
-          ESLint, Prettier, and pre-commit hooks keep your codebase clean from day one.
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
+  </section>
+</main>

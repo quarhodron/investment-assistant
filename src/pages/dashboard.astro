@@ -1,27 +1,259 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
 
 const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+type ApiKeysShape = { anthropic?: unknown; openai?: unknown } | null;
+
+interface RecentAnalysis {
+  id: string;
+  title: string;
+  provider: string;
+  model: string;
+  created_at: string;
+}
+
+let totalAnalyses = 0;
+let weekAnalyses = 0;
+let promptCount = 0;
+let recent: RecentAnalysis[] = [];
+let apiKeys = { anthropic: false, openai: false };
+
+if (supabase && user) {
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+  const [totalRes, weekRes, promptsRes, recentRes, settingsRes] = await Promise.all([
+    supabase.from("analyses").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase
+      .from("analyses")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", sevenDaysAgo),
+    supabase.from("prompts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+    supabase
+      .from("analyses")
+      .select("id, title, provider, model, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(5),
+    supabase.from("user_settings").select("api_keys").eq("user_id", user.id).single(),
+  ]);
+
+  totalAnalyses = totalRes.count ?? 0;
+  weekAnalyses = weekRes.count ?? 0;
+  promptCount = promptsRes.count ?? 0;
+  recent = (recentRes.data ?? []) as RecentAnalysis[];
+
+  if (settingsRes.data) {
+    const keys = settingsRes.data.api_keys as ApiKeysShape;
+    apiKeys = {
+      anthropic: keys?.anthropic !== undefined,
+      openai: keys?.openai !== undefined,
+    };
+  }
+}
+
+const emailHandle = user?.email?.split("@")[0] ?? "analyst";
+const today = new Date().toLocaleDateString("en-GB", {
+  weekday: "long",
+  day: "2-digit",
+  month: "long",
+  year: "numeric",
+});
+const issueNo = String(Math.max(1, totalAnalyses)).padStart(4, "0");
+const keysOk = apiKeys.anthropic || apiKeys.openai;
 ---
 
 <Layout title="Dashboard">
-  <div class="bg-cosmic flex min-h-screen items-center justify-center p-4">
-    <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
-      <h1 class="mb-4 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-        Dashboard
-      </h1>
-      <p class="text-blue-100/80">
-        Welcome, <span class="font-semibold text-white">{user?.email}</span>
+  <!-- Editorial masthead -->
+  <header class="border-border/70 mb-12 flex flex-wrap items-end justify-between gap-6 border-b pb-6">
+    <div>
+      <p class="eyebrow mb-2">
+        Dashboard · <span class="num">{today}</span>
       </p>
-      <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
-      <form method="POST" action="/api/auth/signout" class="mt-6">
-        <button
-          type="submit"
-          class="rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm transition-colors hover:bg-white/20"
-        >
-          Sign out
-        </button>
-      </form>
+      <h1 class="font-display text-5xl leading-[0.95] tracking-tight sm:text-6xl">
+        Morning, <span class="font-light italic">{emailHandle}</span>.
+      </h1>
     </div>
-  </div>
+    <div class="num text-muted-foreground text-right text-xs">
+      <p>Issue №{issueNo}</p>
+      <p>Quant · Research desk</p>
+    </div>
+  </header>
+
+  <!-- Stat row -->
+  <section
+    class="border-border/70 grid grid-cols-2 gap-px overflow-hidden border bg-[color-mix(in_oklch,var(--foreground)_14%,transparent)] lg:grid-cols-4"
+    aria-label="Workspace metrics"
+  >
+    {
+      [
+        { label: "Analyses · total", value: totalAnalyses, suffix: "runs" },
+        { label: "This week", value: weekAnalyses, suffix: "runs", accent: weekAnalyses > 0 },
+        { label: "Prompts · saved", value: promptCount, suffix: "items" },
+        {
+          label: "API keys",
+          value: (apiKeys.anthropic ? 1 : 0) + (apiKeys.openai ? 1 : 0),
+          suffix: "of 2",
+          accent: keysOk,
+        },
+      ].map((stat) => (
+        <div class="bg-card flex flex-col justify-between gap-6 px-6 py-7">
+          <p class="eyebrow">{stat.label}</p>
+          <p class="font-display flex items-baseline gap-2 text-5xl leading-none tracking-tight">
+            <span class="num tabular-nums">{stat.value}</span>
+            <span class="text-muted-foreground/70 text-xs font-normal tracking-normal">{stat.suffix}</span>
+            {stat.accent && <span class="bg-positive ml-1 inline-block h-1.5 w-1.5 rounded-full" aria-hidden="true" />}
+          </p>
+        </div>
+      ))
+    }
+  </section>
+
+  <!-- Two-column: Recent runs + side rail -->
+  <section class="mt-12 grid gap-10 lg:grid-cols-12">
+    <!-- Recent runs -->
+    <div class="lg:col-span-8">
+      <div class="mb-4 flex items-baseline justify-between">
+        <h2 class="font-display text-2xl tracking-tight">Recent research</h2>
+        <a href="/analyses" class="text-muted-foreground hover:text-foreground text-xs underline underline-offset-2">
+          View all →
+        </a>
+      </div>
+
+      {
+        recent.length === 0 ? (
+          <div class="border-border/70 bg-card flex flex-col items-start gap-3 border p-8">
+            <p class="eyebrow">Empty desk</p>
+            <p class="font-display text-2xl tracking-tight">
+              No analyses yet — <span class="font-light italic">dispatch the first one.</span>
+            </p>
+            <p class="text-muted-foreground max-w-md text-sm">
+              You'll need at least one prompt saved and an API key configured. We'll walk you through it.
+            </p>
+            <div class="mt-3 flex gap-3">
+              <a
+                href="/analyses/new"
+                class="bg-foreground text-background inline-flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-tight"
+              >
+                <span class="bg-primary inline-block h-1.5 w-1.5" />
+                New analysis
+              </a>
+              <a
+                href="/prompts"
+                class="border-foreground/30 text-foreground inline-flex items-center border-x px-4 py-2 text-xs font-medium tracking-tight"
+              >
+                Create a prompt
+              </a>
+            </div>
+          </div>
+        ) : (
+          <ol class="border-border/70 divide-border/70 divide-y border-y">
+            {recent.map((a, i) => (
+              <li>
+                <a
+                  href={`/analyses/${a.id}`}
+                  class="group grid grid-cols-[2.5rem_1fr_auto] items-center gap-4 px-1 py-4 transition-colors hover:bg-[color-mix(in_oklch,var(--foreground)_3%,transparent)]"
+                >
+                  <span class="num text-muted-foreground/70 text-xs">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="min-w-0">
+                    <span class="block truncate text-base font-medium">{a.title}</span>
+                    <span class="num text-muted-foreground mt-0.5 block text-xs">
+                      {a.provider} · {a.model}
+                    </span>
+                  </span>
+                  <span class="num text-muted-foreground shrink-0 text-xs">
+                    {new Date(a.created_at).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                    })}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        )
+      }
+    </div>
+
+    <!-- Side rail: setup checklist + quick links -->
+    <aside class="border-border/70 lg:col-span-4 lg:border-l lg:pl-8">
+      <h2 class="font-display mb-4 text-2xl tracking-tight">Workspace</h2>
+
+      <ul class="border-border/70 divide-border/70 divide-y border-y text-sm">
+        <li class="flex items-center justify-between gap-3 py-3">
+          <span class="flex items-center gap-2.5">
+            <span
+              class:list={[
+                "inline-block h-1.5 w-1.5 rounded-full",
+                apiKeys.openai ? "bg-positive" : "bg-muted-foreground/40",
+              ]}
+              aria-hidden="true"></span>
+            OpenAI key
+          </span>
+          <span class="num text-muted-foreground text-xs uppercase">
+            {apiKeys.openai ? "configured" : "missing"}
+          </span>
+        </li>
+        <li class="flex items-center justify-between gap-3 py-3">
+          <span class="flex items-center gap-2.5">
+            <span
+              class:list={[
+                "inline-block h-1.5 w-1.5 rounded-full",
+                apiKeys.anthropic ? "bg-positive" : "bg-muted-foreground/40",
+              ]}
+              aria-hidden="true"></span>
+            Anthropic key
+          </span>
+          <span class="num text-muted-foreground text-xs uppercase">
+            {apiKeys.anthropic ? "configured" : "missing"}
+          </span>
+        </li>
+        <li class="flex items-center justify-between gap-3 py-3">
+          <span class="flex items-center gap-2.5">
+            <span
+              class:list={[
+                "inline-block h-1.5 w-1.5 rounded-full",
+                promptCount > 0 ? "bg-positive" : "bg-muted-foreground/40",
+              ]}
+              aria-hidden="true"></span>
+            Prompts library
+          </span>
+          <span class="num text-muted-foreground text-xs uppercase">
+            {promptCount}
+            {promptCount === 1 ? "item" : "items"}
+          </span>
+        </li>
+      </ul>
+
+      <div class="mt-6 space-y-2">
+        <a
+          href="/analyses/new"
+          class="bg-foreground text-background group flex w-full items-center justify-between px-4 py-3 text-sm font-medium tracking-tight transition-opacity hover:opacity-90"
+        >
+          <span class="flex items-center gap-2">
+            <span class="bg-primary inline-block h-1.5 w-1.5"></span>
+            New analysis
+          </span>
+          <span class="text-base">→</span>
+        </a>
+        <a
+          href="/prompts"
+          class="border-foreground/30 hover:border-foreground flex w-full items-center justify-between border-x px-4 py-3 text-sm font-medium tracking-tight transition-colors"
+        >
+          <span>Manage prompts</span>
+          <span class="text-muted-foreground text-base">→</span>
+        </a>
+        <a
+          href="/settings"
+          class="text-muted-foreground hover:text-foreground flex w-full items-center justify-between py-1 text-xs transition-colors"
+        >
+          <span>Settings · API keys · models</span>
+          <span>→</span>
+        </a>
+      </div>
+    </aside>
+  </section>
 </Layout>

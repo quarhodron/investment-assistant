@@ -24,32 +24,47 @@ if (supabase && user) {
 const roots = buildAnalysisForest(analyses);
 ---
 
-<Layout title="Analyses">
-  <div class="bg-cosmic min-h-screen p-6">
-    <div class="mx-auto max-w-3xl">
-      <h1 class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
-        Analyses
+<Layout title="Research">
+  <header class="border-border/70 mb-10 flex flex-wrap items-end justify-between gap-6 border-b pb-6">
+    <div>
+      <p class="eyebrow mb-2">All research · <span class="num">{analyses.length} runs</span></p>
+      <h1 class="font-display text-5xl tracking-tight">
+        Research <span class="font-light italic">archive</span>
       </h1>
-
-      {
-        analyses.length === 0 ? (
-          <div class="rounded-lg border border-white/10 bg-white/5 p-8 text-center">
-            <p class="mb-4 text-slate-300">No analyses yet — run your first one.</p>
-            <a
-              href="/analyses/new"
-              class="inline-block rounded-md bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500"
-            >
-              New Analysis
-            </a>
-          </div>
-        ) : (
-          <div class="space-y-3">
-            {roots.map((root) => (
-              <AnalysisTreeNodeComponent node={root} depth={0} />
-            ))}
-          </div>
-        )
-      }
     </div>
-  </div>
+    <a
+      href="/analyses/new"
+      class="bg-foreground text-background inline-flex items-center gap-2 px-4 py-2.5 text-xs font-medium tracking-tight transition-opacity hover:opacity-90"
+    >
+      <span class="bg-primary inline-block h-1.5 w-1.5"></span>
+      New analysis
+    </a>
+  </header>
+
+  {
+    analyses.length === 0 ? (
+      <div class="border-border/70 bg-card flex flex-col items-start gap-3 border p-10">
+        <p class="eyebrow">Empty archive</p>
+        <p class="font-display text-3xl tracking-tight">
+          Nothing on file — <span class="font-light italic">run your first analysis.</span>
+        </p>
+        <p class="text-muted-foreground max-w-md text-sm">
+          Saved runs appear here as a tree. Continue any run to branch a new thread under it.
+        </p>
+        <a
+          href="/analyses/new"
+          class="bg-foreground text-background mt-3 inline-flex items-center gap-2 px-4 py-2 text-xs font-medium tracking-tight"
+        >
+          <span class="bg-primary inline-block h-1.5 w-1.5" />
+          New analysis →
+        </a>
+      </div>
+    ) : (
+      <div class="border-border/70 divide-border/70 divide-y border-y">
+        {roots.map((root) => (
+          <AnalysisTreeNodeComponent node={root} depth={0} />
+        ))}
+      </div>
+    )
+  }
 </Layout>
