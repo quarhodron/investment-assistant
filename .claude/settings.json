@@ -1,0 +1,48 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "WebFetch(domain:developers.cloudflare.com)",
+      "WebFetch(domain:telemetry.astro.build)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(gh api --hostname github.com *)",
+      "Bash(gh api --hostname api.github.com *)",
+      "Bash(gh issue *)",
+      "WebFetch(domain:supabase.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:platform.openai.com)",
+      "WebFetch(domain:developers.openai.com)",
+      "Bash(docker exec supabase_db_investment-assistant *)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(pbcopy)",
+      "Skill(10x-impl-review)",
+      "Skill(10x-plan)",
+      "Bash(grep -v \"^$\")",
+      "Bash(xargs ls -la)"
+    ]
+  },
+  "sandbox": {
+    "enabled": false,
+    "autoAllowBashIfSandboxed": false
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx eslint --fix . --quiet",
+            "timeout": 600000
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'stdin=$(cat); FILE=$(echo \"$stdin\" | jq -r .tool_input.file_path); echo \"DEBUG file=$FILE\" >&2; output=$(npx vitest related \"$FILE\" --run 2>&1); code=$?; echo \"DEBUG code=$code\" >&2; if [ $code -ne 0 ]; then echo \"$output\" >&2; exit 2; fi'",
+            "timeout": 600000
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -70,8 +70,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [
-      "tsc --noEmit",
-      "eslint --fix"
+      "eslint --fix",
+      "tsc --noEmit"
     ],
     "*.{json,css,md}": [
       "prettier --write"

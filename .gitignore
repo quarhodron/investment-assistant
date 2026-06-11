@@ -27,7 +27,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-.claude/
+.claude/skills/
+.claude/prompts/
 .codex/
 
 dist-dryrun/
