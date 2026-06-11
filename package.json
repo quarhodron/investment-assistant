@@ -7,6 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "typecheck": "tsc --noEmit",
     "deploy": "astro build && wrangler deploy",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -68,6 +69,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,astro}": [
+      "tsc --noEmit",
       "eslint --fix"
     ],
     "*.{json,css,md}": [

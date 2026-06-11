@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: Test Runner + Critical AI Run Path
 
 - **Plan**: `context/changes/testing-runner-and-ai-run-path/plan.md`
@@ -9,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-| --- | --- |
-| Plan Adherence | WARNING |
-| Scope Discipline | WARNING |
-| Safety & Quality | PASS |
-| Architecture | PASS |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | WARNING |
+| Scope Discipline    | WARNING |
+| Safety & Quality    | PASS    |
+| Architecture        | PASS    |
 | Pattern Consistency | WARNING |
-| Success Criteria | WARNING |
+| Success Criteria    | WARNING |
 
 ## Verification
 
