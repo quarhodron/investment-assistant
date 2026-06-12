@@ -2,8 +2,8 @@
   "package": "@przeprogramowani/10x-cli",
   "version": "1.7.0",
   "manifestVersion": 3,
-  "lastApplied": "2026-06-11T17:01:49.934Z",
-  "lessonId": "m3l3",
+  "lastApplied": "2026-06-12T07:17:07.225Z",
+  "lessonId": "m3l4",
   "course": "10xdevs3",
   "tool": "claude-code",
   "files": {
@@ -174,6 +174,24 @@
         "files": ["SKILL.md"],
         "contentHashes": {
           "SKILL.md": "58943e0630cc874e019aa1f196bf8e0cf6ca95f9f3fb238c533b1ab2a32b0802"
+        }
+      },
+      "10x-e2e": {
+        "files": [
+          "references/browser-driven-generation.md",
+          "references/e2e-anti-patterns.md",
+          "references/e2e-prompt-template.md",
+          "references/e2e-quality-rules.md",
+          "references/seed-test-pattern.md",
+          "SKILL.md"
+        ],
+        "contentHashes": {
+          "references/browser-driven-generation.md": "08fb380685c299ce7cc40d9ab3191261198d0c40ec62a4d9ee5f7ebfc440e50c",
+          "references/e2e-anti-patterns.md": "38950a5c6fc67f65899365f99930178d589e87118d7a6dbd74728806ac36ab38",
+          "references/e2e-prompt-template.md": "7d934d3b6f0e3f36e7abdf0ab7ff4a23b645d12cb80603e3a962ce7d6babb95b",
+          "references/e2e-quality-rules.md": "d161cf3659ae5321b7f597987664e4017aecc7e15f5caa7a15a1eaf73bf4162b",
+          "references/seed-test-pattern.md": "90fa8778a557d0c88320e839c6a8879735b3390b68ed89b3487258f2562b2f80",
+          "SKILL.md": "994b511efafdcbe7526bb32a9908b330bd78326c42c5e41896983e497c61cd54"
         }
       }
     },
@@ -1105,7 +1123,7 @@
       "configs": []
     },
     "m3l4": {
-      "appliedAt": "2026-06-01T16:36:30.583Z",
+      "appliedAt": "2026-06-12T07:17:07.221Z",
       "skills": {
         "10x-init": {
           "files": ["SKILL.md"]
@@ -1189,6 +1207,16 @@
         },
         "10x-tdd": {
           "files": ["SKILL.md"]
+        },
+        "10x-e2e": {
+          "files": [
+            "references/browser-driven-generation.md",
+            "references/e2e-anti-patterns.md",
+            "references/e2e-prompt-template.md",
+            "references/e2e-quality-rules.md",
+            "references/seed-test-pattern.md",
+            "SKILL.md"
+          ]
         }
       },
       "prompts": [
@@ -1197,8 +1225,7 @@
         "m1l5-2-constrain-approach.md",
         "m1l5-3-extend-prerequisites.md",
         "m1l5-4-store-plan.md",
-        "m3l2-ad-hoc-testing.md",
-        "m3l4-e2e-prompt.md"
+        "m3l2-ad-hoc-testing.md"
       ],
       "configs": []
     },
