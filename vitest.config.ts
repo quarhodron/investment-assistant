@@ -19,6 +19,7 @@ export default defineConfig({
       "**/*.swo",
       "dist*/**",
       ".astro/**",
+      "tests/e2e/**",
     ],
     coverage: {
       provider: "v8",
