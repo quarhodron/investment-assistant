@@ -34,3 +34,6 @@ pnpm-debug.log*
 dist-dryrun/
 
 supabase/snippets/
+
+playwright/.auth/
+.playwright-cli/
