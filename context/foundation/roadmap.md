@@ -3,7 +3,7 @@ project: Investment Assistant
 version: 1
 status: draft
 created: 2026-05-26
-updated: 2026-06-02
+updated: 2026-06-12
 prd_version: 1
 main_goal: market-feedback
 top_blocker: time
@@ -35,7 +35,7 @@ Retail amateur investors with day jobs paste one-off prompts into general-purpos
 | S-01 | first-analysis-other-topic      | run their first analysis on a free-text "other" topic and reopen the saved result                                                                                         | F-01, F-02       | US-01, FR-006, FR-007, FR-010, FR-011, FR-012, FR-013, FR-014, FR-015, FR-016, FR-020, FR-028, FR-029, FR-030, FR-032 | done     |
 | S-02 | continue-analysis-chain         | continue a saved analysis with a different prompt and/or model, with the chain preserved                                                                                  | S-01             | FR-018, Business Logic #2                                                                                             | done     |
 | S-10 | drop-analysis-type              | (cleanup) `type` column gone from schema, API, and UI — `company_id` is the sole discriminator                                                                            | S-02             | FR-010 (post-2026-06-01 reshape), FR-014                                                                              | done     |
-| S-04 | prompts-management              | edit and delete saved prompts; prior analyses retain their snapshot                                                                                                       | S-01             | FR-008, FR-009                                                                                                        | proposed |
+| S-04 | prompts-management              | edit and delete saved prompts; prior analyses retain their snapshot                                                                                                       | S-01             | FR-008, FR-009                                                                                                        | done     |
 | S-05 | watchlist-crud                  | add, list, view, edit, and delete watched companies; deletes preserve tied analyses                                                                                       | F-01             | FR-021, FR-022, FR-023, FR-027                                                                                        | proposed |
 | S-06 | company-bound-analysis          | pick a watched company on new-analysis (Topic auto-populates `name (ticker)`, editable); continue inherits the company link unchanged                                     | S-02, S-05, S-10 | FR-010 (picker), FR-026, Business Logic #3                                                                            | proposed |
 | S-07 | link-company-from-analysis      | promote a new company from an analysis (FR-019) AND link an analysis to an existing watched company (FR-019b); both flows back-link / file the analysis under the company | S-01, S-05, S-10 | FR-019, FR-019b, FR-020 (filing carve-out)                                                                            | proposed |
@@ -137,7 +137,7 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Unknowns:**
   - —
 - **Risk:** The retain-the-snapshot invariant is the load-bearing rule — prior analyses must keep the prompt text they were run with. This slice's only job is to not break that.
-- **Status:** proposed
+- **Status:** done
 
 ### S-05: Watchlist CRUD
 
@@ -261,3 +261,4 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **S-01: run their first analysis on a free-text "other" topic and reopen the saved result** — Archived 2026-05-31 → `context/archive/2026-05-31-first-analysis-other-topic/`. Lesson: —.
 - **S-02: From the detail view of a saved analysis, the user runs "Continue analysis", picks a different prompt and/or model than the original, and the new analysis is saved as a child linked to the parent via `parent_analysis_id`. The next AI request receives the parent analysis's full AI output verbatim as context, followed by the new prompt and the new input. Detail views render parent ↔ child linkage so the chain is traversable.** — Archived 2026-06-01 → `context/archive/2026-05-31-continue-analysis-chain/`. Lesson: —.
 - **S-10: The `type` column is removed from the `analyses` table (migration), from the API response and request shapes, and from every UI surface (new-analysis form, analysis detail view, analysis list rows). `company_id` becomes the sole discriminator between "tied to a watched company" and "not". Analyses created during S-01 / S-02 with `type=other` continue to work unchanged — they simply have `company_id IS NULL`. No data loss.** — Archived 2026-06-02 → `context/archive/2026-06-02-drop-analysis-type/`. Lesson: —.
+- **S-04: From the Prompts page, the user can edit a prompt's name, description, and body, and delete a prompt. Edits apply to the next run only — prior analyses keep the prompt text they were originally run with (snapshot-on-save invariant from Business Logic #1).** — Archived 2026-06-12 → `context/archive/2026-06-02-prompts-management/`. Lesson: —.
