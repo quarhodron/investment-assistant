@@ -29,6 +29,7 @@ pnpm-debug.log*
 
 .claude/skills/
 .claude/prompts/
+.claude/10x-cli-manifest.json
 .codex/
 
 dist-dryrun/

@@ -124,7 +124,7 @@ if (supabase && user) {
 
           <button
             type="submit"
-            class="bg-primary text-primary-foreground hover:bg-primary/80 active:bg-primary/70 inline-flex items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors"
+            class="bg-primary text-primary-foreground hover:bg-primary/80 active:bg-primary/70 inline-flex cursor-pointer items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors"
           >
             Create prompt
           </button>
@@ -169,7 +169,7 @@ if (supabase && user) {
                     <button
                       type="button"
                       data-confirm-delete
-                      class="text-destructive/80 hover:text-destructive text-xs underline-offset-2 hover:underline"
+                      class="text-destructive/80 hover:text-destructive cursor-pointer text-xs underline-offset-2 hover:underline"
                     >
                       Delete
                     </button>
@@ -179,14 +179,14 @@ if (supabase && user) {
                       <input type="hidden" name="action" value="delete" />
                       <button
                         type="submit"
-                        class="text-destructive border-destructive/60 hover:bg-destructive hover:text-background border-x px-2 py-1 text-xs font-medium transition-colors"
+                        class="text-destructive border-destructive/60 hover:bg-destructive hover:text-background cursor-pointer border-x px-2 py-1 text-xs font-medium transition-colors"
                       >
                         Confirm delete
                       </button>
                       <button
                         type="button"
                         data-delete-cancel
-                        class="text-muted-foreground hover:text-foreground text-xs"
+                        class="text-muted-foreground hover:text-foreground cursor-pointer text-xs"
                       >
                         Cancel
                       </button>

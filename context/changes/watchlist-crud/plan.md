@@ -242,9 +242,9 @@ None — the table, RLS, indexes, and the `ON DELETE SET NULL` foreign key alrea
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run typecheck`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Production build succeeds: `npm run build`
+- [x] 1.1 Type checking passes: `npm run typecheck` — 9adfb6f
+- [x] 1.2 Linting passes: `npm run lint` — 9adfb6f
+- [x] 1.3 Production build succeeds: `npm run build` — 9adfb6f
 
 #### Manual
 

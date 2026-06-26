@@ -76,7 +76,7 @@ function FieldHint({ text }: { text: string }) {
         onClick={() => {
           setOpen((v) => !v);
         }}
-        className="text-muted-foreground/60 hover:text-foreground ml-1.5 focus:outline-none"
+        className="text-muted-foreground/60 hover:text-foreground ml-1.5 cursor-pointer focus:outline-none"
         aria-label="More info"
       >
         <Info size={13} />
@@ -394,7 +394,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
               type="button"
               onClick={handleRun}
               disabled={frozen || !hasApiKey || !input.trim() || !promptId || !title.trim()}
-              className="bg-primary text-primary-foreground hover:bg-primary/80 active:bg-primary/70 inline-flex items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+              className="bg-primary text-primary-foreground hover:bg-primary/80 active:bg-primary/70 inline-flex cursor-pointer items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors disabled:cursor-not-allowed disabled:opacity-40"
             >
               {status === "streaming" ? "Running…" : "Run analysis"}
             </button>

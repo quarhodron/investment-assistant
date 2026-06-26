@@ -15,11 +15,11 @@ const LABEL = "text-muted-foreground mb-1.5 block text-xs font-medium tracking-[
 const INPUT =
   "border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:ring-2 focus:outline-none";
 const PRIMARY_BTN =
-  "bg-primary text-primary-foreground inline-flex items-center gap-3 px-4 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors hover:bg-primary/80 active:bg-primary/70 disabled:cursor-not-allowed disabled:opacity-50";
+  "bg-primary text-primary-foreground inline-flex cursor-pointer items-center gap-3 px-4 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors hover:bg-primary/80 active:bg-primary/70 disabled:cursor-not-allowed disabled:opacity-50";
 const GHOST_BTN =
-  "border-foreground/30 hover:border-foreground text-foreground inline-flex items-center border-x px-4 py-2.5 text-sm font-medium tracking-tight transition-colors";
+  "border-foreground/30 hover:border-foreground text-foreground inline-flex cursor-pointer items-center border-x px-4 py-2.5 text-sm font-medium tracking-tight transition-colors";
 const DESTRUCTIVE_BTN =
-  "text-destructive border-destructive/60 hover:bg-destructive hover:text-background inline-flex items-center border-x px-4 py-2.5 text-sm font-medium tracking-tight transition-colors";
+  "text-destructive border-destructive/60 hover:bg-destructive hover:text-background inline-flex cursor-pointer items-center border-x px-4 py-2.5 text-sm font-medium tracking-tight transition-colors";
 
 function Section({
   number,
@@ -120,7 +120,7 @@ function ApiKeyRow({
                 onClick={() => {
                   setReplacing(false);
                 }}
-                className="text-muted-foreground hover:text-foreground px-3 py-2.5 text-sm transition-colors"
+                className="text-muted-foreground hover:text-foreground cursor-pointer px-3 py-2.5 text-sm transition-colors"
               >
                 Cancel
               </button>
