@@ -1,0 +1,218 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import type { WatchedCompany } from "@/types";
+
+const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+const error = Astro.url.searchParams.get("error");
+const ok = Astro.url.searchParams.get("ok");
+
+const formName = Astro.url.searchParams.get("_name") ?? "";
+const formTicker = Astro.url.searchParams.get("_ticker") ?? "";
+const formExchange = Astro.url.searchParams.get("_exchange") ?? "";
+const formIndustry = Astro.url.searchParams.get("_industry") ?? "";
+const formNote = Astro.url.searchParams.get("_note") ?? "";
+
+let companies: Pick<WatchedCompany, "id" | "name" | "ticker" | "exchange" | "industry" | "note">[] = [];
+
+if (supabase && user) {
+  const { data } = await supabase
+    .from("watched_companies")
+    .select("id, name, ticker, exchange, industry, note")
+    .eq("user_id", user.id)
+    .order("name");
+  if (data) {
+    companies = data;
+  }
+}
+---
+
+<Layout title="Watchlist">
+  <header class="border-border/70 mb-10 flex flex-wrap items-end justify-between gap-6 border-b pb-6">
+    <div>
+      <p class="eyebrow mb-2">Portfolio · <span class="num">{companies.length} companies</span></p>
+      <h1 class="font-display text-5xl tracking-tight">
+        Watchlist <span class="font-light italic">companies</span>
+      </h1>
+    </div>
+    <p class="text-muted-foreground max-w-xs text-xs leading-relaxed">
+      Companies under observation. Tie them to analyses to track your research.
+    </p>
+  </header>
+
+  {
+    error && (
+      <div class="text-destructive border-destructive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--destructive)_8%,transparent)] px-3 py-2.5 text-sm">
+        <span class="text-xs font-medium tracking-[0.14em] uppercase">Error</span>
+        <span>{error}</span>
+      </div>
+    )
+  }
+
+  {
+    ok === "1" && (
+      <div class="text-positive border-positive/40 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--positive)_8%,transparent)] px-3 py-2.5 text-sm">
+        <span class="text-xs font-medium tracking-[0.14em] uppercase">Saved</span>
+        <span>Company added successfully.</span>
+      </div>
+    )
+  }
+
+  {
+    ok === "deleted" && (
+      <div class="text-muted-foreground border-foreground/30 mb-6 flex items-baseline gap-3 border-l-2 bg-[color-mix(in_oklch,var(--foreground)_4%,transparent)] px-3 py-2.5 text-sm">
+        <span class="text-xs font-medium tracking-[0.14em] uppercase">Removed</span>
+        <span>Company deleted.</span>
+      </div>
+    )
+  }
+
+  <section class="grid gap-12">
+    <!-- Create form -->
+    <aside class="border-border/70">
+      <h2 class="font-display mb-4 text-2xl tracking-tight">Add company</h2>
+      <div class="border-border/70 bg-card border p-6">
+        <form method="POST" action="/api/watchlist" class="space-y-5">
+          <div>
+            <label
+              for="name"
+              class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
+            >
+              Name <span class="text-destructive ml-1 tracking-normal normal-case">*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              required
+              maxlength="200"
+              placeholder="e.g. Apple Inc."
+              value={formName}
+              class="border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:ring-2 focus:outline-none"
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                for="ticker"
+                class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
+              >
+                Ticker <span class="text-muted-foreground/60 ml-1 tracking-normal normal-case">(optional)</span>
+              </label>
+              <input
+                type="text"
+                id="ticker"
+                name="ticker"
+                maxlength="20"
+                placeholder="e.g. AAPL"
+                value={formTicker}
+                class="border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:ring-2 focus:outline-none"
+              />
+            </div>
+            <div>
+              <label
+                for="exchange"
+                class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
+              >
+                Exchange <span class="text-muted-foreground/60 ml-1 tracking-normal normal-case">(optional)</span>
+              </label>
+              <input
+                type="text"
+                id="exchange"
+                name="exchange"
+                maxlength="50"
+                placeholder="e.g. NASDAQ"
+                value={formExchange}
+                class="border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:ring-2 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="industry"
+              class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
+            >
+              Industry <span class="text-muted-foreground/60 ml-1 tracking-normal normal-case">(optional)</span>
+            </label>
+            <input
+              type="text"
+              id="industry"
+              name="industry"
+              maxlength="200"
+              placeholder="e.g. Technology"
+              value={formIndustry}
+              class="border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm transition-colors focus:ring-2 focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label
+              for="note"
+              class="text-muted-foreground mb-1.5 block text-xs font-medium tracking-[0.16em] uppercase"
+            >
+              Note <span class="text-muted-foreground/60 ml-1 tracking-normal normal-case">(optional)</span>
+            </label>
+            <textarea
+              id="note"
+              name="note"
+              maxlength="2000"
+              rows={3}
+              placeholder="Any notes about this company"
+              class="border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:border-foreground focus:ring-ring/40 block w-full border px-3 py-2.5 text-sm leading-relaxed transition-colors focus:ring-2 focus:outline-none"
+              >{formNote}</textarea
+            >
+          </div>
+
+          <button
+            type="submit"
+            class="bg-primary text-primary-foreground hover:bg-primary/80 active:bg-primary/70 inline-flex items-center gap-3 px-5 py-2.5 text-sm font-medium tracking-[0.08em] transition-colors"
+          >
+            Add company
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Existing companies -->
+    <div>
+      <h2 class="font-display mb-4 text-2xl tracking-tight">Watching</h2>
+      {
+        companies.length === 0 ? (
+          <div class="border-border/70 bg-card flex flex-col items-start gap-2 border p-6">
+            <p class="eyebrow">Empty</p>
+            <p class="font-display text-xl tracking-tight">No companies yet.</p>
+            <p class="text-muted-foreground text-sm">Add your first one in the panel above.</p>
+          </div>
+        ) : (
+          <ul class="border-border/70 divide-border/70 divide-y border-y">
+            {companies.map((company) => (
+              <li class="flex items-start justify-between gap-4 py-4">
+                <div class="min-w-0 flex-1">
+                  <p class="text-foreground text-base font-medium">{company.name}</p>
+                  {company.ticker && company.exchange && (
+                    <p class="text-muted-foreground num mt-0.5 text-xs">
+                      {company.ticker} · {company.exchange}
+                    </p>
+                  )}
+                  {company.industry && <p class="text-muted-foreground mt-0.5 text-xs">{company.industry}</p>}
+                </div>
+                <div class="flex shrink-0 items-center gap-4 pt-1">
+                  <a
+                    href={`/watchlist/${company.id}/edit`}
+                    class="text-muted-foreground hover:text-foreground text-xs underline-offset-2 hover:underline"
+                  >
+                    Edit
+                  </a>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </section>
+</Layout>
