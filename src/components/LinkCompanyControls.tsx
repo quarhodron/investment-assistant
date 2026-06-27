@@ -229,12 +229,12 @@ function AddDialog({ analysisId }: { analysisId: string }) {
         if (o) reset();
       }}
     >
-      <DialogTrigger className={primaryBtn} type="button">
-        Add to watchlist
+      <DialogTrigger className={ghostBtn} type="button">
+        Track new company
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add to watchlist</DialogTitle>
+          <DialogTitle>Track new company</DialogTitle>
           <DialogDescription>Create a new watched company and file this analysis under it.</DialogDescription>
         </DialogHeader>
 
