@@ -239,9 +239,9 @@ Carry the parent analysis's `company_id` through the continue flow unchanged and
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npm run typecheck`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Production build succeeds: `npm run build`
+- [x] 3.1 Type checking passes: `npm run typecheck` — 9c84899
+- [x] 3.2 Linting passes: `npm run lint` — 9c84899
+- [x] 3.3 Production build succeeds: `npm run build` — 9c84899
 
 #### Manual
 
