@@ -1,10 +1,11 @@
-type TableName = "user_settings" | "ai_models" | "analyses";
+type TableName = "user_settings" | "ai_models" | "analyses" | "watched_companies";
 
 interface Query {
-  op: "select" | "insert";
+  op: "select" | "insert" | "update";
   cols?: string;
   filters: Record<string, unknown>;
   insertRow?: unknown;
+  updateRow?: unknown;
 }
 
 interface QueryResult {
@@ -27,10 +28,12 @@ export interface SupabaseStub {
         single(): Promise<QueryResult>;
       };
     };
+    update(row: unknown): ReturnType<SupabaseStub["from"]>;
     single(): Promise<QueryResult>;
     maybeSingle(): Promise<QueryResult>;
   };
   insertCalls: { table: string; row: unknown }[];
+  updateCalls: { table: string; row: unknown }[];
 }
 
 type HandlerMap = Partial<Record<TableName, TableHandler>>;
@@ -44,15 +47,17 @@ function createMissingHandler(table: TableName): TableHandler {
 
 export function createSupabaseStub(responses: HandlerMap): SupabaseStub {
   const insertCalls: { table: string; row: unknown }[] = [];
+  const updateCalls: { table: string; row: unknown }[] = [];
 
   const from = (table: TableName) => {
     const handler = responses[table] ?? createMissingHandler(table);
     let cols: string | undefined;
     const filters: Record<string, unknown> = {};
     let insertRow: unknown;
+    let updateRow: unknown;
     let op: Query["op"] = "select";
 
-    const run = () => handler({ op, cols, filters: { ...filters }, insertRow });
+    const run = () => handler({ op, cols, filters: { ...filters }, insertRow, updateRow });
 
     const chain = {
       select(nextCols: string) {
@@ -78,6 +83,12 @@ export function createSupabaseStub(responses: HandlerMap): SupabaseStub {
           },
         };
       },
+      update(row: unknown) {
+        op = "update";
+        updateRow = row;
+        updateCalls.push({ table, row });
+        return chain;
+      },
       single() {
         return Promise.resolve(run());
       },
@@ -89,7 +100,7 @@ export function createSupabaseStub(responses: HandlerMap): SupabaseStub {
     return chain;
   };
 
-  return { from, insertCalls };
+  return { from, insertCalls, updateCalls };
 }
 
 export function createNullSupabaseStub(): null {

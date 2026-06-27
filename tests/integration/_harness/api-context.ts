@@ -7,6 +7,8 @@ export function buildApiContext(opts: {
   user?: { id: string } | null;
   origin?: string;
   headers?: Record<string, string>;
+  params?: Record<string, string>;
+  method?: string;
 }): ApiRouteContext {
   const headers = new Headers(opts.headers);
   const url = opts.origin ?? "https://app.local";
@@ -19,7 +21,7 @@ export function buildApiContext(opts: {
   }
 
   const request = new Request(`${url}/api/ai/run`, {
-    method: "POST",
+    method: opts.method ?? "POST",
     headers,
     body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
   });
@@ -38,7 +40,8 @@ export function buildApiContext(opts: {
 
   return {
     request,
-    locals: { user: opts.user ?? { id: "user-1" } },
+    locals: { user: "user" in opts ? opts.user : { id: "user-1" } },
     cookies,
+    params: opts.params ?? {},
   } as unknown as ApiRouteContext;
 }
