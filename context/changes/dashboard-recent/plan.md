@@ -141,13 +141,13 @@ None — no schema or data changes.
 
 #### Automated
 
-- [x] 1.1 Linting passes: `npm run lint`
-- [x] 1.2 Production build succeeds: `npm run build`
+- [x] 1.1 Linting passes: `npm run lint` — 466d677
+- [x] 1.2 Production build succeeds: `npm run build` — 466d677
 
 #### Manual
 
-- [x] 1.3 Five stat tiles render in one row, correct order (Analyses, This week, Prompts, Watchlist, API keys)
-- [x] 1.4 Watchlist tile value matches `/watchlist` count; accent dot appears only when count > 0
-- [x] 1.5 Workspace aside removed; Recent research spans full width with no layout remnants
-- [x] 1.6 Topbar navigation + New analysis CTA still functional
-- [x] 1.7 Mobile viewport: tiles wrap cleanly
+- [x] 1.3 Five stat tiles render in one row, correct order (Analyses, This week, Prompts, Watchlist, API keys) — 466d677
+- [x] 1.4 Watchlist tile value matches `/watchlist` count; accent dot appears only when count > 0 — 466d677
+- [x] 1.5 Workspace aside removed; Recent research spans full width with no layout remnants — 466d677
+- [x] 1.6 Topbar navigation + New analysis CTA still functional — 466d677
+- [x] 1.7 Mobile viewport: tiles wrap cleanly — 466d677
