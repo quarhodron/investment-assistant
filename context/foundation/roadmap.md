@@ -41,6 +41,8 @@ Retail amateur investors with day jobs paste one-off prompts into general-purpos
 | S-07 | link-company-from-analysis      | promote a new company from an analysis (FR-019) AND link an analysis to an existing watched company (FR-019b); both flows back-link / file the analysis under the company | S-01, S-05, S-10 | FR-019, FR-019b, FR-020 (filing carve-out)                                                                            | proposed |
 | S-08 | dashboard-recent                | see recent analyses and watched companies on the Dashboard as a quick-nav surface                                                                                         | S-01, S-05       | FR-031                                                                                                                | proposed |
 | S-09 | password-reset                  | request a password reset link via email and set a new password                                                                                                            | —                | FR-001, FR-002, FR-003, FR-004, FR-005                                                                                | ready    |
+| S-11 | analyses-tree-view              | (ad-hoc) see continue-analysis chains on the `/analyses` index as collapsible chain-root groups instead of a flat list                                                    | S-02             | FR-018 (chain visibility at list level)                                                                               | done     |
+| S-12 | testing-runner-and-ai-run-path  | (ad-hoc) Vitest harness + first integration tests for the AI run path; split three colliding `service_unavailable` codes into distinct ones                               | S-01, S-02       | NFRs §testability, test-plan.md §3 (Phase 1)                                                                          | done     |
 
 ## Streams
 
@@ -217,21 +219,49 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **Risk:** Forward migration on a live schema column. Mitigations: (1) S-02 is the latest shipped slice, so the migration runs against a known set of analyses; (2) the column is informational (the discriminator the application relies on going forward is `company_id`); (3) drop is preceded by code paths stopping reads of `type` so the migration is a final structural cleanup, not a flag flip. This slice is the one place the reshape touches the existing schema — kept small and self-contained so the slices that ship after it can assume `type` is gone.
 - **Status:** done
 
+### S-11: Analyses tree view (ad-hoc — retro-recorded)
+
+- **Outcome:** The `/analyses` index renders the user's analyses as a forest of chain-roots instead of a flat `created_at`-sorted list. Each root carries a `· N steps` badge and a chevron when it has descendants; expanding a root shows the continue-analysis chain inline, indented in build order, via native `<details>`/`<summary>` (no client JS, no island). Roots sort by latest-activity-in-chain; singletons render as plain rows. Backend untouched — `parent_analysis_id` already existed.
+- **Change ID:** analyses-tree-view
+- **PRD refs:** FR-018 (makes the continue-analysis chain — the S-02 wedge — legible at the list level)
+- **Prerequisites:** S-02
+- **Parallel with:** S-04, S-06, S-08, S-09
+- **Blockers:** —
+- **Unknowns:**
+  - —
+- **Provenance:** Not part of the original PRD-derived roadmap — an ad-hoc change conceived and shipped 2026-06-04 to make the wedge visible at the list level. Retro-recorded here on 2026-06-27 during an archive ↔ roadmap reconciliation so the roadmap reflects all shipped work. Archived at `context/archive/2026-06-04-analyses-tree-view/`.
+- **Risk:** Pure read-side rendering over an existing data model — the only correctness traps were computing the subtree sort key bottom-up after linking, and keeping the title `<a>` and the chevron toggle un-nested (valid HTML). No schema, API, or index work.
+- **Status:** done
+
+### S-12: Test runner + critical AI run path (ad-hoc — retro-recorded)
+
+- **Outcome:** Vitest is installed with a bare-Node harness (`npm test` / `npm run test:watch`) and the first integration tests cover `POST /api/ai/run` against the three highest-impact wedge risks: SSE persistence atomicity (no half-saved row on error), continue-analysis context composition (parent output forwarded verbatim, parent prompt/input never leak), and error-class disambiguation. As part of this, the three colliding `service_unavailable` error codes were split into `supabase_unavailable`, `settings_unavailable`, and `models_unavailable` — a production change. This is Phase 1 of the four-phase rollout in `context/foundation/test-plan.md`.
+- **Change ID:** testing-runner-and-ai-run-path
+- **PRD refs:** NFRs §testability; `context/foundation/test-plan.md` §3 (Phase 1), §6.1, §6.2
+- **Prerequisites:** S-01, S-02 (the AI run path and continue-analysis composition must exist to test)
+- **Parallel with:** S-04, S-06, S-08, S-09
+- **Blockers:** —
+- **Unknowns:**
+  - —
+- **Provenance:** Not part of the original PRD-derived roadmap — an ad-hoc testing-infrastructure change conceived and shipped 2026-06-05 (archived 2026-06-12). Retro-recorded here on 2026-06-27 during an archive ↔ roadmap reconciliation. Archived at `context/archive/2026-06-05-testing-runner-and-ai-run-path/`. Phases 2–4 of the test-plan rollout remain unscheduled.
+- **Risk:** The harness stubs Supabase, `runAiAnalysis`, and `decryptApiKey` at the module boundary, so Phase 1's "no row on error" is asserted as "insert never called" — real-DB validation is deferred to Phase 2. The `service_unavailable` split was the one production-facing edit; isolated to its own phase to keep the diff reviewable.
+- **Status:** done
+
 ## Backlog Handoff
 
-| Roadmap ID | Change ID                       | Suggested issue title                                                          | Ready for `/10x-plan` | Notes                               |
-| ---------- | ------------------------------- | ------------------------------------------------------------------------------ | --------------------- | ----------------------------------- |
-| F-01       | data-schema-and-rls             | Schema + RLS for prompts, analyses, watched_companies, user_settings           | yes                   | Run `/10x-plan data-schema-and-rls` |
-| F-02       | api-keys-and-ai-provider-client | Encrypted per-user API keys + Anthropic / OpenAI streaming client              | no                    | Waits on F-01                       |
-| S-01       | first-analysis-other-topic      | First analysis end-to-end on a free-text "other" topic (US-01)                 | no                    | Waits on F-01, F-02                 |
-| S-02       | continue-analysis-chain         | Continue-analysis with prompt/model swap — wedge milestone                     | no                    | NORTH STAR. Waits on S-01           |
-| S-10       | drop-analysis-type              | Drop `type` from analyses schema, API, and UI (post-2026-06-01 reshape)        | yes                   | Run `/10x-plan drop-analysis-type`  |
-| S-04       | prompts-management              | Edit and delete saved prompts (snapshot retained on prior analyses)            | no                    | Waits on S-01                       |
-| S-05       | watchlist-crud                  | Watchlist CRUD — add / list / view / edit / delete with preserve-tied-analyses | no                    | Waits on F-01                       |
-| S-06       | company-bound-analysis          | Company-bound new + continue analysis (picker + Topic auto-populate)           | no                    | Waits on S-02, S-05, S-10           |
-| S-07       | link-company-from-analysis      | Promote-new (FR-019) + link-existing (FR-019b) from an analysis detail view    | no                    | Waits on S-01, S-05, S-10           |
-| S-08       | dashboard-recent                | Dashboard quick-nav for recent analyses + watched companies                    | no                    | Waits on S-01, S-05                 |
-| S-09       | password-reset                  | Email-link password reset (FR-005)                                             | yes                   | Run `/10x-plan password-reset`      |
+| Roadmap ID | Change ID                           | Suggested issue title                                                              | Ready for `/10x-plan` | Notes                              |
+| ---------- | ----------------------------------- | ---------------------------------------------------------------------------------- | --------------------- | ---------------------------------- |
+| ~~F-01~~   | ~~data-schema-and-rls~~             | ~~Schema + RLS for prompts, analyses, watched_companies, user_settings~~           | —                     | ✅ shipped — archived              |
+| ~~F-02~~   | ~~api-keys-and-ai-provider-client~~ | ~~Encrypted per-user API keys + Anthropic / OpenAI streaming client~~              | —                     | ✅ shipped — archived              |
+| ~~S-01~~   | ~~first-analysis-other-topic~~      | ~~First analysis end-to-end on a free-text "other" topic (US-01)~~                 | —                     | ✅ shipped — archived              |
+| ~~S-02~~   | ~~continue-analysis-chain~~         | ~~Continue-analysis with prompt/model swap — wedge milestone~~                     | —                     | ✅ shipped — archived (NORTH STAR) |
+| ~~S-10~~   | ~~drop-analysis-type~~              | ~~Drop `type` from analyses schema, API, and UI (post-2026-06-01 reshape)~~        | —                     | ✅ shipped — archived              |
+| ~~S-04~~   | ~~prompts-management~~              | ~~Edit and delete saved prompts (snapshot retained on prior analyses)~~            | —                     | ✅ shipped — archived              |
+| ~~S-05~~   | ~~watchlist-crud~~                  | ~~Watchlist CRUD — add / list / view / edit / delete with preserve-tied-analyses~~ | —                     | ✅ shipped — archived              |
+| ~~S-06~~   | ~~company-bound-analysis~~          | ~~Company-bound new + continue analysis (picker + Topic auto-populate)~~           | —                     | ✅ shipped — archived              |
+| S-07       | link-company-from-analysis          | Promote-new (FR-019) + link-existing (FR-019b) from an analysis detail view        | no                    | Waits on S-01, S-05, S-10          |
+| S-08       | dashboard-recent                    | Dashboard quick-nav for recent analyses + watched companies                        | no                    | Waits on S-01, S-05                |
+| S-09       | password-reset                      | Email-link password reset (FR-005)                                                 | yes                   | Run `/10x-plan password-reset`     |
 
 ## Open Roadmap Questions
 
@@ -264,3 +294,5 @@ What's already in place in the codebase as of `2026-05-26` (auto-researched + us
 - **S-04: From the Prompts page, the user can edit a prompt's name, description, and body, and delete a prompt. Edits apply to the next run only — prior analyses keep the prompt text they were originally run with (snapshot-on-save invariant from Business Logic #1).** — Archived 2026-06-12 → `context/archive/2026-06-02-prompts-management/`. Lesson: —.
 - **S-05: add, list, view, edit, and delete watched companies; deletes preserve tied analyses** — Archived 2026-06-27 → `context/archive/2026-06-26-watchlist-crud/`. Lesson: —.
 - **S-06: pick a watched company on new-analysis (Topic auto-populates `name (ticker)`, editable); continue inherits the company link unchanged** — Archived 2026-06-27 → `context/archive/2026-06-27-company-bound-analysis/`. Lesson: —.
+- **S-11: (ad-hoc) see continue-analysis chains on the `/analyses` index as collapsible chain-root groups instead of a flat list** — Archived 2026-06-04 → `context/archive/2026-06-04-analyses-tree-view/`. Retro-recorded 2026-06-27 (off-roadmap when shipped). Lesson: —.
+- **S-12: (ad-hoc) Vitest harness + first integration tests for the AI run path; split three colliding `service_unavailable` codes into distinct ones** — Archived 2026-06-12 → `context/archive/2026-06-05-testing-runner-and-ai-run-path/`. Retro-recorded 2026-06-27 (off-roadmap when shipped). Lesson: —.
