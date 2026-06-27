@@ -18,13 +18,14 @@ interface RecentAnalysis {
 let totalAnalyses = 0;
 let weekAnalyses = 0;
 let promptCount = 0;
+let watchedCount = 0;
 let recent: RecentAnalysis[] = [];
 let apiKeys = { anthropic: false, openai: false };
 
 if (supabase && user) {
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-  const [totalRes, weekRes, promptsRes, recentRes, settingsRes] = await Promise.all([
+  const [totalRes, weekRes, promptsRes, recentRes, settingsRes, watchedRes] = await Promise.all([
     supabase.from("analyses").select("id", { count: "exact", head: true }).eq("user_id", user.id),
     supabase
       .from("analyses")
@@ -39,11 +40,13 @@ if (supabase && user) {
       .order("created_at", { ascending: false })
       .limit(5),
     supabase.from("user_settings").select("api_keys").eq("user_id", user.id).single(),
+    supabase.from("watched_companies").select("id", { count: "exact", head: true }).eq("user_id", user.id),
   ]);
 
   totalAnalyses = totalRes.count ?? 0;
   weekAnalyses = weekRes.count ?? 0;
   promptCount = promptsRes.count ?? 0;
+  watchedCount = watchedRes.count ?? 0;
   recent = (recentRes.data ?? []) as RecentAnalysis[];
 
   if (settingsRes.data) {
@@ -62,7 +65,6 @@ const today = new Date().toLocaleDateString("en-GB", {
   month: "long",
   year: "numeric",
 });
-const issueNo = String(Math.max(1, totalAnalyses)).padStart(4, "0");
 const keysOk = apiKeys.anthropic || apiKeys.openai;
 ---
 
@@ -78,14 +80,13 @@ const keysOk = apiKeys.anthropic || apiKeys.openai;
       </h1>
     </div>
     <div class="num text-muted-foreground text-right text-xs">
-      <p>Issue №{issueNo}</p>
       <p>Quant · Research desk</p>
     </div>
   </header>
 
   <!-- Stat row -->
   <section
-    class="border-border/70 grid grid-cols-2 gap-px overflow-hidden border bg-[color-mix(in_oklch,var(--foreground)_14%,transparent)] lg:grid-cols-4"
+    class="border-border/70 grid grid-cols-2 gap-px overflow-hidden border bg-[color-mix(in_oklch,var(--foreground)_14%,transparent)] lg:grid-cols-5"
     aria-label="Workspace metrics"
   >
     {
@@ -93,6 +94,7 @@ const keysOk = apiKeys.anthropic || apiKeys.openai;
         { label: "Analyses · total", value: totalAnalyses, suffix: "runs" },
         { label: "This week", value: weekAnalyses, suffix: "runs", accent: weekAnalyses > 0 },
         { label: "Prompts · saved", value: promptCount, suffix: "items" },
+        { label: "Watchlist", value: watchedCount, suffix: "companies", accent: watchedCount > 0 },
         {
           label: "API keys",
           value: (apiKeys.anthropic ? 1 : 0) + (apiKeys.openai ? 1 : 0),
@@ -112,10 +114,9 @@ const keysOk = apiKeys.anthropic || apiKeys.openai;
     }
   </section>
 
-  <!-- Two-column: Recent runs + side rail -->
-  <section class="mt-12 grid gap-10 lg:grid-cols-12">
-    <!-- Recent runs -->
-    <div class="lg:col-span-8">
+  <!-- Recent research -->
+  <section class="mt-12">
+    <div>
       <div class="mb-4 flex items-baseline justify-between">
         <h2 class="font-display text-2xl tracking-tight">Recent research</h2>
         <a href="/analyses" class="text-muted-foreground hover:text-foreground text-xs underline underline-offset-2">
@@ -176,80 +177,5 @@ const keysOk = apiKeys.anthropic || apiKeys.openai;
         )
       }
     </div>
-
-    <!-- Side rail: setup checklist + quick links -->
-    <aside class="border-border/70 lg:col-span-4 lg:border-l lg:pl-8">
-      <h2 class="font-display mb-4 text-2xl tracking-tight">Workspace</h2>
-
-      <ul class="border-border/70 divide-border/70 divide-y border-y text-sm">
-        <li class="flex items-center justify-between gap-3 py-3">
-          <span class="flex items-center gap-2.5">
-            <span
-              class:list={[
-                "inline-block h-1.5 w-1.5 rounded-full",
-                apiKeys.openai ? "bg-positive" : "bg-muted-foreground/40",
-              ]}
-              aria-hidden="true"></span>
-            OpenAI key
-          </span>
-          <span class="num text-muted-foreground text-xs uppercase">
-            {apiKeys.openai ? "configured" : "missing"}
-          </span>
-        </li>
-        <li class="flex items-center justify-between gap-3 py-3">
-          <span class="flex items-center gap-2.5">
-            <span
-              class:list={[
-                "inline-block h-1.5 w-1.5 rounded-full",
-                apiKeys.anthropic ? "bg-positive" : "bg-muted-foreground/40",
-              ]}
-              aria-hidden="true"></span>
-            Anthropic key
-          </span>
-          <span class="num text-muted-foreground text-xs uppercase">
-            {apiKeys.anthropic ? "configured" : "missing"}
-          </span>
-        </li>
-        <li class="flex items-center justify-between gap-3 py-3">
-          <span class="flex items-center gap-2.5">
-            <span
-              class:list={[
-                "inline-block h-1.5 w-1.5 rounded-full",
-                promptCount > 0 ? "bg-positive" : "bg-muted-foreground/40",
-              ]}
-              aria-hidden="true"></span>
-            Prompts library
-          </span>
-          <span class="num text-muted-foreground text-xs uppercase">
-            {promptCount}
-            {promptCount === 1 ? "item" : "items"}
-          </span>
-        </li>
-      </ul>
-
-      <div class="mt-6 space-y-2">
-        <a
-          href="/analyses/new"
-          class="bg-primary text-primary-foreground group hover:bg-primary/80 active:bg-primary/70 flex w-full items-center justify-between px-4 py-3 text-sm font-medium tracking-[0.08em] transition-colors"
-        >
-          <span>New analysis</span>
-          <span class="text-base">→</span>
-        </a>
-        <a
-          href="/prompts"
-          class="border-foreground/30 hover:border-foreground flex w-full items-center justify-between border-x px-4 py-3 text-sm font-medium tracking-tight transition-colors"
-        >
-          <span>Manage prompts</span>
-          <span class="text-muted-foreground text-base">→</span>
-        </a>
-        <a
-          href="/settings"
-          class="text-muted-foreground hover:text-foreground flex w-full items-center justify-between py-1 text-xs transition-colors"
-        >
-          <span>Settings · API keys · models</span>
-          <span>→</span>
-        </a>
-      </div>
-    </aside>
   </section>
 </Layout>
