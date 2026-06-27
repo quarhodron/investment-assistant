@@ -1,9 +1,10 @@
 ---
 change_id: watchlist-crud
 title: Watchlist crud
-status: impl_reviewed
+status: archived
 created: 2026-06-26
 updated: 2026-06-27
+archived_at: 2026-06-27T16:24:19Z
 archived_at: null
 ---
 
