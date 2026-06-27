@@ -252,10 +252,10 @@ None — no schema change. `company_id` is already nullable, FK-constrained, and
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run typecheck`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 New endpoint tests pass: `npm test`
-- [x] 1.4 `npx astro sync` then build succeeds: `npm run build`
+- [x] 1.1 Type checking passes: `npm run typecheck` — d505d7c
+- [x] 1.2 Linting passes: `npm run lint` — d505d7c
+- [x] 1.3 New endpoint tests pass: `npm test` — d505d7c
+- [x] 1.4 `npx astro sync` then build succeeds: `npm run build` — d505d7c
 
 #### Manual
 
@@ -267,9 +267,9 @@ None — no schema change. `company_id` is already nullable, FK-constrained, and
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npm run typecheck`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run typecheck`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Build succeeds: `npm run build`
 
 #### Manual
 

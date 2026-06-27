@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Info } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import type { Prompt, AiModel, WatchedCompany } from "@/types";
+import { companyLabel } from "@/lib/company";
 
 interface Props {
   prompts: Pick<Prompt, "id" | "name" | "description" | "body">[];
@@ -9,10 +10,6 @@ interface Props {
   apiKeyStatus: { anthropic: boolean; openai: boolean };
   defaultModelId: string | null;
   companies: Pick<WatchedCompany, "id" | "name" | "ticker">[];
-}
-
-function companyLabel(company: Pick<WatchedCompany, "name" | "ticker">): string {
-  return company.ticker ? `${company.name} (${company.ticker})` : company.name;
 }
 
 type Status = "idle" | "streaming" | "saved" | "error";
