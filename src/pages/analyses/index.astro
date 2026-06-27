@@ -13,11 +13,14 @@ let analyses: AnalysisRow[] = [];
 if (supabase && user) {
   const { data } = await supabase
     .from("analyses")
-    .select("id, title, model, provider, created_at, parent_analysis_id")
+    .select("id, title, model, provider, created_at, parent_analysis_id, watched_companies(name)")
     .eq("user_id", user.id);
 
   if (data) {
-    analyses = data;
+    analyses = data.map((row) => ({
+      ...row,
+      company_name: (row.watched_companies as { name: string } | null)?.name ?? null,
+    }));
   }
 }
 

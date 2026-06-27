@@ -24,7 +24,7 @@ const analysis = data as Analysis;
 const sources = flattenSources(analysis.sources as StoredSources | null);
 const createdAt = new Date(analysis.created_at).toLocaleString("pl-PL");
 
-const [parentAnalysis, { data: childrenData }] = await Promise.all([
+const [parentAnalysis, { data: childrenData }, companyResult] = await Promise.all([
   analysis.parent_analysis_id
     ? supabase
         .from("analyses")
@@ -40,7 +40,12 @@ const [parentAnalysis, { data: childrenData }] = await Promise.all([
     .eq("parent_analysis_id", analysis.id)
     .eq("user_id", user.id)
     .order("created_at", { ascending: true }),
+  analysis.company_id
+    ? supabase.from("watched_companies").select("name").eq("id", analysis.company_id).eq("user_id", user.id).single()
+    : Promise.resolve(null),
 ]);
+
+const companyName = companyResult?.data?.name ?? null;
 
 const children = childrenData ?? [];
 ---
@@ -72,7 +77,14 @@ const children = childrenData ?? [];
           <span class="num">{analysis.provider}</span> · <span class="num">{analysis.model}</span> · <time
             class="num"
             datetime={analysis.created_at}>{createdAt}</time
-          >
+          >{
+            companyName && (
+              <>
+                {" "}
+                · <span>{companyName}</span>
+              </>
+            )
+          }
         </p>
         <h1 class="font-display text-4xl leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-[3.25rem]">
           {analysis.title}

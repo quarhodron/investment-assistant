@@ -55,6 +55,12 @@ const indentRem = cappedDepth * 1.5;
             <span class="text-muted-foreground/80">
               {node.children.length} {node.children.length === 1 ? " continuation" : " continuations"}
             </span>
+            {node.company_name && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>{node.company_name}</span>
+              </>
+            )}
           </div>
         </div>
         <span class="text-muted-foreground group-hover/node:text-foreground shrink-0 text-xs transition-colors">→</span>
@@ -82,6 +88,12 @@ const indentRem = cappedDepth * 1.5;
           <span>
             {new Date(node.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
           </span>
+          {node.company_name && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{node.company_name}</span>
+            </>
+          )}
         </div>
       </div>
       <span class="text-muted-foreground group-hover/node:text-foreground shrink-0 text-xs transition-colors">→</span>

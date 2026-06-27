@@ -1,6 +1,11 @@
 import type { Analysis } from "@/types";
 
-export type AnalysisRow = Pick<Analysis, "id" | "title" | "model" | "provider" | "created_at" | "parent_analysis_id">;
+export type AnalysisRow = Pick<
+  Analysis,
+  "id" | "title" | "model" | "provider" | "created_at" | "parent_analysis_id"
+> & {
+  company_name?: string | null;
+};
 
 export type AnalysisTreeNode = AnalysisRow & {
   children: AnalysisTreeNode[];
