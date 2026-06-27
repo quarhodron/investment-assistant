@@ -2,9 +2,10 @@
 import Layout from "@/layouts/Layout.astro";
 import Banner from "@/components/Banner.astro";
 import MarkdownOutput from "@/components/MarkdownOutput";
+import LinkCompanyControls from "@/components/LinkCompanyControls";
 import { createClient } from "@/lib/supabase";
 import { flattenSources } from "@/lib/sources";
-import type { Analysis, StoredSources } from "@/types";
+import type { Analysis, StoredSources, WatchedCompany } from "@/types";
 
 const { user } = Astro.locals;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
@@ -24,7 +25,7 @@ const analysis = data as Analysis;
 const sources = flattenSources(analysis.sources as StoredSources | null);
 const createdAt = new Date(analysis.created_at).toLocaleString("pl-PL");
 
-const [parentAnalysis, { data: childrenData }, companyResult] = await Promise.all([
+const [parentAnalysis, { data: childrenData }, companyResult, { data: companiesData }] = await Promise.all([
   analysis.parent_analysis_id
     ? supabase
         .from("analyses")
@@ -43,9 +44,11 @@ const [parentAnalysis, { data: childrenData }, companyResult] = await Promise.al
   analysis.company_id
     ? supabase.from("watched_companies").select("name").eq("id", analysis.company_id).eq("user_id", user.id).single()
     : Promise.resolve(null),
+  supabase.from("watched_companies").select("id, name, ticker").eq("user_id", user.id).order("name"),
 ]);
 
 const companyName = companyResult?.data?.name ?? null;
+const companies = (companiesData ?? []) as Pick<WatchedCompany, "id" | "name" | "ticker">[];
 
 const children = childrenData ?? [];
 ---
@@ -89,13 +92,19 @@ const children = childrenData ?? [];
         <h1 class="font-display text-4xl leading-[1.05] tracking-tight text-balance sm:text-5xl lg:text-[3.25rem]">
           {analysis.title}
         </h1>
-        <div class="mt-8">
+        <div class="mt-8 flex flex-wrap items-center gap-3">
           <a
             href={`/analyses/${analysis.id}/continue`}
             class="bg-primary text-primary-foreground group hover:bg-primary/80 active:bg-primary/70 inline-flex items-center gap-3 px-5 py-3 text-sm font-medium tracking-[0.08em] transition-colors"
           >
             Continue analysis →
           </a>
+          <LinkCompanyControls
+            analysisId={analysis.id}
+            currentCompanyId={analysis.company_id ?? null}
+            companies={companies}
+            client:load
+          />
         </div>
       </div>
 

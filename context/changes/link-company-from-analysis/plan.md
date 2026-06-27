@@ -267,9 +267,9 @@ None — no schema change. `company_id` is already nullable, FK-constrained, and
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run typecheck`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run typecheck` — 3b7de0e
+- [x] 2.2 Linting passes: `npm run lint` — 3b7de0e
+- [x] 2.3 Build succeeds: `npm run build` — 3b7de0e
 
 #### Manual
 
@@ -281,9 +281,9 @@ None — no schema change. `company_id` is already nullable, FK-constrained, and
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npm run typecheck`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Build succeeds: `npm run build`
+- [x] 3.1 Type checking passes: `npm run typecheck`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Build succeeds: `npm run build`
 
 #### Manual
 
