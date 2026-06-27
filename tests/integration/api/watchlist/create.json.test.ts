@@ -88,6 +88,16 @@ describe("POST /api/watchlist (JSON mode)", () => {
     expect(json.error).toContain("together");
   });
 
+  it("returns 401 when unauthenticated", async () => {
+    hoisted.currentSupabase = createSupabaseStub({});
+
+    const res = await POST(buildJsonContext({ name: "Test Co" }, null));
+
+    expect(res.status).toBe(401);
+    const json = (await res.json()) as WatchlistResponse;
+    expect(json.error).toBeTruthy();
+  });
+
   it("returns 409 on duplicate (23505)", async () => {
     hoisted.currentSupabase = createSupabaseStub({
       watched_companies: () => ({ data: null, error: { code: "23505", message: "duplicate" } }),

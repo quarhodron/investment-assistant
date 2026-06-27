@@ -43,7 +43,8 @@ export const PATCH: APIRoute = async (context) => {
     });
   }
 
-  const { company_id } = body as { company_id: string | null };
+  const rawCompanyId = (body as { company_id: string | null }).company_id;
+  const company_id = rawCompanyId === "" ? null : rawCompanyId;
 
   if (company_id !== null && typeof company_id !== "string") {
     return new Response(JSON.stringify({ error: "invalid_company_id" }), {
@@ -80,8 +81,10 @@ export const PATCH: APIRoute = async (context) => {
     .single();
 
   if (updateError) {
-    return new Response(JSON.stringify({ error: "analysis_not_found" }), {
-      status: 404,
+    const status = updateError.code === "PGRST116" ? 404 : 500;
+    const error = updateError.code === "PGRST116" ? "analysis_not_found" : "internal_error";
+    return new Response(JSON.stringify({ error }), {
+      status,
       headers: { "Content-Type": "application/json" },
     });
   }

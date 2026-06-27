@@ -128,6 +128,25 @@ describe("PATCH /api/analyses/[id]", () => {
     expect(json.error).toBe("analysis_not_found");
   });
 
+  it("clears company_id when empty string is passed (treated as null)", async () => {
+    hoisted.currentSupabase = buildStub({ companyId: null });
+    const res = await PATCH(
+      buildApiContext({
+        method: "PATCH",
+        params: { id: ANALYSIS_ID },
+        body: { company_id: "" },
+        user: { id: USER_ID },
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as PatchResponse;
+    expect(json).toEqual({ ok: true, company_id: null });
+    // Empty string skips ownership check, like null
+    expect(hoisted.currentSupabase.updateCalls).toHaveLength(1);
+    expect(hoisted.currentSupabase.updateCalls[0]?.row).toMatchObject({ company_id: null });
+  });
+
   it("returns 401 when unauthenticated", async () => {
     hoisted.currentSupabase = buildStub();
     const res = await PATCH(

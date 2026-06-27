@@ -9,6 +9,7 @@ export function buildApiContext(opts: {
   headers?: Record<string, string>;
   params?: Record<string, string>;
   method?: string;
+  path?: string;
 }): ApiRouteContext {
   const headers = new Headers(opts.headers);
   const url = opts.origin ?? "https://app.local";
@@ -20,7 +21,7 @@ export function buildApiContext(opts: {
     headers.set("Origin", opts.origin);
   }
 
-  const request = new Request(`${url}/api/ai/run`, {
+  const request = new Request(`${url}${opts.path ?? "/api/ai/run"}`, {
     method: opts.method ?? "POST",
     headers,
     body: opts.body === undefined ? undefined : JSON.stringify(opts.body),

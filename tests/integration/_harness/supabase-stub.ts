@@ -33,7 +33,7 @@ export interface SupabaseStub {
     maybeSingle(): Promise<QueryResult>;
   };
   insertCalls: { table: string; row: unknown }[];
-  updateCalls: { table: string; row: unknown }[];
+  updateCalls: { table: string; row: unknown; filters: Record<string, unknown> }[];
 }
 
 type HandlerMap = Partial<Record<TableName, TableHandler>>;
@@ -47,7 +47,7 @@ function createMissingHandler(table: TableName): TableHandler {
 
 export function createSupabaseStub(responses: HandlerMap): SupabaseStub {
   const insertCalls: { table: string; row: unknown }[] = [];
-  const updateCalls: { table: string; row: unknown }[] = [];
+  const updateCalls: { table: string; row: unknown; filters: Record<string, unknown> }[] = [];
 
   const from = (table: TableName) => {
     const handler = responses[table] ?? createMissingHandler(table);
@@ -86,13 +86,14 @@ export function createSupabaseStub(responses: HandlerMap): SupabaseStub {
       update(row: unknown) {
         op = "update";
         updateRow = row;
-        updateCalls.push({ table, row });
         return chain;
       },
       single() {
+        if (op === "update") updateCalls.push({ table, row: updateRow, filters: { ...filters } });
         return Promise.resolve(run());
       },
       maybeSingle() {
+        if (op === "update") updateCalls.push({ table, row: updateRow, filters: { ...filters } });
         return Promise.resolve(run());
       },
     };
