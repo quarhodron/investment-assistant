@@ -273,21 +273,21 @@ None — no schema change. `company_id` is already nullable, FK-constrained, and
 
 #### Manual
 
-- [ ] 2.4 Both dialogs open, trap focus, close on Escape / overlay click
-- [ ] 2.5 Link picker preselects current company; Unlink shows only when a link exists
-- [ ] 2.6 Add-to-watchlist creates + links; duplicate shows "use Link instead"
+- [x] 2.4 Both dialogs open, trap focus, close on Escape / overlay click
+- [x] 2.5 Link picker preselects current company; Unlink shows only when a link exists
+- [x] 2.6 Add-to-watchlist creates + links; duplicate shows "use Link instead"
 
 ### Phase 3: Detail-view integration + polish
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npm run typecheck`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Build succeeds: `npm run build`
+- [x] 3.1 Type checking passes: `npm run typecheck` — af1cbca
+- [x] 3.2 Linting passes: `npm run lint` — af1cbca
+- [x] 3.3 Build succeeds: `npm run build` — af1cbca
 
 #### Manual
 
-- [ ] 3.4 Add-to-watchlist back-links and masthead shows company after reload
-- [ ] 3.5 Link set / change / unlink all reflect in the masthead and Studio
-- [ ] 3.6 Empty-state CTA shows when no watched companies exist
-- [ ] 3.7 Two affordances visually distinct; no regression in watchlist add / continue flow
+- [x] 3.4 Add-to-watchlist back-links and masthead shows company after reload
+- [x] 3.5 Link set / change / unlink all reflect in the masthead and Studio
+- [x] 3.6 Empty-state CTA shows when no watched companies exist
+- [x] 3.7 Two affordances visually distinct; no regression in watchlist add / continue flow
