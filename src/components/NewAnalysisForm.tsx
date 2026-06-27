@@ -1,13 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Info } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import type { Prompt, AiModel } from "@/types";
+import type { Prompt, AiModel, WatchedCompany } from "@/types";
 
 interface Props {
   prompts: Pick<Prompt, "id" | "name" | "description" | "body">[];
   models: AiModel[];
   apiKeyStatus: { anthropic: boolean; openai: boolean };
   defaultModelId: string | null;
+  companies: Pick<WatchedCompany, "id" | "name" | "ticker">[];
+}
+
+function companyLabel(company: Pick<WatchedCompany, "name" | "ticker">): string {
+  return company.ticker ? `${company.name} (${company.ticker})` : company.name;
 }
 
 type Status = "idle" | "streaming" | "saved" | "error";
@@ -91,13 +96,14 @@ function groupByProvider(models: AiModel[]): Record<string, AiModel[]> {
 
 const PROVIDER_LABELS: Record<string, string> = { anthropic: "Anthropic", openai: "OpenAI" };
 
-export default function NewAnalysisForm({ prompts, models, apiKeyStatus, defaultModelId }: Props) {
+export default function NewAnalysisForm({ prompts, models, apiKeyStatus, defaultModelId, companies }: Props) {
   const firstWithKey = models.find((m) => apiKeyStatus[m.provider as keyof typeof apiKeyStatus]);
   const firstModelId = firstWithKey?.id ?? models.at(0)?.id ?? "";
   const initialModelId = defaultModelId ?? firstModelId;
 
   const [promptId, setPromptId] = useState(prompts.at(0)?.id ?? "");
   const [modelId, setModelId] = useState(initialModelId);
+  const [companyId, setCompanyId] = useState("");
   const [input, setInput] = useState("");
   const [extraContext, setExtraContext] = useState("");
   const [title, setTitle] = useState("");
@@ -142,6 +148,9 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
     }
     if (extraContext.trim()) {
       payload.extra_context = extraContext;
+    }
+    if (companyId) {
+      payload.company_id = companyId;
     }
 
     try {
@@ -292,6 +301,44 @@ export default function NewAnalysisForm({ prompts, models, apiKeyStatus, default
               ))}
             </select>
           </div>
+
+          {/* Company picker */}
+          {companies.length > 0 ? (
+            <div>
+              <label htmlFor="company_id" className={fieldLabel}>
+                Company <span className="text-muted-foreground/60 ml-1 tracking-normal normal-case">(optional)</span>
+              </label>
+              <select
+                id="company_id"
+                value={companyId}
+                onChange={(e) => {
+                  const selected = e.target.value;
+                  setCompanyId(selected);
+                  if (selected) {
+                    const company = companies.find((c) => c.id === selected);
+                    if (company) setInput(companyLabel(company));
+                  }
+                }}
+                disabled={frozen}
+                className={fieldControl}
+              >
+                <option value="">— No company —</option>
+                {companies.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {companyLabel(c)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-xs">
+              Add companies in your{" "}
+              <a href="/watchlist" className="text-foreground underline underline-offset-2">
+                Watchlist
+              </a>{" "}
+              to link analyses.
+            </p>
+          )}
 
           {/* No API key alert */}
           {!hasApiKey && selectedProvider && (
