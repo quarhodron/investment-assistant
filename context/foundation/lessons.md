@@ -22,3 +22,10 @@
 - **Problem**: Without an explicit locale, dates render in the runtime's default (often American MM/DD/YYYY), which is the wrong format for this project.
 - **Rule**: Always pass `'pl-PL'` as the locale argument when calling `toLocaleDateString`, `toLocaleString`, or `toLocaleTimeString`. Never rely on the implicit locale default.
 - **Applies to**: implement
+
+## Strike the Backlog Handoff row when archiving closes a roadmap item
+
+- **Context**: Any /10x-archive run that closes a roadmap item whose Change ID is also listed in the roadmap's ## Backlog Handoff table.
+- **Problem**: /10x-archive flips item Status to done + adds a ## Done entry but leaves the Backlog Handoff row claiming the item is unplanned ('Run /10x-plan ...'), so the table lists shipped work as outstanding.
+- **Rule**: When archiving closes a roadmap item, also strike its ## Backlog Handoff row (mark it shipped/archived) in the same edit — closing the item without touching Backlog Handoff leaves the table stale.
+- **Applies to**: archive
