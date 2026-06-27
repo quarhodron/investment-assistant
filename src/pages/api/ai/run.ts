@@ -108,6 +108,7 @@ export const POST: APIRoute = async (context) => {
         }
 
         let resolvedContext = input.extra_context;
+        let resolvedCompanyId: string | null = input.company_id ?? null;
 
         if (input.parent_analysis_id) {
           const { data: parentData, error: parentError } = await supabase
@@ -123,6 +124,15 @@ export const POST: APIRoute = async (context) => {
           }
 
           resolvedContext = input.extra_context ? parentData.output + "\n\n" + input.extra_context : parentData.output;
+        } else if (input.company_id) {
+          const { data: companyData } = await supabase
+            .from("watched_companies")
+            .select("id")
+            .eq("id", input.company_id)
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+          resolvedCompanyId = companyData ? input.company_id : null;
         }
 
         const generator = runAiAnalysis({
@@ -156,7 +166,7 @@ export const POST: APIRoute = async (context) => {
             extra_context: input.extra_context ?? null,
             subject: input.subject ?? null,
             parent_analysis_id: input.parent_analysis_id ?? null,
-            company_id: input.company_id ?? null,
+            company_id: resolvedCompanyId,
             input_tokens: event.usage.input_tokens,
             output_tokens: event.usage.output_tokens,
             cost_usd: null,
