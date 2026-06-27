@@ -125,13 +125,14 @@ export const POST: APIRoute = async (context) => {
 
           resolvedContext = input.extra_context ? parentData.output + "\n\n" + input.extra_context : parentData.output;
         } else if (input.company_id) {
-          const { data: companyData } = await supabase
+          const { data: companyData, error: _companyError } = await supabase
             .from("watched_companies")
             .select("id")
             .eq("id", input.company_id)
             .eq("user_id", user.id)
             .maybeSingle();
 
+          // On DB error or missing row, degrade gracefully — never fail the run
           resolvedCompanyId = companyData ? input.company_id : null;
         }
 
@@ -174,7 +175,7 @@ export const POST: APIRoute = async (context) => {
 
           const insertResult = await supabase.from("analyses").insert(row).select("id").single();
 
-          if (!insertResult.data) {
+          if (insertResult.error) {
             enqueue(sseFrame("error", { message: "persist_failed" }));
             return;
           }

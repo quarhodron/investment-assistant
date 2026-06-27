@@ -419,7 +419,7 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
           </div>
 
           {output && (
-            <div className="text-foreground/90 [&_h1]:font-display [&_h2]:font-display [&_strong]:text-foreground mb-4 max-w-none text-[0.95rem] leading-[1.65] [&_a]:underline [&_a]:underline-offset-2 [&_em]:italic [&_h1]:mt-6 [&_h1]:mb-2.5 [&_h1]:text-xl [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:text-lg [&_h3]:mt-4 [&_h3]:mb-1.5 [&_h3]:text-base [&_h3]:font-semibold [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-3 [&_strong]:font-semibold [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-5">
+            <div className="prose-output text-foreground/90 [&_h1]:font-display [&_h2]:font-display [&_strong]:text-foreground mb-4 max-w-none text-[0.95rem] leading-[1.65] [&_a]:underline [&_a]:underline-offset-2 [&_em]:italic [&_h1]:mt-6 [&_h1]:mb-2.5 [&_h1]:text-xl [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:text-lg [&_h3]:mt-4 [&_h3]:mb-1.5 [&_h3]:text-base [&_h3]:font-semibold [&_li]:my-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-3 [&_strong]:font-semibold [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-5">
               <ReactMarkdown>{output}</ReactMarkdown>
             </div>
           )}
