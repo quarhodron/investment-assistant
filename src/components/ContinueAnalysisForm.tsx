@@ -9,6 +9,7 @@ interface ParentAnalysis {
   input: string;
   extra_context: string | null;
   prompt_id: string | null;
+  company_id: string | null;
 }
 
 interface Props {
@@ -157,6 +158,9 @@ export default function ContinueAnalysisForm({ parentAnalysis, prompts, models, 
     }
     if (extraContext.trim()) {
       payload.extra_context = extraContext;
+    }
+    if (parentAnalysis.company_id) {
+      payload.company_id = parentAnalysis.company_id;
     }
 
     try {

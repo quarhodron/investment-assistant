@@ -223,28 +223,28 @@ Carry the parent analysis's `company_id` through the continue flow unchanged and
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run typecheck`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Production build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run typecheck` — 16c64e2
+- [x] 2.2 Linting passes: `npm run lint` — 16c64e2
+- [x] 2.3 Production build succeeds: `npm run build` — 16c64e2
 
 #### Manual
 
-- [ ] 2.4 Picker lists companies as `name (ticker)` (and `name` alone when tickerless)
-- [ ] 2.5 Picking auto-fills Topic; field stays editable and the typed value is sent
-- [ ] 2.6 Re-pick overwrites Topic; `— No company —` leaves Topic and sends no `company_id`
-- [ ] 2.7 Run with a company selected shows the linked company name on detail
-- [ ] 2.8 Zero watched companies → no picker, only the hint; runs still work
+- [x] 2.4 Picker lists companies as `name (ticker)` (and `name` alone when tickerless)
+- [x] 2.5 Picking auto-fills Topic; field stays editable and the typed value is sent
+- [x] 2.6 Re-pick overwrites Topic; `— No company —` leaves Topic and sends no `company_id`
+- [x] 2.7 Run with a company selected shows the linked company name on detail
+- [x] 2.8 Zero watched companies → no picker, only the hint; runs still work
 
 ### Phase 3: Continue-analysis link inheritance (frozen)
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npm run typecheck`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Production build succeeds: `npm run build`
+- [x] 3.1 Type checking passes: `npm run typecheck`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Production build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 Continuing a linked analysis → child has same `company_id` + `parent_analysis_id`
-- [ ] 3.5 Continuing an unlinked analysis → child `company_id` null, no error
-- [ ] 3.6 Continue screen shows no company picker or link control
+- [x] 3.4 Continuing a linked analysis → child has same `company_id` + `parent_analysis_id`
+- [x] 3.5 Continuing an unlinked analysis → child `company_id` null, no error
+- [x] 3.6 Continue screen shows no company picker or link control
