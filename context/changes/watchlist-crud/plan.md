@@ -234,6 +234,10 @@ None — the table, RLS, indexes, and the `ON DELETE SET NULL` foreign key alrea
 - CRUD pattern: `src/pages/prompts.astro`, `src/pages/prompts/[id]/edit.astro`, `src/pages/api/prompts/index.ts`, `src/pages/api/prompts/[id].ts`
 - Lessons: `context/foundation/lessons.md` (pl-PL locale; in-browser `fetch()` for manual steps)
 
+## Addendum
+
+- **Form-value echo (`_*` params):** Both watchlist API routes append submitted field values to error redirects (e.g. `&_name=…&_ticker=…`) so the form repopulates on validation failure. Intentional UX improvement; not in the original plan and absent from the `prompts` sibling. Safe — values are `encodeURIComponent`-encoded out and Astro auto-escapes on render.
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
@@ -266,6 +270,6 @@ None — the table, RLS, indexes, and the `ON DELETE SET NULL` foreign key alrea
 
 #### Manual
 
-- [ ] 2.4 Company name shows on `/analyses` tree node and `/analyses/[id]` for a tied analysis
-- [ ] 2.5 No company label shown when `company_id` is null; layout unchanged
-- [ ] 2.6 After deleting the company, the analysis survives with no company label
+- [x] 2.4 Company name shows on `/analyses` tree node and `/analyses/[id]` for a tied analysis
+- [x] 2.5 No company label shown when `company_id` is null; layout unchanged
+- [x] 2.6 After deleting the company, the analysis survives with no company label
